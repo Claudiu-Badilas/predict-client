@@ -1,0 +1,21 @@
+.loan-info-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.loan-info-button:hover,
+.loan-info-button:active {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  transform: none;
+}

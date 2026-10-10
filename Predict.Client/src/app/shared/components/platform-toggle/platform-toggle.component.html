@@ -1,0 +1,86 @@
+@if (config.type === 'switch') {
+  <button
+    class="platform-toggle__switch"
+    [class.platform-toggle__switch--active]="checked()"
+    [class.platform-toggle__switch--xsmall]="config.size === 'xsmall'"
+    [disabled]="config.disabled"
+    [attr.aria-label]="config.ariaLabel"
+    [attr.aria-checked]="checked()"
+    (click)="toggle()"
+    role="switch"
+    type="button"
+  >
+    <span class="platform-toggle__switch-thumb"></span>
+  </button>
+} @else if (config.type === 'theme') {
+  <button
+    type="button"
+    class="platform-toggle__theme"
+    [attr.aria-label]="'Theme: ' + themeService.theme() + '. Change theme'"
+    [attr.title]="'Theme: ' + themeService.theme()"
+    (click)="themeService.toggleTheme()"
+  >
+    <svg
+      class="platform-toggle__theme-icon"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      @if (themeService.theme() === 'light') {
+        <circle cx="12" cy="12" r="4" />
+        <path
+          d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
+        />
+      } @else {
+        <path d="M20.9 13A9 9 0 1 1 11 3.1 9 9 0 0 0 20.9 13Z" />
+      }
+    </svg>
+    <span class="platform-toggle__theme-label">
+      {{ themeService.theme() === 'light' ? 'Light' : 'Dark' }}
+    </span>
+  </button>
+} @else {
+  <div
+    class="platform-toggle__options"
+    [class.platform-toggle__options--tabs]="config.type === 'tabs'"
+    [class.platform-toggle__options--toolbar]="config.type === 'toolbar'"
+    role="group"
+    [attr.aria-label]="config.ariaLabel"
+  >
+    @if (config.options.length > 0) {
+      <span
+        class="platform-toggle__slider"
+        [style.width]="'calc((100% - 6px) / ' + config.options.length + ')'"
+        [style.transform]="
+          'translateX(' + getSelectedIndex(config.options) * 100 + '%)'
+        "
+        [style.background]="config.gradient ? getGradient(config) : null"
+        aria-hidden="true"
+      ></span>
+    }
+
+    @for (option of config.options; track getOptionLabel(option)) {
+      <button
+        class="platform-toggle__option"
+        [class.platform-toggle__option--active]="
+          getOptionLabel(option) === selected()
+        "
+        [disabled]="config.disabled"
+        [attr.aria-label]="getOptionLabel(option)"
+        [attr.aria-pressed]="getOptionLabel(option) === selected()"
+        (click)="select(option)"
+        type="button"
+      >
+        @if (getOptionIcon(option); as iconPath) {
+          <img [src]="iconPath" alt="" aria-hidden="true" />
+        } @else {
+          {{ getOptionLabel(option) }}
+        }
+      </button>
+    }
+  </div>
+}

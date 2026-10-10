@@ -1,0 +1,27 @@
+@if (toast(); as toast) {
+  <div class="toast-stack" aria-live="polite" aria-relevant="additions">
+    @for (item of toast; track item.id) {
+      <div
+        class="toast-message"
+        [class.toast-message--info]="item.toastType === 'info'"
+        [class.toast-message--success]="item.toastType === 'success'"
+        [class.toast-message--warning]="item.toastType === 'warning'"
+        [class.toast-message--error]="item.toastType === 'error'"
+        role="alert"
+        tabindex="0"
+        (click)="dismiss(item.id)"
+        (keydown.enter)="dismiss(item.id)"
+        (keydown.space)="$event.preventDefault(); dismiss(item.id)"
+      >
+        <span>{{ item.message }}</span>
+        <button
+          type="button"
+          aria-label="Dismiss notification"
+          (click)="$event.stopPropagation(); dismiss(item.id)"
+        >
+          ×
+        </button>
+      </div>
+    }
+  </div>
+}

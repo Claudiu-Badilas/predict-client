@@ -1,0 +1,79 @@
+:host {
+  display: block;
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 2147483647;
+  width: min(24rem, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.toast-stack {
+  display: flex;
+  max-height: calc(100dvh - 2rem);
+  flex-direction: column-reverse;
+  gap: 0.75rem;
+  overflow-y: auto;
+  pointer-events: none;
+}
+
+.toast-message {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--theme-border-strong);
+  border-left: 4px solid var(--theme-accent);
+  border-radius: 0.5rem;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  box-shadow: var(--theme-shadow-raised);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.toast-message--success {
+  border-left-color: var(--theme-success);
+}
+
+.toast-message--warning {
+  border-left-color: var(--theme-warning);
+}
+
+.toast-message--error {
+  border-left-color: var(--theme-danger);
+}
+
+button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  :host {
+    position: fixed;
+    inset: auto max(0.75rem, env(safe-area-inset-right))
+      max(1rem, env(safe-area-inset-bottom))
+      max(0.75rem, env(safe-area-inset-left));
+    width: auto;
+  }
+
+  .toast-message {
+    width: 100%;
+    gap: 0.75rem;
+    padding: 0.85rem;
+    overflow-wrap: anywhere;
+    box-shadow: 0 6px 24px rgb(15 23 42 / 0.24);
+  }
+
+  .toast-stack {
+    max-height: calc(100dvh - 2rem - env(safe-area-inset-top));
+  }
+}

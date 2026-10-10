@@ -1,0 +1,80 @@
+.header-cards {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.divided-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 5px;
+  padding: 1.5rem 0.5rem;
+  box-shadow: var(--theme-shadow);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.divided-card:hover {
+  border-color: var(--theme-border-strong);
+  box-shadow: var(--theme-shadow-raised);
+}
+
+.divided-card .section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0 0.5rem;
+  width: 50%;
+}
+
+.divided-card .section.right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.divided-card .section.center {
+  align-items: center;
+  text-align: center;
+}
+
+.divided-card .label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--theme-text-secondary);
+  margin: 0 0 0.375rem 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.divided-card .value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--theme-text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.divided-card .value.green {
+  color: var(--theme-success);
+}
+
+.divided-card .value.red {
+  color: var(--theme-danger);
+}
+
+.divided-card .vertical-divider {
+  width: 1px;
+  height: 80%;
+  background-color: var(--theme-border);
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+}

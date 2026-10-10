@@ -1,0 +1,109 @@
+<p-top-bar>
+  <p-receipt-insights
+    topbar-actions
+    [receipts]="receipts()"
+    [startDate]="startDate()"
+    [endDate]="endDate()"
+  />
+</p-top-bar>
+
+<div class="p-2">
+  <div class="receipts-toolbar" aria-label="Receipt view controls">
+    <div class="receipts-controls">
+      <p-date-range-picker
+        class="receipts-date-range"
+        [startDate]="startDate()"
+        [endDate]="endDate()"
+        [minDate]="minDate"
+        [maxDate]="now"
+        (valueChanged)="handleRangeChange($event)"
+      />
+      <p-platform-toggle
+        [config]="{
+          type: 'tabs',
+          options: ['Monthly', 'Yearly', 'All'],
+          selected: getSelectedViewLabel(),
+          ariaLabel: 'Receipt view',
+        }"
+        (selectionChange)="onToggle($event)"
+      />
+    </div>
+    <div class="receipts-tools">
+      <div class="receipts-sort" role="group" aria-label="Sort receipts">
+        <button
+          type="button"
+          class="receipts-sort__button"
+          [class.receipts-sort__button--active]="
+            receiptSortMode() === 'newest' || receiptSortMode() === 'oldest'
+          "
+          [attr.aria-pressed]="
+            receiptSortMode() === 'newest' || receiptSortMode() === 'oldest'
+          "
+          [attr.aria-label]="
+            receiptSortMode() === 'oldest'
+              ? 'Date sorted oldest first. Click to sort newest first.'
+              : 'Date sorted newest first. Click to sort oldest first.'
+          "
+          [title]="
+            receiptSortMode() === 'oldest' ? 'Oldest first' : 'Newest first'
+          "
+          (click)="toggleDateSort()"
+        >
+          <span>Date</span>
+          @if (receiptSortMode() === 'oldest') {
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 13V3m0 0L4 7m4-4 4 4" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 3v10m0 0 4-4m-4 4-4-4" />
+            </svg>
+          }
+        </button>
+        <button
+          type="button"
+          class="receipts-sort__button"
+          [class.receipts-sort__button--active]="
+            receiptSortMode() === 'amount-asc' ||
+            receiptSortMode() === 'amount-desc'
+          "
+          [attr.aria-pressed]="
+            receiptSortMode() === 'amount-asc' ||
+            receiptSortMode() === 'amount-desc'
+          "
+          [attr.aria-label]="
+            receiptSortMode() === 'amount-asc'
+              ? 'Amount sorted ascending. Click to sort descending.'
+              : 'Amount sorted descending. Click to sort ascending.'
+          "
+          [title]="
+            receiptSortMode() === 'amount-asc'
+              ? 'Amount ascending'
+              : 'Amount descending'
+          "
+          (click)="toggleAmountSort()"
+        >
+          <span>Amount</span>
+          @if (receiptSortMode() === 'amount-asc') {
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 13V3m0 0L4 7m4-4 4 4" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 3v10m0 0 4-4m-4 4-4-4" />
+            </svg>
+          }
+        </button>
+      </div>
+      <p-search-input [value]="searchTerm()" (search)="onSearch($event)" />
+    </div>
+  </div>
+
+  <p-most-common-products
+    [receipts]="receipts()"
+    [viewMode]="viewMode()"
+    [sortMode]="receiptSortMode()"
+    [searchTerm]="searchTerm()"
+    (productSelected)="onSearch($event)"
+  />
+</div>

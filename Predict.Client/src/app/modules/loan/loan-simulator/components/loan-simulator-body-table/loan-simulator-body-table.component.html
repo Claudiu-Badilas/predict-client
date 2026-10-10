@@ -1,0 +1,416 @@
+<div scrollable class="table-wrapper desktop-view">
+  <table class="instalment-table">
+    <thead>
+      <tr>
+        <th class="col-first">
+          <div class="expand-controls">
+            <img
+              width="20"
+              height="20"
+              [src]="getThemeIconPath('collapse')"
+              alt="collapse"
+              (click)="onCollapseAll()"
+            />
+            <img
+              width="20"
+              height="20"
+              [src]="getThemeIconPath('expand')"
+              alt="expand"
+              (click)="onExpandAll()"
+            />
+          </div>
+        </th>
+        <th>Data</th>
+        <th>Credit</th>
+        <th>Dobândă</th>
+        <th>Asig.</th>
+        <th>Total</th>
+        <th>1/2</th>
+        <th>Anticipat</th>
+        <th>Sold</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (
+        group of monthlyInstalmentGroups();
+        track group.id;
+        let index = $index
+      ) {
+        @if (group.completed) {
+          <tr
+            class="group-header-subtotal-row"
+            [class.expanded-group]="group.expanded"
+          >
+            @let subtotal = getSubtotal(group);
+
+            <td class="col-first" (click)="toggleGroup(group)">
+              <span class="count"
+                >{{ subtotal.instalmentsCount }}
+                @if (subtotal.earlyCount > 0) {
+                  <span class="early-chip">+{{ subtotal.earlyCount }}</span>
+                }
+              </span>
+            </td>
+
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ group.title | date: 'MMM yyyy' }}
+            </td>
+
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ subtotal.principal | numberFormat: '0.00' }}
+            </td>
+
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ subtotal.interest | numberFormat: '0.00' }}
+            </td>
+
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ subtotal.insurance | numberFormat: '0.00' }}
+            </td>
+
+            <td class="bold subtotal-total" (click)="toggleGroup(group)">
+              {{ subtotal.total | numberFormat: '0.00' }}
+            </td>
+
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ subtotal.total / 2 | numberFormat: '0.00' }}
+            </td>
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ subtotal.earlyPayment | numberFormat: '0.00' }}
+            </td>
+            <td class="bold" (click)="toggleGroup(group)">
+              {{ subtotal.remaining | numberFormat: '0.00' }}
+            </td>
+          </tr>
+          @if (index + 1 == completedMonthlyInstalmentGroupsCount()) {
+            <tr class="group-header-subtotal-row">
+              <td class="p-0" colspan="8"></td>
+              <td class="p-1">
+                <div class="mt-1 group-actions">
+                  <button
+                    type="button"
+                    class="action-btn remove-early"
+                    title="Elimină o rată anticipată"
+                    (click)="onRemoveEarlyPayment(group, $event)"
+                  >
+                    −
+                  </button>
+                  <button
+                    type="button"
+                    class="action-btn add-early"
+                    title="Adaugă următoarea rată ca anticipată"
+                    (click)="onAddEarlyPayment(group, $event)"
+                  >
+                    +
+                  </button>
+                  <button
+                    type="button"
+                    class="action-btn dispatch-instalment"
+                    title="Marchează o rată ca plătită"
+                    (click)="onDispatchInstalment(group, $event)"
+                  >
+                    ✓
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        }
+
+        @if (!group.completed || group.expanded) {
+          @for (
+            row of group.instalments;
+            let last = $last;
+            track row.instalmentId
+          ) {
+            <tr
+              [class.row-selected]="row.instalmentPayment"
+              [class.row-early]="row.earlyPayment"
+              [class.row-disabled]="!row.instalmentPayment && !row.earlyPayment"
+            >
+              <td class="col-first">
+                <div class="row-controls">
+                  <span class="row-index">{{ row.instalmentId }}</span>
+                </div>
+              </td>
+
+              <td
+                [class.strike]="row.earlyPayment || row.instalmentPayment"
+                [class.disabled]="!group.completed && row.disabled"
+              >
+                {{ row.paymentDate | date: 'MMM yyyy' }}
+              </td>
+              <td
+                [class.semi-bold]="row.earlyPayment || row.instalmentPayment"
+                [class.disabled]="!group.completed && row.disabled"
+              >
+                {{ row.principalAmount | numberFormat: '0.00'
+                }}{{ row.recalculated ? '*' : '' }}
+              </td>
+              <td
+                [class.strike]="row.earlyPayment"
+                [class.disabled]="!group.completed && row.disabled"
+              >
+                {{ row.interestAmount | numberFormat: '0.00'
+                }}{{ row.recalculated ? '*' : '' }}
+              </td>
+              <td
+                [class.strike]="row.earlyPayment"
+                [class.disabled]="!group.completed && row.disabled"
+              >
+                {{ row.insuranceCost | numberFormat: '0.00'
+                }}{{ row.recalculated ? '*' : '' }}
+              </td>
+              <td [class.disabled]="!group.completed && row.disabled">
+                @if (!row.earlyPayment && !row.instalmentPayment) {
+                  <span
+                    >{{ row.totalInstalment | numberFormat: '0.00'
+                    }}{{ row.recalculated ? '*' : '' }}</span
+                  >
+                } @else {
+                  <span class="subtotal-total">{{
+                    row.batchTotalInstalment | numberFormat: '-'
+                  }}</span>
+                }
+              </td>
+              <td [class.disabled]="!group.completed && row.disabled">
+                {{ row.batchTotalInstalment / 2 | numberFormat: '-' }}
+              </td>
+              <td [class.disabled]="!group.completed && row.disabled">
+                {{ row.batchTotalEarlyPayment | numberFormat: '-' }}
+              </td>
+              <td
+                [class.strike]="
+                  !last && (row.earlyPayment || row.instalmentPayment)
+                "
+                [class.semi-bold]="
+                  last && (row.earlyPayment || row.instalmentPayment)
+                "
+                [class.disabled]="!group.completed && row.disabled"
+              >
+                {{ row.remainingBalance | numberFormat: '0.00' }}
+              </td>
+            </tr>
+          }
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+<div scrollable class="mobile-view">
+  @for (
+    group of monthlyInstalmentGroups();
+    track group.id;
+    let index = $index
+  ) {
+    @if (group.completed) {
+      @let subtotal = getSubtotal(group);
+      <div class="mobile-group-card">
+        <div
+          class="mobile-group-header"
+          (touchstart)="onMobileTouchStart($event, group, index)"
+          (touchmove)="onMobileTouchMove($event)"
+          (touchend)="onMobileTouchEnd($event)"
+          (touchcancel)="onMobileTouchCancel()"
+        >
+          <div class="mobile-item-row" (click)="toggleGroup(group)">
+            <div class="mobile-group-value-col">
+              <span class="mobile-group-count">
+                {{ subtotal.instalmentsCount }}
+                @if (subtotal.earlyCount > 0) {
+                  <span class="early-chip">+{{ subtotal.earlyCount }}</span>
+                }
+              </span>
+              <span class="mobile-group-title">
+                {{ group.title | date: 'MMM yyyy' }}
+              </span>
+            </div>
+
+            <div class="mobile-group-value-col">
+              <span class="item-label">Anticipat</span>
+              <span class="item-value principal-value">
+                {{ subtotal.earlyPayment | numberFormat: '0.00' }}
+              </span>
+            </div>
+            <div class="mobile-group-value-col">
+              <span class="item-label">Rata</span>
+              <span class="item-value interest-value">
+                {{ subtotal.instalment | numberFormat: '0.00' }}
+              </span>
+            </div>
+            <div class="mobile-group-value-col">
+              <span class="item-label">Total</span>
+              <span class="item-value total-value">
+                {{ subtotal.total | numberFormat: '0.00' }}
+              </span>
+            </div>
+            <div class="mobile-group-value-col">
+              <span class="item-label">1/2</span>
+              <span class="item-value">
+                {{ subtotal.total / 2 | numberFormat: '0.00' }}
+              </span>
+            </div>
+
+            <div class="mobile-group-value-col">
+              <span class="item-label">Sold</span>
+              <span class="item-value balance-value">
+                {{ subtotal.remaining | numberFormat: '0.00' }}
+              </span>
+            </div>
+          </div>
+          @if (gestureFeedback?.group === group) {
+            <div
+              class="gesture-feedback"
+              [class.remove-early]="gestureFeedback?.direction === 'left'"
+              [class.add-early]="gestureFeedback?.direction === 'right'"
+              [class.dispatch-instalment]="
+                gestureFeedback?.direction === 'down'
+              "
+              role="status"
+            >
+              {{ gestureFeedback?.label }}
+            </div>
+          }
+        </div>
+
+        @if (group.expanded) {
+          <div class="mobile-items-list">
+            @for (row of group.instalments; track row.instalmentId) {
+              <div
+                class="mobile-item"
+                [class.item-selected]="row.instalmentPayment"
+                [class.item-early]="row.earlyPayment"
+                [class.item-disabled]="
+                  !row.instalmentPayment && !row.earlyPayment
+                "
+              >
+                <div class="mobile-item-row">
+                  <div class="mobile-item-col">
+                    <div class="checkbox-group">
+                      <span class="item-index">#{{ row.instalmentId }}</span>
+                    </div>
+                    <span
+                      class="item-date"
+                      [class.strike]="row.earlyPayment || row.instalmentPayment"
+                    >
+                      {{ row.paymentDate | date: 'MMM yyyy' }}
+                    </span>
+                  </div>
+                  <div class="mobile-item-col">
+                    <span class="item-label">Credit</span>
+                    <span class="item-value principal-value"
+                      >{{ row.principalAmount | numberFormat: '0.00'
+                      }}{{ row.recalculated ? '*' : '' }}
+                    </span>
+                  </div>
+                  <div class="mobile-item-col">
+                    <span class="item-label">Anticipat</span>
+                    <span class="item-value principal-value">
+                      {{ row.batchTotalEarlyPayment | numberFormat: '-'
+                      }}{{ row.recalculated ? '*' : '' }}
+                    </span>
+                  </div>
+                  <div class="mobile-item-col">
+                    <span class="item-label">Dobândă</span>
+                    <span
+                      class="item-value interest-value"
+                      [class.strike]="row.earlyPayment"
+                    >
+                      {{ row.interestAmount | numberFormat: '0.00'
+                      }}{{ row.recalculated ? '*' : '' }}
+                    </span>
+                  </div>
+                  <div class="mobile-item-col">
+                    <span class="item-label">Asig.</span>
+                    <span
+                      class="item-value insurance-value"
+                      [class.strike]="row.earlyPayment"
+                    >
+                      {{ row.insuranceCost | numberFormat: '0.00'
+                      }}{{ row.recalculated ? '*' : '' }}
+                    </span>
+                  </div>
+                  <div class="mobile-item-col">
+                    <span class="item-label">Total</span>
+                    <span class="item-value total-value">
+                      @if (!row.earlyPayment && !row.instalmentPayment) {
+                        {{ row.totalInstalment | numberFormat: '0.00'
+                        }}{{ row.recalculated ? '*' : '' }}
+                      } @else {
+                        {{ row.batchTotalInstalment | numberFormat: '-' }}
+                      }
+                    </span>
+                  </div>
+                  <div class="mobile-item-col">
+                    <span class="item-label">1/2</span>
+                    <span class="item-value">
+                      {{ row.batchTotalInstalment / 2 | numberFormat: '-' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="mobile-normal-section">
+        <div class="mobile-items-list">
+          @for (row of group.instalments; track row.instalmentId) {
+            <div class="mobile-item item-disabled">
+              <div class="mobile-item-row">
+                <div class="mobile-item-col">
+                  <div class="checkbox-group">
+                    <span class="item-index">#{{ row.instalmentId }}</span>
+                  </div>
+                  <span
+                    class="item-date"
+                    [class.strike]="row.earlyPayment || row.instalmentPayment"
+                  >
+                    {{ row.paymentDate | date: 'MMM yyyy' }}
+                  </span>
+                </div>
+                <div class="mobile-item-col">
+                  <span class="item-label">Credit</span>
+                  <span class="item-value principal-value"
+                    >{{ row.principalAmount | numberFormat: '0.00'
+                    }}{{ row.recalculated ? '*' : '' }}
+                  </span>
+                </div>
+                <div class="mobile-item-col">
+                  <span class="item-label">Dobândă</span>
+                  <span class="item-value interest-value">
+                    {{ row.interestAmount | numberFormat: '0.00'
+                    }}{{ row.recalculated ? '*' : '' }}
+                  </span>
+                </div>
+                <div class="mobile-item-col">
+                  <span class="item-label">Asig.</span>
+                  <span class="item-value insurance-value">
+                    {{ row.insuranceCost | numberFormat: '0.00'
+                    }}{{ row.recalculated ? '*' : '' }}
+                  </span>
+                </div>
+                <div class="mobile-item-col">
+                  <span class="item-label">Total</span>
+                  <span class="item-value total-value">
+                    {{ row.totalInstalment | numberFormat: '0.00'
+                    }}{{ row.recalculated ? '*' : '' }}
+                  </span>
+                </div>
+                <div class="mobile-item-col">
+                  <span class="item-label">Sold</span>
+                  <span class="item-value balance-value">
+                    {{ row.remainingBalance | numberFormat: '0.00' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

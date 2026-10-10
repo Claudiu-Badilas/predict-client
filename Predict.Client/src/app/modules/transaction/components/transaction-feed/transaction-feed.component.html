@@ -1,0 +1,112 @@
+<div class="transaction-feed" role="list">
+  @for (
+    transaction of visibleTransactions();
+    track transactionKey(transaction, $index)
+  ) {
+    <article class="transaction-row" role="listitem">
+      <div class="transaction-row__main">
+        <button
+          type="button"
+          class="merchant-mark"
+          [style.--category-color]="getCategoryColor(transaction.category)"
+          (click)="selectProvider(transaction)"
+          [attr.aria-label]="'Filter by provider ' + merchantLabel(transaction)"
+        >
+          {{ merchantLabel(transaction).slice(0, 1).toUpperCase() }}
+        </button>
+
+        <div class="transaction-copy">
+          <div class="merchant-line">
+            <strong class="merchant-name">
+              @for (
+                part of highlightParts(merchantLabel(transaction));
+                track $index
+              ) {
+                @if (part.match) {
+                  <mark class="search-match">{{ part.text }}</mark>
+                } @else {
+                  {{ part.text }}
+                }
+              }
+            </strong>
+            <div class="merchant-date-row">
+              <span class="transaction-date-mobile">
+                {{
+                  formatDate(
+                    transaction.completionDate || transaction.registrationDate
+                  )
+                }}
+              </span>
+            </div>
+          </div>
+          <div class="merchant-category-row">
+            <button
+              type="button"
+              class="category-chip"
+              (click)="categorySelected.emit(transaction.category)"
+              [attr.aria-label]="
+                'Filter by category ' + getCategoryLabel(transaction)
+              "
+            >
+              <span
+                class="category-dot"
+                [style.background]="getCategoryColor(transaction.category)"
+                aria-hidden="true"
+              ></span>
+              {{ getCategoryLabel(transaction) }}
+            </button>
+            <span class="transaction-date-mobile">
+              {{
+                formatDate(
+                  transaction.completionDate || transaction.registrationDate
+                )
+              }}
+            </span>
+          </div>
+          @if (transaction.description?.trim()) {
+            <div class="transaction-description">
+              @for (
+                part of highlightParts(transaction.description ?? '');
+                track $index
+              ) {
+                @if (part.match) {
+                  <mark class="search-match">{{ part.text }}</mark>
+                } @else {
+                  {{ part.text }}
+                }
+              }
+            </div>
+          }
+          <div class="transaction-meta">
+            <span class="transaction-date-desktop">{{
+              formatDate(
+                transaction.completionDate || transaction.registrationDate
+              )
+            }}</span>
+          </div>
+        </div>
+
+        <div class="transaction-side">
+          <strong
+            class="transaction-amount"
+            [class.income]="(transaction.amount ?? 0) > 0"
+            [class.expense]="(transaction.amount ?? 0) < 0"
+          >
+            {{ transaction.amount | numberFormat: '0.00' }}
+            @if (transaction.currency) {
+              <span>{{ transaction.currency }}</span>
+            }
+          </strong>
+        </div>
+      </div>
+    </article>
+  }
+</div>
+@if (hasMoreTransactions()) {
+  <button type="button" class="show-more-transactions" (click)="showMore()">
+    Show more transactions ({{
+      transactions().length - visibleTransactions().length
+    }}
+    remaining)
+  </button>
+}

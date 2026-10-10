@@ -1,0 +1,51 @@
+<div class="header-cards mb-3">
+  @for (
+    headerCardInput of headerCardInputs();
+    let index = $index;
+    track index
+  ) {
+    @let sections = headerCardInput.sections;
+    @if (sections.length > 0) {
+      <div class="divided-card">
+        @for (
+          section of sections;
+          track section.label;
+          let first = $first;
+          let last = $last
+        ) {
+          <div
+            class="section"
+            [ngClass]="{
+              left: first && sections.length > 1,
+              center: (!first && !last) || sections.length == 1,
+              right: last && sections.length > 1,
+            }"
+          >
+            <p class="label">{{ section.label }}</p>
+            @if (isDate(section.value)) {
+              <p class="value" [ngClass]="section.color">
+                {{
+                  (section.value | date: section.pattern ?? 'yyyy-MM-dd') ??
+                    section.default ??
+                    '-'
+                }}
+              </p>
+            } @else if (isNumber(section.value)) {
+              <p class="value" [ngClass]="section.color">
+                {{ section.value ?? section.default ?? '-' | numberFormat }}
+              </p>
+            } @else {
+              <p class="value" [ngClass]="section.color">
+                {{ section.value ?? section.default ?? '-' }}
+              </p>
+            }
+          </div>
+
+          @if (!last) {
+            <div class="vertical-divider"></div>
+          }
+        }
+      </div>
+    }
+  }
+</div>

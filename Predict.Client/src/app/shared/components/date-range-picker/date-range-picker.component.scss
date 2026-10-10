@@ -1,0 +1,21 @@
+.pickers {
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .pickers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .pickers date-picker {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 380px) {
+  .pickers {
+    gap: 4px;
+  }
+}

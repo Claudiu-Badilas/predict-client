@@ -1,0 +1,40 @@
+<p-top-bar />
+
+<main class="home-page">
+  <section class="home-intro" aria-labelledby="home-title">
+    <p class="home-intro__eyebrow">PREDICT / PERSONAL FINANCE</p>
+    <h1 id="home-title">Your finance workspace</h1>
+    <p class="home-intro__summary">
+      A clear view of your loans, everyday spending, and purchases.
+    </p>
+  </section>
+
+  <section class="module-grid" aria-label="Finance modules">
+    @for (module of modules; track module.route; let index = $index) {
+      <article class="module-card" [attr.data-index]="index">
+        <p class="module-card__category">{{ module.category }}</p>
+        <h2>{{ module.title }}</h2>
+        <p class="module-card__description">{{ module.description }}</p>
+        <a class="module-card__link" [routerLink]="module.route">
+          {{ module.action }}
+        </a>
+      </article>
+    }
+  </section>
+
+  <section class="explore-section" aria-labelledby="explore-title">
+    <div class="explore-section__intro">
+      <p class="home-intro__eyebrow">A DIFFERENT WAY TO EXPLORE</p>
+      <h2 id="explore-title">Start with a question</h2>
+    </div>
+    <div class="explore-grid">
+      @for (prompt of explorationPrompts; track prompt.route) {
+        <article class="explore-item">
+          <h3>{{ prompt.question }}</h3>
+          <p>{{ prompt.detail }}</p>
+          <a [routerLink]="prompt.route">{{ prompt.action }}</a>
+        </article>
+      }
+    </div>
+  </section>
+</main>

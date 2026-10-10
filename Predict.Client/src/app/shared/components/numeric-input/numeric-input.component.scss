@@ -1,0 +1,110 @@
+.numeric-input-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.numeric-input-row {
+  position: relative;
+  width: 100%;
+}
+
+.numeric-input-label {
+  position: absolute;
+  top: 0;
+  left: 12px;
+  padding: 0 4px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--theme-text-secondary);
+  background: var(--theme-surface);
+  margin: 0;
+  line-height: 1;
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.numeric-input {
+  height: 40px;
+  max-width: 200px;
+  width: 100%;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: 5px;
+  text-align: center;
+  outline: none;
+  border: 1px solid var(--theme-border);
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.numeric-input:hover:not(:disabled) {
+  border-color: var(--theme-border-strong);
+  background: var(--theme-hover);
+}
+
+.numeric-input:focus,
+.numeric-input:active {
+  outline: none;
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-focus-ring);
+}
+
+.numeric-input:focus + .numeric-input-label {
+  color: var(--theme-accent);
+}
+
+.numeric-input:disabled {
+  background: var(--theme-surface-muted);
+  color: var(--theme-text-muted);
+  border: 1px solid var(--theme-border);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.numeric-input-invalid,
+.numeric-input-invalid:focus,
+.numeric-input-invalid:active {
+  border-color: var(--theme-danger);
+  background: var(--theme-danger-subtle);
+  box-shadow: var(--theme-focus-ring);
+}
+
+.numeric-input-invalid + .numeric-input-label {
+  color: var(--theme-danger);
+}
+
+.numeric-input-error {
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  max-width: calc(100% - 16px);
+  padding: 0 3px;
+  transform: translateY(50%);
+  background: var(--theme-surface);
+  color: var(--theme-danger);
+  font-size: 10px;
+  line-height: 1;
+  text-align: right;
+  white-space: normal;
+}
+
+/* Remove default number input arrows */
+.numeric-input::-webkit-inner-spin-button,
+.numeric-input::-webkit-outer-spin-button {
+  margin: 0;
+  -webkit-appearance: none;
+}
+
+.numeric-input {
+  -moz-appearance: textfield;
+}
+
+.numeric-input::-ms-clear,
+.numeric-input::-ms-reveal {
+  display: none;
+}

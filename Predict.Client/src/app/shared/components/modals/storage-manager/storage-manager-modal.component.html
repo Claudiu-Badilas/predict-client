@@ -1,0 +1,49 @@
+<div class="storage-modal-header">
+  <div>
+    <h5 class="storage-modal-title">{{ config.title }}</h5>
+    <span class="storage-modal-subtitle">
+      {{ hasStoredItem() ? 'Transaction data is available' : 'No transaction data saved' }}
+    </span>
+  </div>
+
+  <div class="storage-modal-actions">
+    <label class="upload-btn">
+      <span>Upload JSON</span>
+      <input
+        type="file"
+        class="hidden-input"
+        accept=".json,application/json"
+        aria-label="Upload transaction JSON"
+        (change)="onFileSelected($event)"
+      />
+    </label>
+    @if (activeModal) {
+      <button
+        type="button"
+        class="modal-close-btn"
+        aria-label="Close"
+        (click)="activeModal.dismiss()"
+      >
+        ×
+      </button>
+    }
+  </div>
+</div>
+
+@if (errorMessage(); as message) {
+  <div class="storage-error" role="alert">{{ message }}</div>
+}
+
+<div class="storage-modal-body">
+  <code>{{ config.storageKey }}</code>
+  @if (hasStoredItem()) {
+    <div class="storage-item-actions">
+      <button type="button" class="download-btn" (click)="downloadItem()">
+        Download JSON
+      </button>
+      <button type="button" class="remove-btn" (click)="removeItem()">
+        Remove
+      </button>
+    </div>
+  }
+</div>

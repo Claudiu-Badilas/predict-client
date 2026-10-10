@@ -1,0 +1,332 @@
+:host {
+  display: contents;
+}
+
+.simulator-insights-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--topbar-action-padding, 10px);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--theme-text-secondary);
+  cursor: pointer;
+  font-size: var(--topbar-action-font-size, 0.875rem);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.simulator-insights-trigger:hover {
+  background: var(--theme-hover);
+  color: var(--theme-text-primary);
+}
+
+.simulator-insights-trigger:active {
+  transform: scale(0.98);
+}
+
+.simulator-insights-trigger:focus-visible,
+.simulator-insights-story button:focus-visible {
+  outline: 2px solid var(--simulator-story-accent);
+  outline-offset: 3px;
+}
+
+.simulator-insights-trigger svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.simulator-insights-backdrop {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: var(--theme-overlay);
+  backdrop-filter: blur(8px);
+}
+
+.simulator-insights-story {
+  --simulator-story-accent: var(--theme-warning);
+  --simulator-story-wash: color-mix(
+    in srgb,
+    var(--simulator-story-accent) 15%,
+    var(--theme-background)
+  );
+
+  display: flex;
+  width: min(100%, 430px);
+  min-height: min(760px, calc(100dvh - 40px));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--theme-border) 60%, transparent);
+  border-radius: 14px;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  box-shadow: 0 24px 80px rgb(0 0 0 / 32%);
+  animation: simulator-story-enter 220ms ease-out both;
+}
+
+.simulator-insights-progress {
+  display: flex;
+  gap: 4px;
+  padding: 12px 12px 0;
+}
+
+.simulator-insights-progress__segment {
+  position: relative;
+  height: 3px;
+  flex: 1 1 0;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--theme-border);
+}
+
+.simulator-insights-progress__segment--complete {
+  background: var(--simulator-story-accent);
+}
+
+.simulator-insights-progress__segment--current::after {
+  position: absolute;
+  inset: 0;
+  background: var(--simulator-story-accent);
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: simulator-story-progress 5s linear forwards;
+}
+
+.simulator-insights-story--paused
+  .simulator-insights-progress__segment--current::after {
+  animation-play-state: paused;
+}
+
+.simulator-insights-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+}
+
+.simulator-insights-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.simulator-insights-mark {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid
+    color-mix(in srgb, var(--simulator-story-accent) 45%, var(--theme-border));
+  background: var(--simulator-story-wash);
+  color: var(--simulator-story-accent);
+}
+
+.simulator-insights-mark svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.simulator-insights-close {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--theme-border);
+  border-radius: 50%;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  cursor: pointer;
+}
+
+.simulator-insights-close svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+}
+
+.simulator-insights-content {
+  position: relative;
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  padding: 34px clamp(24px, 8vw, 48px);
+  background: linear-gradient(
+    155deg,
+    var(--simulator-story-wash),
+    var(--theme-background) 68%
+  );
+}
+
+.simulator-insights-eyebrow {
+  color: var(--simulator-story-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.simulator-insights-content h1 {
+  max-width: 12ch;
+  margin: 16px 0 26px;
+  font-size: 2.35rem;
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.simulator-insights-value {
+  overflow-wrap: anywhere;
+  color: var(--simulator-story-accent);
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+
+.simulator-insights-content p {
+  max-width: 30ch;
+  margin: 16px 0 0;
+  color: var(--theme-text-secondary);
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.simulator-insights-index {
+  margin-top: 34px;
+  color: var(--theme-text-secondary);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.simulator-insights-tap {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  display: grid;
+  width: 50%;
+  align-items: center;
+  padding: 0 14px;
+  border: 0;
+  background: transparent;
+  color: var(--simulator-story-accent);
+  cursor: pointer;
+}
+
+.simulator-insights-tap--previous {
+  left: 0;
+  justify-items: start;
+}
+
+.simulator-insights-tap--next {
+  right: 0;
+  justify-items: end;
+}
+
+.simulator-insights-tap svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  opacity: 0.24;
+  transition: opacity 150ms ease;
+}
+
+.simulator-insights-tap:hover svg,
+.simulator-insights-tap:focus-visible svg {
+  opacity: 0.85;
+}
+
+.simulator-insights-tap:disabled {
+  cursor: default;
+}
+
+.simulator-insights-tap:disabled svg {
+  opacity: 0;
+}
+
+@keyframes simulator-story-progress {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes simulator-story-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .simulator-insights-trigger {
+    flex-direction: column;
+    gap: 4px;
+    min-width: 50px;
+    padding: var(--topbar-action-padding, 4px 8px);
+    font-size: var(--topbar-action-font-size, 0.625rem);
+    line-height: 1;
+  }
+}
+
+@media (max-width: 520px) {
+  .simulator-insights-backdrop {
+    padding: 0;
+  }
+
+  .simulator-insights-story {
+    width: 100%;
+    min-height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .simulator-insights-content {
+    padding-inline: 28px;
+  }
+
+  .simulator-insights-content h1 {
+    font-size: 1.9rem;
+  }
+
+  .simulator-insights-value {
+    font-size: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .simulator-insights-story,
+  .simulator-insights-progress__segment--current::after {
+    animation: none;
+  }
+}

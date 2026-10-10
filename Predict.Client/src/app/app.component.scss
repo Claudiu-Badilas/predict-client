@@ -1,0 +1,19 @@
+::ng-deep .tooltip-inner {
+  max-width: 320px;
+  text-align: left;
+  padding: 10px;
+  line-height: 1.5;
+  white-space: pre-line;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  border-radius: 10px;
+  box-shadow: var(--theme-shadow-raised);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  font-size: 0.75rem;
+  font-weight: 500;
+}

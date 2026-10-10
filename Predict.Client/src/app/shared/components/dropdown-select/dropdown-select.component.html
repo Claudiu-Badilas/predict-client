@@ -1,0 +1,121 @@
+<div class="dropdown-container" #dropdownContainer>
+  <button
+    class="btn dropdown-toggle-btn w-100 text-left d-flex justify-content-between align-items-center"
+    [class.filled]="selectedItem"
+    [class.open]="isOpen"
+    type="button"
+    #dropdownToggle
+    (click)="toggleDropdown($event)"
+  >
+    <span class="dropdown-text">{{ selectedItem || placeholder }}</span>
+    <svg
+      class="dropdown-icon"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M4 6L8 10L12 6"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
+
+  <!-- Dropdown menu rendered at body level via CDK Overlay -->
+  <ng-template #dropdownTemplate>
+    <div
+      class="dropdown-menu-custom"
+      [class.dropup]="shouldDropUp"
+      (click)="$event.stopPropagation()"
+    >
+      <!-- Search Input -->
+      <div class="search-wrapper">
+        <svg
+          class="search-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M6.5 11C8.98528 11 11 8.98528 11 6.5C11 4.01472 8.98528 2 6.5 2C4.01472 2 2 4.01472 2 6.5C2 8.98528 4.01472 11 6.5 11Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M12 12L10 10"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search items..."
+          [(ngModel)]="searchTerm"
+          (click)="$event.stopPropagation()"
+          (keydown)="onSearchKeydown($event)"
+        />
+      </div>
+
+      <div class="options-scrollable-container">
+        @if (filteredItems().length === 0) {
+          <div class="no-results">
+            <svg
+              width="32"
+              height="32"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span>No results found</span>
+          </div>
+        } @else {
+          @for (item of filteredItems(); track item) {
+            <button
+              class="dropdown-item-custom"
+              (click)="selectItem(item)"
+              [class.selected]="item === selectedItem"
+              type="button"
+            >
+              <span>{{ item }}</span>
+              @if (item === selectedItem) {
+                <svg
+                  class="check-icon"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M13.3334 4L6.00008 11.3333L2.66675 8"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              }
+            </button>
+          }
+        }
+      </div>
+    </div>
+  </ng-template>
+</div>

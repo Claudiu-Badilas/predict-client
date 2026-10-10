@@ -1,0 +1,23 @@
+@if (deploymentUpdate.updateAvailable()) {
+  <aside class="deployment-banner" role="status" aria-live="polite">
+    <div class="deployment-banner__details">
+      <span class="deployment-banner__message">A new version is available</span>
+      @if (deploymentUpdate.availableDeployment(); as deployment) {
+        <span class="deployment-banner__metadata">
+          <span>Version {{ deployment.version }}</span>
+          @if (deployment.workflowRunNumber) {
+            <span>Workflow #{{ deployment.workflowRunNumber }}</span>
+          }
+          @if (deployment.timestamp) {
+            <time [attr.datetime]="deployment.timestamp">
+              Deployed {{ deployment.timestamp | date: 'medium' }}
+            </time>
+          }
+        </span>
+      }
+    </div>
+    <button class="deployment-banner__button" type="button" (click)="reload()">
+      Refresh now
+    </button>
+  </aside>
+}

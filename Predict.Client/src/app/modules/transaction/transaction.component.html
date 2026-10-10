@@ -1,0 +1,27 @@
+<p-top-bar>
+  <ng-container module-navigation> </ng-container>
+  <p-transaction-insights
+    topbar-actions
+    [transactions]="transactions()"
+    [economiiTransactions]="economii()"
+    [startDate]="startDate()"
+    [endDate]="endDate()"
+    [showEconomii]="showEconomiiInsights()"
+  />
+</p-top-bar>
+
+<div class="p-2">
+  <p-most-common-transaction
+    [viewMode]="viewMode()"
+    [transactions]="transactions()"
+    [economiiTransactions]="economii()"
+    [startDate]="startDate()"
+    [endDate]="endDate()"
+    [minDate]="minDate"
+    [maxDate]="maxDate"
+    (dateRangeChange)="handleRangeChange($event)"
+    (viewModeChange)="onViewModeChange($event)"
+    (datasetChanged)="setInsightsDataset($event)"
+    (storageSettingsRequested)="openStorageSettings()"
+  />
+</div>

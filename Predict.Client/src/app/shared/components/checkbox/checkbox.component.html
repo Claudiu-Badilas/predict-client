@@ -1,0 +1,60 @@
+<div class="checkbox-wrapper">
+  @if (label) {
+    <label class="checkbox-container" [class.disabled]="disabled">
+      <span class="checkbox-label">{{ label }}</span>
+      <div class="checkbox-custom">
+        <input
+          type="checkbox"
+          class="checkbox-input"
+          [(ngModel)]="checked"
+          [disabled]="disabled"
+          (change)="onCheckboxChange()"
+        />
+        <svg
+          class="checkbox-icon"
+          width="12"
+          height="12"
+          viewBox="0 0 12 12"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          [class.visible]="checked"
+        >
+          <path
+            d="M10 3L4.5 8.5L2 6"
+            stroke="white"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </div>
+    </label>
+  } @else {
+    <div class="checkbox-custom" [class.disabled]="disabled">
+      <input
+        type="checkbox"
+        class="checkbox-input"
+        [(ngModel)]="checked"
+        [disabled]="disabled"
+        (change)="onCheckboxChange()"
+      />
+      <svg
+        class="checkbox-icon"
+        width="12"
+        height="12"
+        viewBox="0 0 12 12"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        [class.visible]="checked"
+      >
+        <path
+          d="M10 3L4.5 8.5L2 6"
+          stroke="white"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </div>
+  }
+</div>

@@ -1,0 +1,14 @@
+<div class="search-container">
+  <input
+    type="text"
+    class="search-box"
+    [value]="query()"
+    (input)="onInput($event)"
+    placeholder="Search..."
+  />
+  @if (query()) {
+    <button class="clear-btn" (click)="clear()" aria-label="Clear search">
+      ✕
+    </button>
+  }
+</div>

@@ -1,0 +1,21 @@
+<div class="d-flex align-items-center justify-content-between">
+  @for (option of options; track $index) {
+    <div class="form-check d-flex align-items-center justify-content-between">
+      <input
+        type="radio"
+        class="form-check-input mb-1"
+        [value]="option.value"
+        [formControl]="control"
+        [checked]="option.value === selected"
+        [id]="'radio-' + $index"
+      />
+      <label
+        class="form-check-label"
+        [for]="'radio-' + $index"
+        (click)="selectOption(option.value)"
+      >
+        {{ option.label }}
+      </label>
+    </div>
+  }
+</div>

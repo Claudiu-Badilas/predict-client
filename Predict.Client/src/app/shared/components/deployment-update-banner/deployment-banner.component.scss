@@ -1,0 +1,54 @@
+:host {
+  display: block;
+}
+
+.deployment-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--theme-accent-subtle);
+  color: var(--theme-text-primary);
+  border-bottom: 1px solid var(--theme-border);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.deployment-banner__message {
+  font-weight: 600;
+}
+
+.deployment-banner__details {
+  display: grid;
+  gap: 2px;
+}
+
+.deployment-banner__metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--theme-text-secondary);
+  font-size: 0.75rem;
+}
+
+.deployment-banner__button {
+  padding: 5px 10px;
+  border: 1px solid var(--theme-accent);
+  border-radius: 6px;
+  background: var(--theme-accent);
+  color: var(--theme-surface);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+.deployment-banner__button:hover {
+  filter: brightness(0.95);
+}
+
+.deployment-banner__button:focus-visible {
+  outline: 2px solid var(--theme-text-primary);
+  outline-offset: 2px;
+}

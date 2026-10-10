@@ -1,0 +1,21 @@
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* adjust as needed */
+}
+
+.chart-wrapper {
+  flex: 1 1 48%; /* roughly 50% width on desktop */
+  min-width: 300px; /* prevents being too narrow */
+}
+
+/* Mobile: full width */
+@media (max-width: 768px) {
+  .chart-wrapper {
+    flex: 1 1 100%;
+  }
+}
+.title {
+  font-weight: bold;
+  font-size: 21px;
+}

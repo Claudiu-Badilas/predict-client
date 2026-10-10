@@ -1,0 +1,97 @@
+<div
+  class="datepicker"
+  [attr.data-datepicker-id]="datepickerId"
+  [class.right-side]="openSide === 'right'"
+>
+  <input
+    type="text"
+    [value]="selectedDateValue"
+    readonly
+    (click)="toggle()"
+    class="date-input"
+    placeholder="Select date"
+    [title]="selectedDateValue"
+  />
+  <span class="calendar-icon">📅</span>
+
+  @if (open()) {
+    <div class="calendar" [class.right-side]="openSide === 'right'">
+      <!-- Month/Year Dropdowns -->
+      <div class="dropdowns-header">
+        <select
+          [(ngModel)]="selectedYear"
+          (ngModelChange)="onYearMonthChange()"
+          class="year-dropdown"
+          title="Select year"
+        >
+          @for (year of availableYears(); track year) {
+            <option [value]="year">
+              {{ year }}
+            </option>
+          }
+        </select>
+
+        <select
+          [(ngModel)]="selectedMonth"
+          (ngModelChange)="onYearMonthChange()"
+          class="month-dropdown"
+          title="Select month"
+        >
+          @for (month of availableMonths(); track month) {
+            <option [value]="month">
+              {{ monthShortNames[month] }}
+            </option>
+          }
+        </select>
+
+        <div class="month-nav">
+          <button
+            (click)="prevMonth()"
+            class="nav-button"
+            [disabled]="!canGoPrev()"
+            title="Previous month"
+          >
+            ‹
+          </button>
+          <button
+            (click)="nextMonth()"
+            class="nav-button"
+            [disabled]="!canGoNext()"
+            title="Next month"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      <!-- Weekdays -->
+      <div class="weekdays">
+        @for (day of reorderedWeekDays(); track day) {
+          <span class="weekday">{{ day }}</span>
+        }
+      </div>
+
+      <!-- Days Grid -->
+      <div class="days-grid">
+        <!-- Empty cells before first day of month -->
+        @for (empty of getEmptyDays(); let i = $index; track i) {
+          <span class="day empty"></span>
+        }
+
+        <!-- Days of the month -->
+        @for (day of daysInMonth(); track day) {
+          <span
+            (click)="selectDate(day)"
+            class="day"
+            [class.selected]="isSelected(day)"
+            [class.today]="isToday(day)"
+            [class.disabled]="isDisabled(day)"
+            [title]="getDayTitle(day)"
+          >
+            {{ day }}
+          </span>
+        }
+      </div>
+    </div>
+  }
+</div>

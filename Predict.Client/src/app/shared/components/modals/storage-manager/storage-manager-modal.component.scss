@@ -1,0 +1,175 @@
+:host {
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+}
+
+.storage-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--theme-border);
+  background: var(--theme-background);
+}
+
+.storage-modal-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+}
+
+.storage-modal-subtitle {
+  display: block;
+  margin-top: 3px;
+  color: var(--theme-text-secondary);
+  font-size: 0.78rem;
+}
+
+.storage-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.upload-btn,
+.download-btn {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border: 1px solid var(--theme-accent);
+  border-radius: 6px;
+  background: var(--theme-accent-subtle);
+  color: var(--theme-accent);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.upload-btn:hover,
+.download-btn:hover {
+  background: var(--theme-hover);
+  color: var(--theme-text-primary);
+}
+
+.upload-btn:focus-within,
+.download-btn:focus-visible,
+.modal-close-btn:focus-visible {
+  outline: 2px solid var(--theme-accent);
+  outline-offset: 2px;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.modal-close-btn {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--theme-text-secondary);
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+.modal-close-btn:hover {
+  background: var(--theme-hover);
+  color: var(--theme-text-primary);
+}
+
+.storage-error {
+  margin: 12px 16px 0;
+  padding: 10px 12px;
+  border: 1px solid var(--theme-danger);
+  border-radius: 6px;
+  background: var(--theme-danger-subtle);
+  color: var(--theme-danger);
+  font-size: 0.85rem;
+}
+
+.storage-modal-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 22px;
+}
+
+.storage-modal-body code {
+  overflow-wrap: anywhere;
+  color: var(--theme-text-secondary);
+  font-family: 'Cascadia Code', 'Consolas', monospace;
+  font-size: 0.8rem;
+}
+
+.storage-modal-body .download-btn {
+  flex: 0 0 auto;
+}
+
+.storage-item-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.remove-btn {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 11px;
+  border: 1px solid var(--theme-danger);
+  border-radius: 6px;
+  background: var(--theme-danger-subtle);
+  color: var(--theme-danger);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.remove-btn:hover {
+  background: var(--theme-hover);
+  color: var(--theme-text-primary);
+}
+
+@media (max-width: 640px) {
+  .storage-modal-header {
+    padding: 14px 16px;
+  }
+
+  .storage-modal-body {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 14px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .storage-modal-header {
+    align-items: flex-start;
+  }
+
+  .storage-modal-actions {
+    gap: 5px;
+  }
+
+  .upload-btn,
+  .download-btn,
+  .remove-btn {
+    padding: 6px 8px;
+    font-size: 0.72rem;
+  }
+}

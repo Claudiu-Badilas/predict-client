@@ -1,0 +1,86 @@
+<div class="charts-container mb-2">
+  @if (chartBasePaymentChange() === 'pie-chart') {
+    <p-highcharts-wrapper
+      class="chart-wrapper"
+      [chartOptions]="interestProgressPieChart()"
+      ><ng-container p-highcharts-wrapper-content>
+        <div class="my-2 d-flex align-items-center justify-content-between">
+          <div class="w-100">
+            <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+        </div> </ng-container
+    ></p-highcharts-wrapper>
+  } @else if (
+    chartBasePaymentChange() === 'Prd. Fixa' ||
+    chartBasePaymentChange() === 'Prd. Totala'
+  ) {
+    <p-highcharts-wrapper
+      class="chart-wrapper"
+      [chartOptions]="loanMonthlyPaymentsChart()"
+    >
+      <ng-container p-highcharts-wrapper-content>
+        <div class="my-2 d-flex align-items-center justify-content-between">
+          <div class="w-100">
+            <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+        </div> </ng-container
+    ></p-highcharts-wrapper>
+  } @else if (chartBasePaymentChange() === 'dot-bar-chart') {
+    <p-highcharts-wrapper class="chart-wrapper" [chartOptions]="dotBarChart()">
+      <ng-container p-highcharts-wrapper-content>
+        <div class="my-2 d-flex align-items-center justify-content-between">
+          <div class="w-100">
+            <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+        </div> </ng-container
+    ></p-highcharts-wrapper>
+  } @else {
+    <p-highcharts-wrapper
+      class="chart-wrapper"
+      [chartOptions]="interestProgressBarChart()"
+      ><ng-container p-highcharts-wrapper-content>
+        <div class="my-2 d-flex align-items-center justify-content-between">
+          <div class="w-100">
+            <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+        </div> </ng-container
+    ></p-highcharts-wrapper>
+  }
+</div>
+
+<ng-template #chartTypeSelector>
+  <p-platform-toggle
+    [config]="{
+      type: 'sliding',
+      options: [
+        {
+          label: 'pie-chart',
+          iconPath: 'assets/icons/pie-chart.svg',
+        },
+        {
+          label: 'bars-chart',
+          iconPath: 'assets/icons/bar-chart.svg',
+        },
+        {
+          label: 'Prd. Fixa',
+          iconPath: 'assets/icons/column-chart.svg',
+        },
+        {
+          label: 'Prd. Totala',
+          iconPath: 'assets/icons/column-chart.svg',
+        },
+        {
+          label: 'dot-bar-chart',
+          iconPath: 'assets/icons/dot-bar-chart.svg',
+        },
+      ],
+      selected: chartBasePaymentChange(),
+      ariaLabel: 'Chart type',
+    }"
+    (selectionChange)="onChartBasePaymentChange($event)"
+  />
+</ng-template>
+
+<p-historical-instalments-table
+  [monthlyInstalmentGroups]="historicalInstalmentPaymentBatches()"
+></p-historical-instalments-table>

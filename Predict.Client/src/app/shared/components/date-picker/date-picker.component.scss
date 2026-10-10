@@ -1,0 +1,236 @@
+.datepicker {
+  position: relative;
+  width: 100%;
+}
+
+.date-input {
+  width: 100%;
+  padding: 6px 28px 6px 8px;
+  cursor: pointer;
+  border: 1px solid var(--theme-border);
+  border-radius: 4px;
+  color: var(--theme-text-primary);
+  background-color: var(--theme-surface);
+  font-size: 15px;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: 40px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-focus-ring);
+}
+
+.date-input:hover {
+  border-color: var(--theme-border-strong);
+}
+
+.date-input::placeholder {
+  color: var(--theme-text-muted);
+  font-size: 11px;
+}
+
+.calendar-icon {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--theme-text-secondary);
+  font-size: 12px;
+}
+
+.calendar {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  border: 1px solid var(--theme-border);
+  padding: 10px 10px 0 10px;
+  z-index: 1000;
+  border-radius: 8px;
+  box-shadow: var(--theme-shadow-raised);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  width: 225px;
+  box-sizing: border-box;
+}
+
+/* Right-side calendar positioning */
+.datepicker.right-side .calendar {
+  left: auto;
+  right: 0;
+}
+
+/* Dropdowns Header */
+.dropdowns-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.year-dropdown,
+.month-dropdown {
+  flex: 1;
+  padding: 8px 0px;
+  border: 1px solid var(--theme-border);
+  border-radius: 6px;
+  background-color: var(--theme-surface);
+  font-size: 12px;
+  color: var(--theme-text-primary);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  min-width: 55px;
+}
+
+.year-dropdown {
+  flex: 0.7;
+}
+
+.month-dropdown {
+  flex: 1;
+}
+
+.year-dropdown:focus,
+.month-dropdown:focus {
+  outline: none;
+  border-color: var(--theme-accent);
+  box-shadow: var(--theme-focus-ring);
+}
+
+/* Month Navigation */
+.month-nav {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-button {
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--theme-border);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--theme-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.nav-button:hover:not(:disabled) {
+  background-color: var(--theme-hover);
+  border-color: var(--theme-border-strong);
+  color: var(--theme-text-primary);
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background-color: var(--theme-surface-muted);
+}
+
+/* Weekdays */
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 8px;
+  gap: 2px;
+}
+
+.weekday {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--theme-text-secondary);
+  padding: 6px 0;
+}
+
+/* Days Grid */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  gap: 2px;
+  margin-bottom: 16px;
+}
+
+.day {
+  padding: 4px 0;
+  cursor: pointer;
+  font-size: 12px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  color: var(--theme-text-primary);
+  user-select: none;
+  position: relative;
+}
+
+.day:not(.empty):not(.disabled):hover {
+  background-color: var(--theme-hover);
+}
+
+.day.selected {
+  background: var(--theme-accent);
+  color: var(--theme-accent-contrast);
+  font-weight: 600;
+}
+
+.day.today:not(.selected) {
+  background-color: var(--theme-accent-subtle);
+  color: var(--theme-accent);
+  font-weight: 600;
+  border: 1px solid var(--theme-border);
+}
+
+.day.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background-color: var(--theme-surface-muted);
+  color: var(--theme-text-muted);
+}
+
+.day.empty {
+  visibility: hidden;
+}
+
+@media (max-width: 768px) {
+  .date-input {
+    height: 38px;
+    padding: 5px 20px 5px 5px;
+    font-size: 0.7rem;
+  }
+
+  .calendar-icon {
+    right: 5px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .date-input {
+    padding-right: 17px;
+    font-size: 0.64rem;
+  }
+
+  .calendar-icon {
+    right: 4px;
+    font-size: 9px;
+  }
+}

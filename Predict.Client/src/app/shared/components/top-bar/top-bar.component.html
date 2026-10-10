@@ -1,0 +1,128 @@
+<header class="topbar" #topbarRef>
+  <div class="topbar__inner">
+    <button
+      type="button"
+      class="brand"
+      aria-label="Go to Predict home"
+      (click)="onNavigateTo('/home')"
+    >
+      <img [src]="getThemeIconPath('logo')" alt="" aria-hidden="true" />
+      <span class="brand__name">Predict</span>
+    </button>
+
+    <div class="module-nav">
+      <ng-content select="[module-navigation]"></ng-content>
+    </div>
+
+    <!-- Filter Button - Desktop only -->
+    @if (hasFiltersContent) {
+      <button
+        type="button"
+        class="actions__link filter-btn filter-btn--desktop"
+        [class.active]="isFilterPanelOpen"
+        (click)="toggleFilterPanel()"
+      >
+        <img [src]="getThemeIconPath('filter')" alt="filter" />
+        <span class="action-label">Filter</span>
+      </button>
+    }
+
+    <div class="actions actions--desktop">
+      @for (option of modules; track option) {
+        <button
+          type="button"
+          class="actions__link"
+          [class.active]="isActiveRoute(option.url)"
+          (click)="onNavigateTo(option.url)"
+        >
+          <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
+          <span class="action-label">{{ option.label }}</span>
+        </button>
+      }
+    </div>
+
+    <!-- Mobile Actions (Icons only) - Only shown when NO module navigation content -->
+    <div class="actions actions--mobile" *ngIf="!hasModuleNavContent">
+      @if (hasFiltersContent) {
+        <button
+          type="button"
+          class="mobile-extended-menu__item"
+          style="border: none"
+          [class.active]="isFilterPanelOpen"
+          (click)="toggleFilterPanel()"
+        >
+          <img [src]="getThemeIconPath('filter')" alt="filter" />
+          <span class="mobile-extended-menu__label">Filter</span>
+        </button>
+      }
+
+      @for (option of modules; track option) {
+        <button
+          class="mobile-extended-menu__item"
+          [class.active]="isActiveRoute(option.url)"
+          (click)="onNavigateTo(option.url); closeMenu()"
+        >
+          <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
+          <span class="mobile-extended-menu__label">{{ option.label }}</span>
+        </button>
+      }
+
+    </div>
+
+    <!-- Mobile Filter Button - Only shown when module-nav has content AND filters exist -->
+    <!-- Combined mobile menu and filter control -->
+    <div class="mobile-menu" *ngIf="hasModuleNavContent">
+      <button
+        type="button"
+        class="burger-btn"
+        [class.active]="isMenuOpen || isFilterPanelOpen"
+        [attr.aria-expanded]="isMenuOpen || isFilterPanelOpen"
+        aria-label="Open navigation and filters"
+        (click)="toggleMobileControls()"
+      >
+        <img [src]="getThemeIconPath('filter')" alt="" aria-hidden="true" />
+        <span aria-hidden="true">☰</span>
+      </button>
+    </div>
+
+    <div class="topbar__custom-actions">
+      <ng-content select="[topbar-actions]"></ng-content>
+      <p-platform-toggle [config]="{ type: 'theme' }" />
+    </div>
+  </div>
+
+  <!-- Extended Menu - Single row with icons below top bar -->
+  <div
+    class="mobile-extended-menu"
+    *ngIf="hasModuleNavContent && isMenuOpen"
+    #mobileMenuRef
+  >
+    <div class="mobile-extended-menu__items">
+      @for (option of modules; track option) {
+        <button
+          class="mobile-extended-menu__item"
+          [class.active]="isActiveRoute(option.url)"
+          (click)="onNavigateTo(option.url); closeMenu()"
+        >
+          <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
+          <span class="mobile-extended-menu__label">{{ option.label }}</span>
+        </button>
+      }
+
+    </div>
+  </div>
+
+  <!-- Filter Panel - Extends from top bar -->
+  @if (hasFiltersContent) {
+    <div
+      class="filter-panel"
+      [class.open]="isFilterPanelOpen"
+      [class.animating]="isAnimating"
+      #filterPanelRef
+    >
+      <div class="filter-panel__content">
+        <ng-content select="[filter-content]"></ng-content>
+      </div>
+    </div>
+  }
+</header>

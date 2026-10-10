@@ -1,0 +1,166 @@
+<!-- Desktop View -->
+<div class="desktop-view">
+  <div class="summary-grid">
+    <div class="summary-row">
+      <!-- Rata -->
+      <div class="summary-section stat-item stat-item--orange">
+        <div class="stat-row">
+          <span class="stat-item__label">Rata</span>
+          <span class="stat-item__label">Anticipat</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ totalInstalmentPayments() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{ totalEarlyPayment() | numberFormat: '0.00' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Dobanda -->
+      <div class="summary-section stat-item stat-item--amber">
+        <div class="stat-row">
+          <span class="stat-item__label">Dobanda</span>
+          <span class="stat-item__label">Principal</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ totalInterestPayment() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{ totalPrincipalPayment() | numberFormat: '0.00' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="summary-section stat-item stat-item--rose">
+        <div class="stat-row">
+          <span class="stat-item__label">Total</span>
+          <span class="stat-item__label">1 / 2</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ totalPayment() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{ totalPayment() / 2 | numberFormat: '0.00' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Sold -->
+      <div class="summary-section stat-item stat-item--violet">
+        <div class="stat-row">
+          <span class="stat-item__label"> {{ nextPayment }}</span>
+          <span class="stat-item__value">
+            {{ paidMonthlyInstalments() | numberFormat: '0' : 0 }}
+            /
+            {{ monthlyInstalments() | numberFormat: '0' : 0 }} ({{
+              simulatedPeriod()
+            }})
+          </span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ initialRemainingBalance() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{
+              $safeNavigationMigration(payments()?.at(-1)?.remainingBalance)
+                | numberFormat: '0.00'
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile View - same metrics as desktop -->
+<div class="mobile-view">
+  <div class="summary-grid">
+    <div class="summary-row">
+      <!-- Rata -->
+      <div class="summary-section stat-item stat-item--orange">
+        <div class="stat-row">
+          <span class="stat-item__label">Rata</span>
+          <span class="stat-item__label">Anticipat</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ totalInstalmentPayments() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{ totalEarlyPayment() | numberFormat: '0.00' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Dobanda -->
+      <div class="summary-section stat-item stat-item--amber">
+        <div class="stat-row">
+          <span class="stat-item__label">Dobanda</span>
+          <span class="stat-item__label">Principal</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ totalInterestPayment() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{ totalPrincipalPayment() | numberFormat: '0.00' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="summary-section stat-item stat-item--rose">
+        <div class="stat-row">
+          <span class="stat-item__label">Total</span>
+          <span class="stat-item__label">1 / 2</span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ totalPayment() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{ totalPayment() / 2 | numberFormat: '0.00' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Sold -->
+      <div class="summary-section stat-item stat-item--violet">
+        <div class="stat-row">
+          <span class="stat-item__label">{{ nextPayment }}</span>
+          <span class="stat-item__label">
+            {{ paidMonthlyInstalments() | numberFormat: '0' : 0 }} /
+            {{ monthlyInstalments() | numberFormat: '0' : 0 }} ({{
+              simulatedPeriod()
+            }})
+          </span>
+        </div>
+
+        <div class="stat-row">
+          <span class="stat-item__value">
+            {{ initialRemainingBalance() | numberFormat: '0.00' }}
+          </span>
+          <span class="stat-item__value">
+            {{
+              $safeNavigationMigration(payments()?.at(-1)?.remainingBalance)
+                | numberFormat: '0.00'
+            }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

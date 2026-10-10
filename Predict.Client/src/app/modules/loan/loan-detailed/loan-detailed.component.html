@@ -1,0 +1,32 @@
+<p-top-bar [hasFiltersContent]="true">
+  <ng-container module-navigation> </ng-container>
+  <p-loan-insights topbar-actions />
+  <ng-container filter-content>
+    <p-dropdown-select
+      [items]="dropDownSelectOptions()"
+      [selectedItem]="selectedRepaymentScheduleName()"
+      placeholder="No Selection"
+      (selectionChange)="onDropdownSelected($event)"
+    />
+    <div class="pt-2 d-flex align-items-center justify-content-between">
+      <div class="sidebar-label">Dobanda Fixa 5.79%</div>
+      <div>
+        <p-platform-toggle
+          [config]="{
+            type: 'switch',
+            value: calculateRepaymentSchedules(),
+            ariaLabel: 'Calculate repayment schedules',
+          }"
+          (toggleChange)="onCalculateRepaymentSchedulesChanged($event)"
+        />
+      </div>
+    </div>
+  </ng-container>
+</p-top-bar>
+
+<div class="m-2">
+  <div class="mb-2">
+    <p-loan-detailed-header />
+  </div>
+  <p-loan-detailed-body />
+</div>

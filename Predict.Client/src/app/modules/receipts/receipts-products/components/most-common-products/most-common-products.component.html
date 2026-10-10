@@ -1,0 +1,359 @@
+<div class="receipt-view">
+  @if (selectedProvider()) {
+    <div class="provider-filter__active" aria-live="polite">
+      <span>Showing receipts from {{ selectedProvider() }}</span>
+      <button
+        type="button"
+        class="provider-filter__clear"
+        (click)="clearProviderSelection()"
+      >
+        Clear selection
+      </button>
+    </div>
+  }
+
+  @if (searchTerm().trim()) {
+    <ng-template #matchingProductRow let-result="result">
+      <div class="receipt-product receipt-product--search">
+        <button
+          type="button"
+          class="provider-logo-button provider-logo-button--product"
+          [class.provider-logo-button--active]="
+            isProviderSelected(result.receipt.provider)
+          "
+          [attr.aria-pressed]="isProviderSelected(result.receipt.provider)"
+          [attr.aria-label]="
+            'Show receipts from ' +
+            (result.receipt.provider || 'unknown provider')
+          "
+          [disabled]="!result.receipt.provider?.trim()"
+          (click)="selectProvider(result.receipt.provider)"
+        >
+          <span
+            class="receipt-mark receipt-mark--product"
+            [class.receipt-mark--lidl]="
+              providerBrand(result.receipt.provider) === 'lidl'
+            "
+            [class.receipt-mark--carrefour]="
+              providerBrand(result.receipt.provider) === 'carrefour'
+            "
+            [class.receipt-mark--kaufland]="
+              providerBrand(result.receipt.provider) === 'kaufland'
+            "
+            [style.--provider-hue]="providerHue(result.receipt.provider)"
+            aria-hidden="true"
+          >
+            {{ providerInitial(result.receipt.provider) }}
+          </span>
+        </button>
+        <strong class="receipt-product__name">
+          @for (part of highlightParts(result.product.name); track $index) {
+            @if (part.match) {
+              <mark class="search-match">{{ part.text }}</mark>
+            } @else {
+              {{ part.text }}
+            }
+          }
+        </strong>
+        <span class="receipt-product__date">
+          @if (result.receipt.date) {
+            {{ result.receipt.date | date: 'dd MMM yyyy' }}
+          } @else {
+            Date unavailable
+          }
+        </span>
+        <span class="receipt-product__quantity">
+          {{ result.product.quantity }} {{ result.product.quantityType }}
+        </span>
+        <span class="receipt-product__price">
+          {{ result.product.price ?? 0 | numberFormat: '0.00' }}
+          {{ result.receipt.currency || 'RON' }}
+        </span>
+        <strong class="receipt-product__total">
+          {{
+            (result.product.price ?? 0) * (result.product.quantity ?? 0)
+              | numberFormat: '0.00'
+          }}
+          {{ result.receipt.currency || 'RON' }}
+        </strong>
+      </div>
+    </ng-template>
+    <div class="receipt-periods" aria-label="Matching products">
+      @if (viewMode() === 'all') {
+        <section class="receipt-period">
+          <div class="period-header period-header--static">
+            <span class="period-title">All</span>
+            <span class="period-count"
+              >{{ matchingProducts().length }} products</span
+            >
+            <strong class="period-total">
+              {{ matchingProductsTotal() | numberFormat: '0.00' }} RON
+            </strong>
+          </div>
+          <div class="period-content">
+            <div class="receipt-feed">
+              @for (result of matchingProducts(); track result.product.id) {
+                <ng-container
+                  *ngTemplateOutlet="
+                    matchingProductRow;
+                    context: { result: result }
+                  "
+                />
+              }
+              @if (!matchingProducts().length) {
+                <div class="empty-state">No matching products</div>
+              }
+            </div>
+          </div>
+        </section>
+      } @else {
+        @for (period of matchingProductPeriods(); track period.id) {
+          <section class="receipt-period">
+            <button
+              type="button"
+              class="period-header"
+              (click)="togglePeriod(period.id)"
+              [attr.aria-expanded]="isPeriodExpanded(period.id)"
+              [attr.aria-controls]="'period-content-' + period.id"
+            >
+              <span class="period-title">{{ period.title }}</span>
+              <span class="period-count"
+                >{{ period.products.length }} products</span
+              >
+              <strong class="period-total">
+                {{ period.total | numberFormat: '0.00' }} RON
+              </strong>
+            </button>
+            @if (isPeriodExpanded(period.id)) {
+              <div class="period-content" [id]="'period-content-' + period.id">
+                <div class="receipt-feed">
+                  @for (result of period.products; track result.product.id) {
+                    <ng-container
+                      *ngTemplateOutlet="
+                        matchingProductRow;
+                        context: { result: result }
+                      "
+                    />
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        }
+        @if (!matchingProductPeriods().length) {
+          <div class="empty-state">No matching products</div>
+        }
+      }
+    </div>
+  } @else {
+    @if (viewMode() !== 'all') {
+      <div class="receipt-summary" aria-label="Receipt totals">
+        <div class="summary-item">
+          <span class="summary-label">Total</span>
+          <strong class="summary-value">
+            {{ totalRevenue() | numberFormat: '0.00' }} RON
+          </strong>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Receipts</span>
+          <strong class="summary-value">{{ receiptFrequency() }}</strong>
+        </div>
+      </div>
+    }
+
+    <ng-template #receiptRow let-receipt="receipt">
+      <article
+        class="receipt-row"
+        [class.receipt-row--expanded]="expandedReceiptId() === receipt.id"
+      >
+        <div class="receipt-row__main">
+          <button
+            type="button"
+            class="provider-logo-button"
+            [class.provider-logo-button--active]="
+              isProviderSelected(receipt.provider)
+            "
+            [attr.aria-pressed]="isProviderSelected(receipt.provider)"
+            [attr.aria-label]="
+              'Show receipts from ' + (receipt.provider || 'unknown provider')
+            "
+            [disabled]="!receipt.provider?.trim()"
+            (click)="selectProvider(receipt.provider)"
+          >
+            <span
+              class="receipt-mark"
+              [class.receipt-mark--lidl]="
+                providerBrand(receipt.provider) === 'lidl'
+              "
+              [class.receipt-mark--carrefour]="
+                providerBrand(receipt.provider) === 'carrefour'
+              "
+              [class.receipt-mark--kaufland]="
+                providerBrand(receipt.provider) === 'kaufland'
+              "
+              [style.--provider-hue]="providerHue(receipt.provider)"
+              aria-hidden="true"
+            >
+              {{ providerInitial(receipt.provider) }}
+            </span>
+          </button>
+          <button
+            type="button"
+            class="receipt-row__toggle"
+            (click)="toggleReceipt(receipt.id)"
+            [attr.aria-expanded]="expandedReceiptId() === receipt.id"
+            [attr.aria-controls]="'receipt-details-' + receipt.id"
+          >
+            <span class="receipt-copy">
+              <span class="receipt-heading">
+                <strong class="receipt-provider">
+                  {{ receipt.provider }}
+                </strong>
+                <span class="receipt-count">
+                  {{ receipt.products.length }} items
+                </span>
+              </span>
+              <span class="receipt-description">
+                {{ productSummary(receipt) }}
+              </span>
+            </span>
+            <span class="receipt-date">
+              @if (receipt.date) {
+                <strong>{{ receipt.date | date: 'dd' }}</strong>
+                <span>{{ receipt.date | date: 'MMM yyyy' }}</span>
+              } @else {
+                <span>Date unavailable</span>
+              }
+            </span>
+            <strong class="receipt-total">
+              {{ receiptTotal(receipt) | numberFormat: '0.00' }}
+              <span>{{ receipt.currency || 'RON' }}</span>
+            </strong>
+          </button>
+        </div>
+
+        @if (expandedReceiptId() === receipt.id) {
+          <div
+            class="receipt-details"
+            [id]="'receipt-details-' + receipt.id"
+            role="region"
+            [attr.aria-label]="receipt.provider + ' receipt details'"
+          >
+            <div class="receipt-details__heading">
+              <span>Product</span>
+              <span>Quantity</span>
+              <span>Unit price</span>
+              <span>Line total</span>
+            </div>
+            @for (product of receipt.products; track product.id) {
+              <div class="receipt-product">
+                <button
+                  type="button"
+                  class="receipt-product__name receipt-product__select"
+                  (click)="selectProduct(product.name)"
+                  [attr.aria-label]="'Search for products like ' + product.name"
+                >
+                  {{ product.name }}
+                </button>
+                <span class="receipt-product__quantity">
+                  {{ product.quantity }} {{ product.quantityType }}
+                </span>
+                <span class="receipt-product__price">
+                  {{ product.price ?? 0 | numberFormat: '0.00' }}
+                  {{ receipt.currency || 'RON' }}
+                </span>
+                <strong class="receipt-product__total">
+                  {{
+                    (product.price ?? 0) * (product.quantity ?? 0)
+                      | numberFormat: '0.00'
+                  }}
+                  {{ receipt.currency || 'RON' }}
+                </strong>
+              </div>
+            }
+            @if (!receipt.products.length) {
+              <div class="receipt-empty">No product details available.</div>
+            }
+            @if (receipt.totalDiscount > 0) {
+              <div class="receipt-adjustment">
+                <span>Discount</span>
+                <strong>
+                  -{{ receipt.totalDiscount | numberFormat: '0.00' }}
+                  {{ receipt.currency || 'RON' }}
+                </strong>
+              </div>
+            }
+          </div>
+        }
+      </article>
+    </ng-template>
+
+    @if (viewMode() === 'all') {
+      <section class="receipt-period" aria-label="All receipts">
+        <div class="period-header period-header--static">
+          <span class="period-title">All</span>
+          <span class="period-count">{{ allReceipts().length }} receipts</span>
+          <strong class="period-total">
+            {{ totalRevenue() | numberFormat: '0.00' }} RON
+          </strong>
+        </div>
+        <div class="period-content">
+          <div class="receipt-feed">
+            @for (receipt of allReceipts(); track receipt.id) {
+              <ng-container
+                *ngTemplateOutlet="receiptRow; context: { receipt: receipt }"
+              />
+            }
+          </div>
+        </div>
+      </section>
+      @if (!allReceipts().length) {
+        <div class="empty-state">No receipts available</div>
+      }
+    } @else {
+      <div class="receipt-periods">
+        @for (period of currentPeriods(); track period.id) {
+          <section class="receipt-period">
+            <button
+              type="button"
+              class="period-header"
+              (click)="togglePeriod(period.id)"
+              [attr.aria-expanded]="isPeriodExpanded(period.id)"
+              [attr.aria-controls]="'period-content-' + period.id"
+            >
+              <span class="period-title">{{ period.title }}</span>
+              <span class="period-count"
+                >{{ period.receipts.length }} receipts</span
+              >
+              <strong class="period-total">
+                {{ period.total | numberFormat: '0.00' }} RON
+              </strong>
+            </button>
+            @if (isPeriodExpanded(period.id)) {
+              <div
+                class="period-content"
+                [id]="'period-content-' + period.id"
+                role="region"
+                [attr.aria-label]="period.title + ' receipt details'"
+              >
+                <div class="receipt-feed">
+                  @for (receipt of period.receipts; track receipt.id) {
+                    <ng-container
+                      *ngTemplateOutlet="
+                        receiptRow;
+                        context: { receipt: receipt }
+                      "
+                    />
+                  }
+                </div>
+              </div>
+            }
+          </section>
+        }
+      </div>
+      @if (!currentPeriods().length) {
+        <div class="empty-state">No receipts available</div>
+      }
+    }
+  }
+</div>

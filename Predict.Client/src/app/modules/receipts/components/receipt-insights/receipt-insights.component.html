@@ -1,0 +1,126 @@
+<button
+  type="button"
+  class="receipts-insights-trigger"
+  aria-label="Open receipt insights"
+  title="Receipt insights"
+  (click)="openInsights()"
+>
+  <svg viewBox="0 0 24 24" aria-hidden="true">
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5m0-8h.01" />
+  </svg>
+  <span>Insights</span>
+</button>
+
+<ng-template #storyOverlay>
+  @if (showInsights()) {
+    <div
+      class="insights-backdrop"
+      (click)="closeInsights()"
+      (pointerdown)="pauseStory($event)"
+      (pointerup)="resumeStory()"
+      (pointercancel)="resumeStory(true)"
+      (pointerleave)="resumeStory(true)"
+    >
+      <section
+        class="insights-story"
+        [class.insights-story--paused]="isStoryPaused()"
+        [attr.data-tone]="activeStory() % 4"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Receipt insights stories"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="insights-progress" aria-hidden="true">
+          @for (story of insightStories(); track $index) {
+            <span
+              class="insights-progress__segment"
+              [class.insights-progress__segment--complete]="
+                $index < activeStory()
+              "
+              [class.insights-progress__segment--current]="
+                $index === activeStory()
+              "
+            ></span>
+          }
+        </div>
+        <header class="insights-story__header">
+          <span class="insights-story__identity">
+            <span class="insights-story__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 11v5m0-8h.01" />
+              </svg>
+            </span>
+            <span>Receipt insights</span>
+          </span>
+          <button
+            type="button"
+            class="insights-story__close"
+            aria-label="Close receipt insights"
+            (click)="closeInsights()"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m6 6 12 12M18 6 6 18" />
+            </svg>
+          </button>
+        </header>
+        <div class="insights-story__content" aria-live="polite">
+          <button
+            type="button"
+            class="insights-story__tap-zone insights-story__tap-zone--previous"
+            aria-label="Previous insight"
+            [disabled]="activeStory() === 0"
+            (click)="previousStory(true)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m15 18-6-6 6-6" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class="insights-story__tap-zone insights-story__tap-zone--next"
+            aria-label="Next insight"
+            (click)="nextStory(true)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </button>
+          <span class="insights-story__eyebrow">
+            {{ insightStories()[activeStory()].eyebrow }}
+          </span>
+          <h1>{{ insightStories()[activeStory()].title }}</h1>
+          <strong class="insights-story__value">
+            {{ insightStories()[activeStory()].value }}
+          </strong>
+          <p>{{ insightStories()[activeStory()].detail }}</p>
+          @if (insightStories()[activeStory()].monthlySpend; as monthlySpend) {
+            <div
+              class="insights-monthly"
+              aria-label="Monthly spending breakdown"
+            >
+              @for (month of monthlySpend; track month.label) {
+                <div class="insights-monthly__row">
+                  <div class="insights-monthly__labels">
+                    <span>{{ month.label }}</span>
+                    <strong>{{ month.amount }}</strong>
+                  </div>
+                  <div class="insights-monthly__track" aria-hidden="true">
+                    <span
+                      class="insights-monthly__bar"
+                      [style.width.%]="month.barWidth"
+                    ></span>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+          <span class="insights-story__index">
+            {{ activeStory() + 1 }} / {{ insightStories().length }}
+          </span>
+        </div>
+      </section>
+    </div>
+  }
+</ng-template>
