@@ -35,8 +35,8 @@
 }
 
 <div class="storage-modal-body">
-  <code>{{ config.storageKey }}</code>
   @if (hasStoredItem()) {
+    <code>{{ config.storageKey }}</code>
     <div class="storage-item-actions">
       <button type="button" class="download-btn" (click)="downloadItem()">
         Download JSON
@@ -45,5 +45,7 @@
         Remove
       </button>
     </div>
+  } @else {
+    <p class="storage-empty-state">No transaction data saved.</p>
   }
 </div>
