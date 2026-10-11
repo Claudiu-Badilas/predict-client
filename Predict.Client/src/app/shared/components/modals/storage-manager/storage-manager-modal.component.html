@@ -2,7 +2,11 @@
   <div>
     <h5 class="storage-modal-title">{{ config.title }}</h5>
     <span class="storage-modal-subtitle">
-      {{ hasStoredItem() ? 'Transaction data is available' : 'No transaction data saved' }}
+      {{
+        hasStoredItem()
+          ? 'Transaction data is available'
+          : 'No transaction data saved'
+      }}
     </span>
   </div>
 

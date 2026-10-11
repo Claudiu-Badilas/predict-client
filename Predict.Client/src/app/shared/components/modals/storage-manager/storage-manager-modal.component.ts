@@ -92,7 +92,9 @@ export class StorageManagerModalComponent implements OnInit {
   }
 
   refreshStorageState(): void {
-    this.hasStoredItem.set(localStorage.getItem(this.config.storageKey) !== null);
+    this.hasStoredItem.set(
+      localStorage.getItem(this.config.storageKey) !== null,
+    );
   }
 
   downloadItem(): void {

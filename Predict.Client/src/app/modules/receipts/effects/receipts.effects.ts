@@ -3,7 +3,13 @@ import { Injectable, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { catchError, finalize, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError,
+  finalize,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import * as ReceiptsActions from 'src/app/modules/receipts/actions/receipts.actions';
@@ -57,9 +63,7 @@ export class ReceiptsEffects {
       switchMap(([, startDate, endDate]) =>
         this._receiptsService.getReceipts(startDate, endDate).pipe(
           switchMap((receipts) =>
-            of(
-              ReceiptsActions.setReceiptsSuccess({ receipts }),
-            ),
+            of(ReceiptsActions.setReceiptsSuccess({ receipts })),
           ),
           catchError((error: unknown) =>
             of(

@@ -12,7 +12,10 @@ import {
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ScrollableDirective } from 'src/app/shared/directives/scrollable.directive';
 import { NumberFormatPipe } from 'src/app/shared/pipes/number-format.pipe';
-import { TransactionCategory, TransactionDomain } from '../../models/transactions.model';
+import {
+  TransactionCategory,
+  TransactionDomain,
+} from '../../models/transactions.model';
 import { TransactionFeedComponent } from '../transaction-feed/transaction-feed.component';
 import { RangeSelectorComponent } from 'src/app/shared/components/date-range-picker/date-range-picker.component';
 import { DateRangePicker } from 'src/app/shared/components/date-range-picker/models/date-range-picker.model';
@@ -283,8 +286,9 @@ export class MostCommonTransactionComponent {
   selectedCategoryLabel(): string {
     const category = this.selectedCategory();
     return (
-      this.selectedTransaction().find((transaction) => transaction.category === category)
-        ?.categoryLabel ?? ''
+      this.selectedTransaction().find(
+        (transaction) => transaction.category === category,
+      )?.categoryLabel ?? ''
     );
   }
 

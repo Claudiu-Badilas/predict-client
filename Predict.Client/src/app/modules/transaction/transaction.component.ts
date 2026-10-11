@@ -71,5 +71,4 @@ export class TransactionComponent {
   setInsightsDataset(showEconomii: boolean): void {
     this.showEconomiiInsights.set(showEconomii);
   }
-
 }

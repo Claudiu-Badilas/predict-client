@@ -8,7 +8,11 @@ export interface State {
 
 export const LayoutStore = signalStore(
   { providedIn: 'root' },
-  withState<State>({ loading: false, minimumVisibleMs: 500, activeOperations: 0 }),
+  withState<State>({
+    loading: false,
+    minimumVisibleMs: 500,
+    activeOperations: 0,
+  }),
   withMethods((state) => ({
     spinnerOn(minimumVisibleMs = 500): void {
       patchState(state, {

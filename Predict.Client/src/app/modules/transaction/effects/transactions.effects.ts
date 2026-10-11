@@ -3,7 +3,13 @@ import { Injectable, inject } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of, timeout } from 'rxjs';
-import { catchError, finalize, switchMap, tap, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError,
+  finalize,
+  switchMap,
+  tap,
+  withLatestFrom,
+} from 'rxjs/operators';
 
 import { Store } from '@ngrx/store';
 import * as TransactionsActions from 'src/app/modules/transaction/actions/transactions.actions';

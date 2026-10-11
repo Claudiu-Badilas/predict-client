@@ -1172,8 +1172,10 @@
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns:
-    minmax(360px, 1.8fr) minmax(180px, 0.9fr) minmax(200px, 1fr) 210px 44px;
+  grid-template-columns: minmax(360px, 1.8fr) minmax(180px, 0.9fr) minmax(
+      200px,
+      1fr
+    ) 210px 44px;
   grid-template-areas: 'dates period search sort upload';
   align-items: center;
   gap: 10px;

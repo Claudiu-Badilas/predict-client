@@ -8,8 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { NumberFormatPipe } from 'src/app/shared/pipes/number-format.pipe';
-import { ReceiptDomain } from '../../../models/receipts-domain.model';
 import { Calculator } from 'src/app/shared/utils/calculator.utils';
+import { ReceiptDomain } from '../../../models/receipts-domain.model';
 
 interface ReceiptPeriod {
   id: string;
