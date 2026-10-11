@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 import { NumberFormatPipe } from 'src/app/shared/pipes/number-format.pipe';
 import { ReceiptDomain } from '../../../models/receipts-domain.model';
+import { Calculator } from 'src/app/shared/utils/calculator.utils';
 
 interface ReceiptPeriod {
   id: string;
@@ -314,6 +315,14 @@ export class MostCommonProductsComponent {
       ...expanded,
       [periodId]: !expanded[periodId],
     }));
+  }
+
+  getTotalItems(receipt: ReceiptDomain): number {
+    return Calculator.sum(
+      receipt.products.map((product) =>
+        product.quantityType === 'BUC' ? (product.quantity ?? 0) : 1,
+      ),
+    );
   }
 
   private sortReceipts(receipts: ReceiptDomain[]): ReceiptDomain[] {
