@@ -21,14 +21,6 @@
             }"
             (selectionChange)="setDataset($event === 'Economii')"
           />
-          <button
-            type="button"
-            class="transaction-upload-button"
-            aria-label="Open transaction storage to upload JSON"
-            (click)="storageSettingsRequested.emit()"
-          >
-            Upload
-          </button>
         </div>
 
         <div class="period-control">
@@ -169,6 +161,16 @@
             </button>
           </div>
         </div>
+
+        <button
+          type="button"
+          class="transaction-upload-button"
+          aria-label="Open transaction storage to upload JSON"
+          title="Upload transactions"
+          (click)="storageSettingsRequested.emit()"
+        >
+          <img src="assets/icons/light/upload.svg" alt="" />
+        </button>
       </div>
 
       @if (selectedCategory() || selectedProvider()) {
