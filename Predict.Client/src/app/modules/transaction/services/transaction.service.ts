@@ -41,7 +41,7 @@ export class TransactionService {
       TransactionResponse[] | TransactionsApiResponse
     >(TransactionService_STORAGE_KEY);
     const source$: Observable<TransactionsApiResponse | TransactionResponse[]> =
-      false
+      cachedData
         ? of(cachedData)
         : this.httpClient
             .get<TransactionResponse[]>(
