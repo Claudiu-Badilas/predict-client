@@ -15,11 +15,11 @@
             class="dataset-toggle"
             [config]="{
               type: 'toolbar',
-              options: ['Main', 'Economii'],
-              selected: showEconomii() ? 'Economii' : 'Main',
-              ariaLabel: 'Transaction dataset',
+              options: accountOptions().map((account) => account.label),
+              selected: activeAccount()?.label ?? null,
+              ariaLabel: 'Transaction account',
             }"
-            (selectionChange)="setDataset($event === 'Economii')"
+            (selectionChange)="setDataset($event)"
           />
         </div>
 
@@ -193,7 +193,7 @@
               <div class="period-header all-period-header">
                 <div class="header-row-main">
                   <span class="header-title">
-                    {{ showEconomii() ? 'Economii' : 'Transactions' }}
+                    {{ activeAccount()?.label ?? 'Transactions' }}
                   </span>
                   @if (showEconomii()) {
                     <span

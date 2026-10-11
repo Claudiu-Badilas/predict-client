@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
+  computed,
   Component,
   inject,
   signal,
@@ -36,7 +37,50 @@ export class TransactionComponent {
   viewMode = this.transactionsStore.viewMode;
   transactions = this.transactionsStore.availableTransactions;
   economii = this.transactionsStore.availableEconomii;
-  showEconomiiInsights = signal(false);
+  selectedAccount = signal('');
+  accountOptions = computed(() => {
+    const accounts = new Set<string>([
+      ...this.transactions().map(
+        (transaction) =>
+          transaction.account?.trim().toLocaleLowerCase() || 'main',
+      ),
+      ...this.economii().map(
+        (transaction) =>
+          transaction.account?.trim().toLocaleLowerCase() || 'economii',
+      ),
+    ]);
+    return Array.from(accounts).sort((first, second) => {
+      if (first === 'main') return -1;
+      if (second === 'main') return 1;
+      if (first === 'economii') return -1;
+      if (second === 'economii') return 1;
+      return first.localeCompare(second);
+    });
+  });
+  activeAccount = computed(() => {
+    const selected = this.selectedAccount();
+    if (selected && this.accountOptions().includes(selected)) return selected;
+    return this.accountOptions()[0] ?? 'main';
+  });
+  showEconomiiInsights = computed(() => this.activeAccount() === 'economii');
+  insightTransactions = computed(() =>
+    this.activeAccount() === 'economii'
+      ? []
+      : this.transactions().filter(
+          (transaction) =>
+            (transaction.account?.trim().toLocaleLowerCase() || 'main') ===
+            this.activeAccount(),
+        ),
+  );
+  insightEconomii = computed(() =>
+    this.activeAccount() === 'economii'
+      ? this.economii().filter(
+          (transaction) =>
+            (transaction.account?.trim().toLocaleLowerCase() || 'economii') ===
+            this.activeAccount(),
+        )
+      : [],
+  );
   minDate = new Date('2016-01-01');
   maxDate = new Date('2030-01-01');
 
@@ -68,7 +112,7 @@ export class TransactionComponent {
     this.store.dispatch(TransactionsActions.viewModeChanged({ viewMode }));
   }
 
-  setInsightsDataset(showEconomii: boolean): void {
-    this.showEconomiiInsights.set(showEconomii);
+  setInsightsDataset(account: string): void {
+    this.selectedAccount.set(account.toLocaleLowerCase());
   }
 }

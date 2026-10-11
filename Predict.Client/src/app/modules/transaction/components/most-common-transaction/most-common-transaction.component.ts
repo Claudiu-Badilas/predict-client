@@ -37,6 +37,12 @@ interface PeriodGroup {
   month?: string;
 }
 
+interface AccountOption {
+  key: string;
+  label: string;
+  value: string;
+}
+
 @Component({
   selector: 'p-most-common-transaction',
   imports: [
@@ -66,23 +72,75 @@ export class MostCommonTransactionComponent {
   dateRangeChange = output<DateRangePicker>();
 
   searchTerm = signal('');
-  showEconomii = signal(false);
+  selectedAccount = signal('');
   sortMode = signal<TransactionSort>('recent');
   selectedCategory = signal<TransactionCategory | null>(null);
   selectedProvider = signal<string | null>(null);
-  datasetChanged = output<boolean>();
+  datasetChanged = output<string>();
   storageSettingsRequested = output<void>();
 
   private normalizedSearch = computed(() =>
     this.searchTerm().trim().toLowerCase(),
   );
 
-  selectedTransaction = computed(() =>
-    (this.showEconomii()
-      ? this.economiiTransactions()
-      : this.transactions()
-    ).filter((transaction) => this.matchesSearch(transaction)),
-  );
+  accountTransactions = computed(() => [
+    ...this.transactions().map((transaction) => ({
+      transaction,
+      account: transaction.account?.trim() || 'main',
+    })),
+    ...this.economiiTransactions().map((transaction) => ({
+      transaction,
+      account: transaction.account?.trim() || 'economii',
+    })),
+  ]);
+
+  accountOptions = computed(() => {
+    const accounts = new Map<string, AccountOption>();
+    for (const item of this.accountTransactions()) {
+      const key = item.account.toLocaleLowerCase();
+      if (!key) continue;
+      if (!accounts.has(key)) {
+        accounts.set(key, {
+          key,
+          value: item.account,
+          label:
+            key === 'main'
+              ? 'Main'
+              : key === 'economii'
+                ? 'Economii'
+                : item.account,
+        });
+      }
+    }
+    return Array.from(accounts.values()).sort((first, second) => {
+      if (first.key === 'main') return -1;
+      if (second.key === 'main') return 1;
+      if (first.key === 'economii') return -1;
+      if (second.key === 'economii') return 1;
+      return first.label.localeCompare(second.label);
+    });
+  });
+
+  activeAccount = computed(() => {
+    const options = this.accountOptions();
+    const selected = this.selectedAccount().toLocaleLowerCase();
+    return (
+      options.find((account) => account.key === selected) ??
+      options.find((account) => account.key === 'main') ??
+      options[0] ??
+      null
+    );
+  });
+
+  showEconomii = computed(() => this.activeAccount()?.key === 'economii');
+
+  selectedTransaction = computed(() => {
+    const account = this.activeAccount()?.key;
+    return this.accountTransactions()
+      .filter((item) => item.account.toLocaleLowerCase() === account)
+      .map((item) => item.transaction)
+      .filter((transaction) => this.matchesSearch(transaction));
+  });
 
   economiiTotal = computed(() =>
     this.filteredTransactions().reduce(
@@ -91,9 +149,13 @@ export class MostCommonTransactionComponent {
     ),
   );
 
-  setDataset(showEconomii: boolean): void {
-    this.showEconomii.set(showEconomii);
-    this.datasetChanged.emit(showEconomii);
+  setDataset(label: string): void {
+    const account = this.accountOptions().find(
+      (option) => option.label === label,
+    );
+    if (!account) return;
+    this.selectedAccount.set(account.key);
+    this.datasetChanged.emit(account.key);
     this.selectedProvider.set(null);
     this.clearSearch();
     this.scrollTransactionsToTop();

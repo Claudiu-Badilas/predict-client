@@ -18,7 +18,7 @@ export interface State {
 const initialState: State = {
   transactions: [],
   economii: [],
-  startDate: new Date('2016-01-01'),
+  startDate: new Date('2017-01-01'),
   endDate: new Date(),
   viewMode: 'all',
 };
