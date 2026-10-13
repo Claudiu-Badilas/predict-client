@@ -1,9 +1,10 @@
 <section class="activity-calendar" aria-label="Activity calendar">
-  @if (total() > 0) {
-    <div class="calendar-summary">
-      <strong>{{ total() | number }} contributions</strong>
-    </div>
-  }
+  <div class="calendar-summary">
+    <strong
+      >{{ daysWithStatus() | number }} / {{ availableDays() | number }} days
+      marked</strong
+    >
+  </div>
 
   <div
     class="calendar-scroll"
@@ -58,7 +59,7 @@
           class="color-swatch"
           [class.color-swatch--default]="option.id === 'default'"
           [style.background-color]="
-            option.id === 'default' ? null : option.color
+            option.id === 'default' ? null : getColorOptionColor(option)
           "
         ></span>
         {{ option.label }}
