@@ -100,12 +100,26 @@
 }
 
 .day {
+  appearance: none;
   display: block;
+  box-sizing: border-box;
   width: var(--cell-size);
   height: var(--cell-size);
+  padding: 0;
   border: 1px solid rgb(27 31 36 / 6%);
   border-radius: 2px;
   background: var(--empty-cell-color, #ebedf0);
+  cursor: pointer;
+}
+
+.day:disabled {
+  cursor: default;
+}
+
+.day:not(:disabled):hover,
+.day:focus-visible {
+  outline: 2px solid var(--theme-accent, #0369a1);
+  outline-offset: 1px;
 }
 
 .outside-range {
@@ -152,38 +166,45 @@
   background: #40b866;
 }
 
-.calendar-legend,
-.legend-scale {
-  display: flex;
-  align-items: center;
+:host-context([data-theme='dark']) .color-swatch {
+  border-color: rgb(184 210 221 / 35%);
 }
 
-.calendar-legend {
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 8px;
+.color-swatch {
+  display: inline-block;
+  flex: 0 0 12px;
+  width: 12px;
+  height: 12px;
+  box-sizing: border-box;
+  border: 1px solid rgb(27 31 36 / 18%);
+  border-radius: 2px;
+}
+
+.color-swatch--default {
+  background: var(--default-empty-color, #ebedf0);
+}
+
+:host-context([data-theme='dark']) .color-swatch--default {
+  background: #0d2a35;
+}
+
+.custom-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 6px;
   color: var(--theme-text-muted, #57606a);
   font-size: 10px;
 }
 
-.legend-scale {
-  gap: var(--calendar-cell-gap);
-}
-
-.legend-scale > span:first-child {
-  margin-right: 2px;
-}
-
-.legend-scale > span:last-child {
-  margin-left: 2px;
+.custom-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
 }
 
 @media (max-width: 540px) {
   .activity-calendar {
     padding-inline: 10px;
-  }
-
-  .calendar-legend {
-    flex-wrap: wrap;
   }
 }
