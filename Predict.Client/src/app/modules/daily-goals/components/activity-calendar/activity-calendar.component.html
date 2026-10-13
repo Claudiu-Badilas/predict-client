@@ -1,11 +1,9 @@
 <section class="activity-calendar" aria-label="Activity calendar">
-  <div class="calendar-summary">
-    <strong>{{ total() | number }} contributions</strong>
-    <span>
-      {{ fromDate() | date: 'mediumDate' }} to
-      {{ toDate() | date: 'mediumDate' }}
-    </span>
-  </div>
+  @if (total() > 0) {
+    <div class="calendar-summary">
+      <strong>{{ total() | number }} contributions</strong>
+    </div>
+  }
 
   <div
     class="calendar-scroll"
@@ -31,14 +29,17 @@
               <span class="year-label">{{ week.yearLabel }}</span>
             </div>
             @for (day of week.days; track day.date.getTime()) {
-              <span
+              <button
+                type="button"
                 class="day"
                 [class]="'day level-' + day.level"
-                [attr.aria-label]="day.label"
-                [attr.title]="day.label"
+                [style.background-color]="getCustomColor(day.date)"
+                [attr.aria-label]="getDayAccessibleLabel(day)"
+                [ngbTooltip]="getDayAccessibleLabel(day)"
                 [class.outside-range]="!day.inRange"
-                [attr.aria-hidden]="!day.inRange"
-              ></span>
+                [disabled]="!day.inRange"
+                (click)="cycleDayColor(day.date, day.inRange)"
+              ></button>
             }
           </div>
         }
@@ -46,16 +47,22 @@
     </div>
   </div>
 
-  <div class="calendar-legend" aria-hidden="true">
-    <span>{{ total() | number }} total</span>
-    <span class="legend-scale">
-      <span>Less</span>
-      <span class="day level-0"></span>
-      <span class="day level-1"></span>
-      <span class="day level-2"></span>
-      <span class="day level-3"></span>
-      <span class="day level-4"></span>
-      <span>More</span>
-    </span>
+  <div
+    class="custom-legend"
+    aria-hidden="true"
+    [style.--default-empty-color]="emptyColor()"
+  >
+    @for (option of colorOptions(); track option.id) {
+      <span class="custom-legend__item">
+        <span
+          class="color-swatch"
+          [class.color-swatch--default]="option.id === 'default'"
+          [style.background-color]="
+            option.id === 'default' ? null : option.color
+          "
+        ></span>
+        {{ option.label }}
+      </span>
+    }
   </div>
 </section>

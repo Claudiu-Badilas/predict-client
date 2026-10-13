@@ -3,6 +3,7 @@ import { TopBarComponent } from 'src/app/shared/components/top-bar/top-bar.compo
 import { RangeSelectorComponent } from '../../shared/components/date-range-picker/date-range-picker.component';
 import { DateRangePicker } from '../../shared/components/date-range-picker/models/date-range-picker.model';
 import { ActivityCalendarComponent } from './components/activity-calendar/activity-calendar.component';
+import type { ActivityCalendarConfig } from './components/activity-calendar/activity-calendar.component';
 
 @Component({
   imports: [ActivityCalendarComponent, TopBarComponent, RangeSelectorComponent],
@@ -11,6 +12,13 @@ import { ActivityCalendarComponent } from './components/activity-calendar/activi
   templateUrl: './daily-goals.component.html',
 })
 export class DailyGoalsComponent {
+  readonly activityCalendarConfig: ActivityCalendarConfig = {
+    colorOptions: [
+      { id: 'planned', label: 'Planned', color: '#60a5fa' },
+      { id: 'in-progress', label: 'In progress', color: '#fbbf24' },
+      { id: 'complete', label: 'Complete', color: '#34d399' },
+    ],
+  };
   private readonly today = new Date();
   readonly fromDate = signal(
     new Date(

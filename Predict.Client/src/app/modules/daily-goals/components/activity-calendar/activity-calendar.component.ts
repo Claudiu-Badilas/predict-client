@@ -1,10 +1,23 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, input } from '@angular/core';
+import { DecimalPipe } from '@angular/common';
+import { Component, computed, input, signal } from '@angular/core';
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 
 export interface ActivityContribution {
   date: Date | string;
   count: number;
 }
+
+export interface ActivityCalendarColorOption {
+  id: string;
+  label: string;
+  color: string;
+}
+
+export interface ActivityCalendarConfig {
+  colorOptions: ActivityCalendarColorOption[];
+}
+
+const DEFAULT_COLOR_OPTION_ID = 'default';
 
 interface CalendarDay {
   date: Date;
@@ -22,22 +35,90 @@ interface CalendarWeek {
 
 @Component({
   selector: 'p-activity-calendar',
-  imports: [DatePipe, DecimalPipe],
+  imports: [DecimalPipe, NgbTooltip],
   templateUrl: './activity-calendar.component.html',
   styleUrl: './activity-calendar.component.scss',
 })
 export class ActivityCalendarComponent {
   contributions = input<ActivityContribution[]>([]);
+  config = input.required<ActivityCalendarConfig>();
   fromDate = input.required<Date>();
   toDate = input.required<Date>();
   emptyColor = input('#ebedf0');
 
+  readonly selectedColorIds = signal<Record<string, string>>({});
+  readonly colorOptions = computed(() => [
+    {
+      id: DEFAULT_COLOR_OPTION_ID,
+      label: 'Default',
+      color: this.emptyColor(),
+    },
+    ...this.config().colorOptions.filter(
+      (option) => option.id !== DEFAULT_COLOR_OPTION_ID,
+    ),
+  ]);
   readonly weeks = computed(() => this.buildWeeks());
   readonly total = computed(() =>
     this.weeks()
       .flatMap((week) => week.days)
       .reduce((sum, day) => sum + (day.inRange ? day.count : 0), 0),
   );
+
+  cycleDayColor(date: Date, inRange: boolean): void {
+    if (!inRange) return;
+
+    const options = this.colorOptions();
+    const currentId = this.getSelectedColorId(date) ?? DEFAULT_COLOR_OPTION_ID;
+    const currentIndex = options.findIndex((option) => option.id === currentId);
+    const nextOption = options[(currentIndex + 1) % options.length];
+
+    if (nextOption.id === DEFAULT_COLOR_OPTION_ID) {
+      this.clearDayColor(date);
+      return;
+    }
+
+    this.setDayColor(date, nextOption);
+  }
+
+  getSelectedColorId(date: Date): string | null {
+    return this.selectedColorIds()[this.dateKey(date)] ?? null;
+  }
+
+  getCustomColor(date: Date): string | null {
+    const selectedId = this.getSelectedColorId(date);
+    return (
+      this.config().colorOptions.find((option) => option.id === selectedId)
+        ?.color ?? null
+    );
+  }
+
+  getColorLabel(date: Date): string {
+    const selectedId = this.getSelectedColorId(date) ?? DEFAULT_COLOR_OPTION_ID;
+    return (
+      this.colorOptions().find((option) => option.id === selectedId)?.label ??
+      'Default'
+    );
+  }
+
+  getDayAccessibleLabel(day: CalendarDay): string {
+    return `${day.label}`;
+  }
+
+  setDayColor(date: Date, option: ActivityCalendarColorOption): void {
+    if (!this.config().colorOptions.some(({ id }) => id === option.id)) return;
+
+    const selectedColors = {
+      ...this.selectedColorIds(),
+      [this.dateKey(date)]: option.id,
+    };
+    this.selectedColorIds.set(selectedColors);
+  }
+
+  clearDayColor(date: Date): void {
+    const selectedColors = { ...this.selectedColorIds() };
+    delete selectedColors[this.dateKey(date)];
+    this.selectedColorIds.set(selectedColors);
+  }
 
   private buildWeeks(): CalendarWeek[] {
     const fromDate = this.toLocalDate(this.fromDate());
@@ -112,9 +193,7 @@ export class ActivityCalendarComponent {
           date,
           count,
           level,
-          label: inRange
-            ? `${count} contribution${count === 1 ? '' : 's'} on ${formattedDate}`
-            : '',
+          label: inRange ? `${formattedDate}` : '',
           inRange,
         });
       }
