@@ -1,0 +1,58 @@
+<section class="activity-calendar" aria-label="Activity calendar">
+  <div class="calendar-summary">
+    <strong>{{ total() | number }} contributions</strong>
+    <span>
+      {{ fromDate() | date: 'mediumDate' }} to
+      {{ toDate() | date: 'mediumDate' }}
+    </span>
+  </div>
+
+  <div
+    class="calendar-scroll"
+    role="group"
+    aria-label="Daily contributions for the selected date range"
+  >
+    <div class="calendar" [style.--empty-cell-color]="emptyColor()">
+      <div class="weekday-labels" aria-hidden="true">
+        <span></span>
+        <span>Mon</span>
+        <span></span>
+        <span>Wed</span>
+        <span></span>
+        <span>Fri</span>
+        <span></span>
+      </div>
+
+      <div class="weeks">
+        @for (week of weeks(); track $index) {
+          <div class="week">
+            <span class="month-label">{{ week.monthLabel }}</span>
+            @for (day of week.days; track day.date.getTime()) {
+              <span
+                class="day"
+                [class]="'day level-' + day.level"
+                [attr.aria-label]="day.label"
+                [attr.title]="day.label"
+                [class.outside-range]="!day.inRange"
+                [attr.aria-hidden]="!day.inRange"
+              ></span>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-legend" aria-hidden="true">
+    <span>{{ total() | number }} total</span>
+    <span class="legend-scale">
+      <span>Less</span>
+      <span class="day level-0"></span>
+      <span class="day level-1"></span>
+      <span class="day level-2"></span>
+      <span class="day level-3"></span>
+      <span class="day level-4"></span>
+      <span>More</span>
+    </span>
+  </div>
+</section>

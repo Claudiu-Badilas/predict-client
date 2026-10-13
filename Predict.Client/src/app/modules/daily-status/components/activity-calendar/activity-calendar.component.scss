@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  min-width: 0;
+  color: var(--theme-text-primary, #24292f);
+  font-size: 12px;
+}
+
+.activity-calendar {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid var(--theme-border, #d0d7de);
+  border-radius: 4px;
+  padding: 12px 16px 10px;
+  background: var(--theme-surface, #fff);
+}
+
+.calendar-summary {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+  color: var(--theme-text-muted, #57606a);
+}
+
+.calendar-summary strong {
+  color: var(--theme-text-primary, #24292f);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.calendar-summary span {
+  font-size: 11px;
+}
+
+.calendar-scroll {
+  width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  padding-bottom: 3px;
+  overscroll-behavior-x: contain;
+  container-type: inline-size;
+}
+
+.calendar {
+  --cell-size: clamp(10px, calc(1.887cqi - 3.566px), 22px);
+  display: flex;
+  width: max-content;
+  min-width: 100%;
+  gap: 7px;
+}
+
+.weekday-labels,
+.week {
+  display: grid;
+  grid-template-rows: 15px repeat(7, 10px);
+  row-gap: 3px;
+}
+
+.weekday-labels {
+  flex: 0 0 26px;
+  color: var(--theme-text-muted, #57606a);
+  font-size: 10px;
+  text-align: right;
+}
+
+.weeks {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+  gap: 3px;
+}
+
+.week {
+  width: var(--cell-size);
+  flex: 0 0 var(--cell-size);
+}
+
+.month-label {
+  width: max-content;
+  color: var(--theme-text-muted, #57606a);
+  font-size: 10px;
+  line-height: 15px;
+}
+
+.day {
+  display: block;
+  width: var(--cell-size);
+  height: var(--cell-size);
+  border: 1px solid rgb(27 31 36 / 6%);
+  border-radius: 2px;
+  background: var(--empty-cell-color, #ebedf0);
+}
+
+.outside-range {
+  visibility: hidden;
+}
+
+.level-1 {
+  background: #9be9a8;
+}
+
+.level-2 {
+  background: #40c463;
+}
+
+.level-3 {
+  background: #30a14e;
+}
+
+.level-4 {
+  background: #216e39;
+}
+
+.calendar-legend,
+.legend-scale {
+  display: flex;
+  align-items: center;
+}
+
+.calendar-legend {
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  color: var(--theme-text-muted, #57606a);
+  font-size: 10px;
+}
+
+.legend-scale {
+  gap: 3px;
+}
+
+.legend-scale > span:first-child {
+  margin-right: 2px;
+}
+
+.legend-scale > span:last-child {
+  margin-left: 2px;
+}
+
+@media (max-width: 540px) {
+  .activity-calendar {
+    padding-inline: 10px;
+  }
+
+  .calendar-legend {
+    flex-wrap: wrap;
+  }
+}
