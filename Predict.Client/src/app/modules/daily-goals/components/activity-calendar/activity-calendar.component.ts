@@ -1,16 +1,19 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, input, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
+import { ThemeService } from 'src/app/core/services/theme.service';
 
 export interface ActivityContribution {
   date: Date | string;
   count: number;
+  colorId?: string;
 }
 
 export interface ActivityCalendarColorOption {
   id: string;
   label: string;
   color: string;
+  darkColor?: string;
 }
 
 export interface ActivityCalendarConfig {
@@ -46,6 +49,7 @@ export class ActivityCalendarComponent {
   toDate = input.required<Date>();
   emptyColor = input('#ebedf0');
 
+  private readonly themeService = inject(ThemeService);
   readonly selectedColorIds = signal<Record<string, string>>({});
   readonly colorOptions = computed(() => [
     {
@@ -58,10 +62,16 @@ export class ActivityCalendarComponent {
     ),
   ]);
   readonly weeks = computed(() => this.buildWeeks());
-  readonly total = computed(() =>
+  readonly daysWithStatus = computed(() =>
     this.weeks()
       .flatMap((week) => week.days)
       .reduce((sum, day) => sum + (day.inRange ? day.count : 0), 0),
+  );
+  readonly availableDays = computed(
+    () =>
+      this.weeks()
+        .flatMap((week) => week.days)
+        .filter((day) => day.inRange).length,
   );
 
   cycleDayColor(date: Date, inRange: boolean): void {
@@ -81,15 +91,30 @@ export class ActivityCalendarComponent {
   }
 
   getSelectedColorId(date: Date): string | null {
-    return this.selectedColorIds()[this.dateKey(date)] ?? null;
+    const dateKey = this.dateKey(date);
+    const selectedColorId = this.selectedColorIds()[dateKey];
+    if (selectedColorId !== undefined) return selectedColorId;
+
+    return (
+      this.contributions().find(
+        (contribution) =>
+          this.dateKey(this.toLocalDate(contribution.date)) === dateKey,
+      )?.colorId ?? null
+    );
   }
 
   getCustomColor(date: Date): string | null {
     const selectedId = this.getSelectedColorId(date);
-    return (
-      this.config().colorOptions.find((option) => option.id === selectedId)
-        ?.color ?? null
+    const option = this.config().colorOptions.find(
+      (colorOption) => colorOption.id === selectedId,
     );
+    return option ? this.getColorOptionColor(option) : null;
+  }
+
+  getColorOptionColor(option: ActivityCalendarColorOption): string {
+    return this.themeService.theme() === 'dark'
+      ? (option.darkColor ?? option.color)
+      : option.color;
   }
 
   getColorLabel(date: Date): string {
@@ -115,8 +140,10 @@ export class ActivityCalendarComponent {
   }
 
   clearDayColor(date: Date): void {
-    const selectedColors = { ...this.selectedColorIds() };
-    delete selectedColors[this.dateKey(date)];
+    const selectedColors = {
+      ...this.selectedColorIds(),
+      [this.dateKey(date)]: DEFAULT_COLOR_OPTION_ID,
+    };
     this.selectedColorIds.set(selectedColors);
   }
 
@@ -128,19 +155,39 @@ export class ActivityCalendarComponent {
     const lastSunday = new Date(toDate);
     lastSunday.setDate(lastSunday.getDate() - lastSunday.getDay());
 
-    const counts = new Map<string, number>();
+    const configuredColorIds = new Set(
+      this.config().colorOptions.map((option) => option.id),
+    );
+    const statusDateKeys = new Set<string>();
     for (const contribution of this.contributions()) {
       const date = this.toLocalDate(contribution.date);
       const key = this.dateKey(date);
-      counts.set(key, (counts.get(key) ?? 0) + Math.max(0, contribution.count));
+      if (
+        contribution.colorId &&
+        contribution.colorId !== DEFAULT_COLOR_OPTION_ID &&
+        configuredColorIds.has(contribution.colorId)
+      ) {
+        statusDateKeys.add(key);
+      }
     }
 
-    const maxCount = Array.from(counts.entries())
-      .filter(([key]) => {
-        const date = this.toLocalDate(key);
-        return date >= fromDate && date <= toDate;
-      })
-      .reduce((max, [, count]) => Math.max(max, count), 0);
+    for (const [key, colorId] of Object.entries(this.selectedColorIds())) {
+      if (
+        colorId !== DEFAULT_COLOR_OPTION_ID &&
+        configuredColorIds.has(colorId)
+      ) {
+        statusDateKeys.add(key);
+      } else {
+        statusDateKeys.delete(key);
+      }
+    }
+
+    const maxCount = Array.from(statusDateKeys).some((key) => {
+      const date = this.toLocalDate(key);
+      return date >= fromDate && date <= toDate;
+    })
+      ? 1
+      : 0;
     const weeks: CalendarWeek[] = [];
     let previousMonth = -1;
     const weekCount =
@@ -179,7 +226,7 @@ export class ActivityCalendarComponent {
         const date = new Date(weekStart);
         date.setDate(weekStart.getDate() + dayIndex);
         const inRange = date >= fromDate && date <= toDate;
-        const count = inRange ? (counts.get(this.dateKey(date)) ?? 0) : 0;
+        const count = inRange && statusDateKeys.has(this.dateKey(date)) ? 1 : 0;
         const level =
           count === 0 || maxCount === 0 ? 0 : Math.ceil((count / maxCount) * 4);
         const formattedDate = date.toLocaleDateString(undefined, {
