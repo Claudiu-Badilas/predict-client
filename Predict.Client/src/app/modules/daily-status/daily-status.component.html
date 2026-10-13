@@ -1,1 +1,23 @@
-<p>daily-status works!</p>
+<p-top-bar>
+  <ng-container module-navigation> </ng-container>
+</p-top-bar>
+
+<main class="daily-status">
+  <header class="daily-status-header">
+    <h1>Daily Status</h1>
+    <fieldset class="date-range">
+      <legend>From / To</legend>
+      <p-date-range-picker
+        [startDate]="fromDate()"
+        [endDate]="toDate()"
+        [minDate]="minDate"
+        [maxDate]="maxDate"
+        (valueChanged)="onDateRangeChange($event)"
+      ></p-date-range-picker>
+    </fieldset>
+  </header>
+  <p-activity-calendar
+    [fromDate]="fromDate()"
+    [toDate]="toDate()"
+  ></p-activity-calendar>
+</main>

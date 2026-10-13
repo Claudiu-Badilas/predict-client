@@ -1,0 +1,55 @@
+.daily-status {
+  box-sizing: border-box;
+  display: grid;
+  width: 100%;
+  gap: 16px;
+  padding: 24px;
+}
+
+.daily-status-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.daily-status-header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.date-range {
+  flex: 0 1 440px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.date-range legend {
+  margin-bottom: 3px;
+  color: var(--theme-text-muted, #57606a);
+  font-size: 10px;
+}
+
+.date-range p-date-range-picker {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 540px) {
+  .daily-status {
+    padding: 12px;
+  }
+
+  .daily-status-header {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .date-range {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
