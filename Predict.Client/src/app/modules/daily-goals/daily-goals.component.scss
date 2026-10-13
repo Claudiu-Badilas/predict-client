@@ -1,4 +1,4 @@
-.daily-status {
+.daily-goals {
   box-sizing: border-box;
   display: grid;
   width: 100%;
@@ -6,14 +6,14 @@
   padding: 24px;
 }
 
-.daily-status-header {
+.daily-goals-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
 }
 
-.daily-status-header h1 {
+.daily-goals-header h1 {
   margin: 0;
   font-size: 20px;
 }
@@ -38,11 +38,11 @@
 }
 
 @media (max-width: 540px) {
-  .daily-status {
+  .daily-goals {
     padding: 12px;
   }
 
-  .daily-status-header {
+  .daily-goals-header {
     align-items: stretch;
     flex-direction: column;
     gap: 8px;

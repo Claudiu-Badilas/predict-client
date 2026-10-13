@@ -6,11 +6,11 @@ import { ActivityCalendarComponent } from './components/activity-calendar/activi
 
 @Component({
   imports: [ActivityCalendarComponent, TopBarComponent, RangeSelectorComponent],
-  selector: 'app-daily-status',
-  styleUrl: './daily-status.component.scss',
-  templateUrl: './daily-status.component.html',
+  selector: 'app-daily-goals',
+  styleUrl: './daily-goals.component.scss',
+  templateUrl: './daily-goals.component.html',
 })
-export class DailyStatusComponent {
+export class DailyGoalsComponent {
   private readonly today = new Date();
   readonly fromDate = signal(
     new Date(

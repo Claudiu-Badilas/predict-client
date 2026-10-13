@@ -18,10 +18,10 @@ const routes: Routes = [
       import('./modules/loan/loan.routing').then((m) => m.loanRoutes),
   },
   {
-    path: 'daily-status',
+    path: 'daily-goals',
     loadChildren: () =>
-      import('./modules/daily-status/daily-status.routing').then(
-        (m) => m.dailyStatusRoutes,
+      import('./modules/daily-goals/daily-goals.routing').then(
+        (m) => m.dailyGoalsRoutes,
       ),
   },
   {
