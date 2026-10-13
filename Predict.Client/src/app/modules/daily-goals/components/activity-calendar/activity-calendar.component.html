@@ -26,7 +26,10 @@
       <div class="weeks">
         @for (week of weeks(); track $index) {
           <div class="week">
-            <span class="month-label">{{ week.monthLabel }}</span>
+            <div class="month-heading">
+              <span class="month-label">{{ week.monthLabel }}</span>
+              <span class="year-label">{{ week.yearLabel }}</span>
+            </div>
             @for (day of week.days; track day.date.getTime()) {
               <span
                 class="day"
