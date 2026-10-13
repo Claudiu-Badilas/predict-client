@@ -16,6 +16,7 @@ interface CalendarDay {
 
 interface CalendarWeek {
   monthLabel: string;
+  yearLabel: string;
   days: CalendarDay[];
 }
 
@@ -76,14 +77,19 @@ export class ActivityCalendarComponent {
           (7 * 24 * 60 * 60 * 1000),
       ) + 1;
 
-    for (let weekIndex = 0; weekIndex < weekCount; weekIndex++) {
+    for (let weekIndex = weekCount - 1; weekIndex >= 0; weekIndex--) {
       const weekStart = new Date(firstSunday);
       weekStart.setDate(firstSunday.getDate() + weekIndex * 7);
       const month = weekStart.getMonth();
+      const monthLabel =
+        month !== previousMonth
+          ? weekStart.toLocaleString(undefined, { month: 'short' })
+          : '';
       const week: CalendarWeek = {
-        monthLabel:
-          month !== previousMonth
-            ? weekStart.toLocaleString(undefined, { month: 'short' })
+        monthLabel,
+        yearLabel:
+          monthLabel && (month === 0 || month === 11)
+            ? String(weekStart.getFullYear())
             : '',
         days: [],
       };
