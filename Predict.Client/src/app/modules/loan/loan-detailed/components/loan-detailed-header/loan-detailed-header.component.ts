@@ -88,18 +88,49 @@ export class LoanDetailedHeaderComponent {
   readonly simulatedTotalInstalments = computed(
     () => this.baseRepaymentSchedule()?.monthlyInstalments.length ?? 0,
   );
+  readonly simulatedFirstInstalmentPaymentDate = computed(
+    () => this.simulatedPayments().find((payment) => payment.newPaymentDate)
+      ?.newPaymentDate ?? null,
+  );
   readonly simulatedLastInstalmentPaymentDate = computed(
     () => this.simulatedPayments().at(-1)?.newPaymentDate ?? null,
   );
-  readonly simulatedFirstInstalmentPaymentDate = computed(
-    () => this.simulatedPayments().at(0)?.newPaymentDate ?? null,
-  );
-  readonly simulatedDateDiffYMD = computed(() =>
-    JsDateUtils.dateDiffYMD(
-      this.simulatedFirstInstalmentPaymentDate(),
-      this.simulatedLastInstalmentPaymentDate(),
-    ),
-  );
+  readonly simulatedDateDiffYMD = computed(() => {
+    const durationStartDate = this.firstInstalmentPaymentDate();
+    const durationEndDate = this.lastInstalmentPaymentDate();
+    const simulationStartDate = this.simulatedFirstInstalmentPaymentDate();
+    const simulationEndDate = this.simulatedLastInstalmentPaymentDate();
+
+    if (
+      !JsDateUtils.isValidDate(durationStartDate) ||
+      !JsDateUtils.isValidDate(durationEndDate) ||
+      !JsDateUtils.isValidDate(simulationStartDate) ||
+      !JsDateUtils.isValidDate(simulationEndDate)
+    ) {
+      return null;
+    }
+
+    const simulatedPeriodMonths =
+      (simulationEndDate.getFullYear() - simulationStartDate.getFullYear()) *
+        12 +
+      simulationEndDate.getMonth() -
+      simulationStartDate.getMonth();
+    const extraPaymentMonths = this.simulatedPayments().filter(
+      (payment) => payment.earlyPayment,
+    ).length;
+    const reducedEndDate = JsDateUtils.addMonths(
+      durationEndDate,
+      -(simulatedPeriodMonths + extraPaymentMonths),
+    );
+    const adjustedEndDate = JsDateUtils.isBefore(
+      reducedEndDate,
+      durationStartDate,
+    )
+      ? durationStartDate
+      : reducedEndDate;
+
+    return JsDateUtils.dateDiffYMD(durationStartDate, adjustedEndDate);
+  });
 
   readonly paidPrincipal = computed(() =>
     Calculator.sum(
@@ -167,7 +198,7 @@ export class LoanDetailedHeaderComponent {
     () =>
       this.historicalInstalmentPaymentBatches()
         .filter((s) => s.completed)
-        .at(-1)
+        .at(0)
         ?.instalments?.at(0)?.paymentDate ?? null,
   );
 
