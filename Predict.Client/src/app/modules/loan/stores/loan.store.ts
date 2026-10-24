@@ -22,6 +22,7 @@ interface OverviewLoanState {
 
 interface DetailedLoanState {
   selectedRepaymentScheduleName: string | null;
+  includeSimulation: boolean;
 }
 
 export interface LoanState {
@@ -40,7 +41,10 @@ const initialState: LoanState = {
     selectedInstalmentPayments: [],
     selectedEarlyPayments: [],
   },
-  detailed: { selectedRepaymentScheduleName: null },
+  detailed: {
+    selectedRepaymentScheduleName: null,
+    includeSimulation: true,
+  },
 };
 
 export const LoanStore = signalStore(
@@ -170,6 +174,9 @@ export const LoanStore = signalStore(
         ),
       ),
       detailedSelectedName,
+      includeDetailedSimulation: computed(
+        () => state.detailed.includeSimulation(),
+      ),
       detailedSelectedSchedule,
       detailedCompareToSchedule,
       detailedRepaymentSchedules,
@@ -201,6 +208,11 @@ export const LoanStore = signalStore(
     selectDetailedLoan(selectedRepaymentScheduleName: string): void {
       patchState(state, (current) => ({
         detailed: { ...current.detailed, selectedRepaymentScheduleName },
+      }));
+    },
+    setIncludeDetailedSimulation(includeSimulation: boolean): void {
+      patchState(state, (current) => ({
+        detailed: { ...current.detailed, includeSimulation },
       }));
     },
     toggleInstalmentPayments(values: number[]): void {

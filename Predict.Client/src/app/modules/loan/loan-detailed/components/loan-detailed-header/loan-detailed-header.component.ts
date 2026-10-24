@@ -28,6 +28,7 @@ export class LoanDetailedHeaderComponent {
   readonly simulationMonthlyInstalmentBatches =
     this.store.simulationMonthlyInstalmentBatches;
   readonly baseRepaymentSchedule = this.store.baseRepaymentSchedule;
+  readonly includeSimulation = this.store.includeDetailedSimulation;
 
   readonly simulatedPayments = computed(() =>
     this.simulationMonthlyInstalmentBatches()
@@ -38,7 +39,7 @@ export class LoanDetailedHeaderComponent {
       ),
   );
   readonly hasSimulatedPayments = computed(
-    () => this.simulatedPayments().length > 0,
+    () => this.includeSimulation() && this.simulatedPayments().length > 0,
   );
   readonly simulatedPaidPrincipal = computed(
     () =>

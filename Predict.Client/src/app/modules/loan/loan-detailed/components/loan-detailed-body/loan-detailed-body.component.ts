@@ -48,6 +48,10 @@ export class LoanDetailedBodyComponent {
     this.loanStore.historicalInstalmentPaymentBatches;
   simulationMonthlyInstalmentBatches =
     this.loanStore.simulationMonthlyInstalmentBatches;
+  includeSimulation = this.loanStore.includeDetailedSimulation;
+  visibleSimulationMonthlyInstalmentBatches = computed(() =>
+    this.includeSimulation() ? this.simulationMonthlyInstalmentBatches() : [],
+  );
 
   baseRepaymentSchedule = this.loanStore.baseRepaymentSchedule;
   selectedRepaymentSchedule = this.loanStore.detailedSelectedSchedule;

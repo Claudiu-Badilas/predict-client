@@ -21,6 +21,19 @@
         />
       </div>
     </div>
+    <div class="pt-2 d-flex align-items-center justify-content-between">
+      <div class="sidebar-label">Include simulation</div>
+      <div>
+        <p-platform-toggle
+          [config]="{
+            type: 'switch',
+            value: includeSimulation(),
+            ariaLabel: 'Include simulated values in detailed view',
+          }"
+          (toggleChange)="onIncludeSimulationChanged($event)"
+        />
+      </div>
+    </div>
   </ng-container>
 </p-top-bar>
 
