@@ -54,6 +54,14 @@
   margin-bottom: 0.5rem;
 }
 
+.stat-item__simulation {
+  color: var(--theme-text-secondary);
+  font-size: 0.75em;
+  font-weight: 500;
+  opacity: 0.65;
+  white-space: nowrap;
+}
+
 .stat-item__label {
   font-size: 12px;
   font-weight: 600;
@@ -155,6 +163,10 @@
     font-size: 13px;
     font-weight: 700;
     color: var(--theme-text-primary);
+  }
+
+  .mobile-view .stat-item__simulation {
+    display: block;
   }
 
   /* Same color styles as web */

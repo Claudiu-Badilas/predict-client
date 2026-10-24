@@ -25,6 +25,80 @@ export class LoanDetailedHeaderComponent {
     this.store.historicalInstalments;
   readonly historicalInstalmentPaymentBatches =
     this.store.historicalInstalmentPaymentBatches;
+  readonly simulationMonthlyInstalmentBatches =
+    this.store.simulationMonthlyInstalmentBatches;
+  readonly baseRepaymentSchedule = this.store.baseRepaymentSchedule;
+
+  readonly simulatedPayments = computed(() =>
+    this.simulationMonthlyInstalmentBatches()
+      .flatMap((batch) => batch.instalments)
+      .filter(
+        (instalment) =>
+          instalment.instalmentPayment || instalment.earlyPayment,
+      ),
+  );
+  readonly hasSimulatedPayments = computed(
+    () => this.simulatedPayments().length > 0,
+  );
+  readonly simulatedPaidPrincipal = computed(
+    () =>
+      (this.paidPrincipal() ?? 0) +
+      (Calculator.sum(
+        this.simulatedPayments().map(
+          (instalment) => instalment.principalAmount ?? 0,
+        ),
+      ) ?? 0),
+  );
+  readonly simulatedPaidPrincipalPercent = computed(() => {
+    const total = Calculator.sum(
+      this.updatedBaseRepaymentScheduleBasedOnLatestStates()
+        .map((instalment) => instalment.principalAmount ?? 0),
+    );
+
+    return MathUtil.percent(this.simulatedPaidPrincipal(), total);
+  });
+  readonly simulatedPaidInterest = computed(
+    () =>
+      (this.paidIntrest() ?? 0) +
+      (Calculator.sum(
+        this.simulatedPayments()
+          .filter((instalment) => instalment.instalmentPayment)
+          .map((instalment) => instalment.interestAmount ?? 0),
+      ) ?? 0),
+  );
+  readonly simulatedPaidInsurance = computed(
+    () =>
+      (this.paidInsurance() ?? 0) +
+      (Calculator.sum(
+        this.simulatedPayments()
+          .filter((instalment) => instalment.instalmentPayment)
+          .map((instalment) => instalment.insuranceCost ?? 0),
+      ) ?? 0),
+  );
+  readonly simulatedTotalPaid = computed(
+    () =>
+      this.simulatedPaidPrincipal() +
+      this.simulatedPaidInterest() +
+      this.simulatedPaidInsurance(),
+  );
+  readonly simulatedPaidInstalments = computed(
+    () => (this.paidInstalments() ?? 0) + this.simulatedPayments().length,
+  );
+  readonly simulatedTotalInstalments = computed(
+    () => this.baseRepaymentSchedule()?.monthlyInstalments.length ?? 0,
+  );
+  readonly simulatedLastInstalmentPaymentDate = computed(
+    () => this.simulatedPayments().at(-1)?.newPaymentDate ?? null,
+  );
+  readonly simulatedFirstInstalmentPaymentDate = computed(
+    () => this.simulatedPayments().at(0)?.newPaymentDate ?? null,
+  );
+  readonly simulatedDateDiffYMD = computed(() =>
+    JsDateUtils.dateDiffYMD(
+      this.simulatedFirstInstalmentPaymentDate(),
+      this.simulatedLastInstalmentPaymentDate(),
+    ),
+  );
 
   readonly paidPrincipal = computed(() =>
     Calculator.sum(

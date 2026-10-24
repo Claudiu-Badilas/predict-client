@@ -12,9 +12,19 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ paidPrincipal() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidPrincipal() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ paidPrincipalPercent() | numberFormat: '0.00' }} %
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidPrincipalPercent() | numberFormat: '0.00' }} %]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -29,9 +39,19 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ paidIntrest() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidInterest() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ paidInsurance() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidInsurance() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -46,10 +66,21 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ totalPaid() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedTotalPaid() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ paidInstalments() | numberFormat: '0' : 0 }} /
             {{ unpaidInstalments() | numberFormat: '0' : 0 }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidInstalments() | numberFormat: '0' : 0 }} /
+                {{ simulatedTotalInstalments() | numberFormat: '0' : 0 }}]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -64,9 +95,19 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ lastInstalmentPaymentDate() | date: 'MMM-yyyy' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedLastInstalmentPaymentDate() | date: 'MMM-yyyy' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ dateDiffYMD() ?? '-' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedDateDiffYMD() ?? '-' }}]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -88,9 +129,19 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ paidPrincipal() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidPrincipal() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ paidPrincipalPercent() | numberFormat: '0.00' }} %
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidPrincipalPercent() | numberFormat: '0.00' }} %]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -105,9 +156,19 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ paidIntrest() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidInterest() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ paidInsurance() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidInsurance() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -122,10 +183,21 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ totalPaid() | numberFormat: '0.00' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedTotalPaid() | numberFormat: '0.00' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ paidInstalments() | numberFormat: '0' : 0 }} /
             {{ unpaidInstalments() | numberFormat: '0' : 0 }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedPaidInstalments() | numberFormat: '0' : 0 }} /
+                {{ simulatedTotalInstalments() | numberFormat: '0' : 0 }}]
+              </span>
+            }
           </span>
         </div>
       </div>
@@ -140,9 +212,19 @@
         <div class="stat-row">
           <span class="stat-item__value">
             {{ lastInstalmentPaymentDate() | date: 'MMM-yyyy' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedLastInstalmentPaymentDate() | date: 'MMM-yyyy' }}]
+              </span>
+            }
           </span>
           <span class="stat-item__value">
             {{ dateDiffYMD() ?? '-' }}
+            @if (hasSimulatedPayments()) {
+              <span class="stat-item__simulation">
+                [{{ simulatedDateDiffYMD() ?? '-' }}]
+              </span>
+            }
           </span>
         </div>
       </div>
