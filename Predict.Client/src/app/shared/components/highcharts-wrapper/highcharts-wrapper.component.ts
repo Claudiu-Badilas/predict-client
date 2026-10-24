@@ -71,7 +71,7 @@ export class HighchartWrapperComponent
         this.chartOptions,
         this.getThemeColors(),
       );
-      this.chart.update(updatedOptions);
+      this.chart.update(updatedOptions, true, true);
     }
   }
 
