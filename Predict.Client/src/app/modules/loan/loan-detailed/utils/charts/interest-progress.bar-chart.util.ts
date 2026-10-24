@@ -3,12 +3,14 @@ import { NumberFormatPipe } from 'src/app/shared/pipes/number-format.pipe';
 import { Colors } from 'src/app/shared/styles/colors';
 import { Calculator } from 'src/app/shared/utils/calculator.utils';
 import { MathUtil } from 'src/app/shared/utils/math.utils';
+import type { LoanSimulatorInstalment } from '../../../loan-simulator/models/loan-simulator.model';
 import { HistoricalInstalmentPayment } from '../../models/base-loan-rate.model';
 
 export namespace InterestProgressChartBarUtils {
   export function getChart(
     rates: HistoricalInstalmentPayment[],
     compareToRates: HistoricalInstalmentPayment[],
+    simulatedPayments: LoanSimulatorInstalment[] = [],
   ): Highcharts.Options | null {
     if (!rates.length) return null;
 
@@ -43,6 +45,39 @@ export namespace InterestProgressChartBarUtils {
     const unpaidInterest = Calculator.sum(
       unpaidRates.map((r) => r.interestAmount),
     );
+
+    const selectedSimulationPayments = simulatedPayments.filter(
+      (payment) => payment.instalmentPayment || payment.earlyPayment,
+    );
+    const simulatedInstalmentPayments = selectedSimulationPayments.filter(
+      (payment) => payment.instalmentPayment,
+    );
+    const simulatedEarlyPayments = selectedSimulationPayments.filter(
+      (payment) => payment.earlyPayment,
+    );
+    const simulatedPrincipal =
+      Calculator.sum(
+        selectedSimulationPayments.map(
+          (payment) => payment.principalAmount ?? 0,
+        ),
+      ) ?? 0;
+    const simulatedInstalmentInterest =
+      Calculator.sum(
+        simulatedInstalmentPayments.map(
+          (payment) => payment.interestAmount ?? 0,
+        ),
+      ) ?? 0;
+    const simulatedEarlyInterest =
+      Calculator.sum(
+        simulatedEarlyPayments.map((payment) => payment.interestAmount ?? 0),
+      ) ?? 0;
+    const simulatedInsurance =
+      Calculator.sum(
+        simulatedInstalmentPayments.map(
+          (payment) => payment.insuranceCost ?? 0,
+        ),
+      ) ?? 0;
+    const hasSimulationData = selectedSimulationPayments.length > 0;
 
     const comparePaidRates =
       compareToRates?.filter((r) => r.instalmentPayment || r.earlyPayment) ||
@@ -131,12 +166,27 @@ export namespace InterestProgressChartBarUtils {
       unpaidInterest: compareUnpaidInterest,
     };
 
-    const hasCompareData = compareToRates && compareToRates.length > 0;
+    const simulatedValuesMap = {
+      paidPrincipal: (paidPrincipal ?? 0) + simulatedPrincipal,
+      unpaidPrincipal: Math.max(0, (unpaidPrincipal ?? 0) - simulatedPrincipal),
+      paidInterest: (paidInterest ?? 0) + simulatedInstalmentInterest,
+      paidInsurance: (paidInsurance ?? 0) + simulatedInsurance,
+      savedInterest: (savedInterest ?? 0) + simulatedEarlyInterest,
+      unpaidInterest: Math.max(
+        0,
+        (unpaidInterest ?? 0) -
+          simulatedInstalmentInterest -
+          simulatedEarlyInterest,
+      ),
+    };
 
+    const hasCompareData = compareToRates && compareToRates.length > 0;
     const mainData = categories
       .map((cat) => ({
         ...cat,
         value: valuesMap[cat.id as keyof typeof valuesMap] || 0,
+        simulatedValue:
+          simulatedValuesMap[cat.id as keyof typeof simulatedValuesMap],
         compareValue: hasCompareData
           ? compareValuesMap[cat.id as keyof typeof compareValuesMap] || 0
           : undefined,
@@ -158,6 +208,16 @@ export namespace InterestProgressChartBarUtils {
         d.compareValue !== undefined
           ? NumberFormatPipe.numberFormat(d.compareValue)
           : undefined,
+      simulatedAmount: MathUtil.round(d.simulatedValue),
+      simulatedAmountCompact: NumberFormatPipe.numberFormat(d.simulatedValue),
+    }));
+
+    const simulationData = barChartData.map((d) => ({
+      ...d,
+      y: d.simulatedAmount,
+      color: d.color + 'B3',
+      amount: d.simulatedAmount,
+      amountCompact: d.simulatedAmountCompact,
     }));
 
     const compareData = barChartData.map((d, index) => ({
@@ -173,90 +233,19 @@ export namespace InterestProgressChartBarUtils {
     const allValues = [
       ...barChartData.map((d) => d.y),
       ...compareData.map((d) => d.y),
+      ...(hasSimulationData ? simulationData.map((d) => d.y) : []),
     ];
     const maxY = Math.max(...allValues, 1);
 
     return {
       chart: {
         type: 'bar',
-        spacing: [20, 20, 20, 20],
-        height: Math.max(400, barChartData.length * 60 + 120),
+        spacing: isMobile ? [12, 12, 12, 8] : [20, 24, 20, 16],
+        height: Math.max(isMobile ? 340 : 320, barChartData.length * 48 + 80),
       },
       title: { text: null, align: 'left' },
-      legend: {
-        enabled: hasCompareData,
-        layout: 'horizontal',
-        align: 'center',
-        verticalAlign: 'bottom',
-        itemStyle: {
-          fontSize: '9px',
-          fontWeight: 'normal',
-        },
-        symbolRadius: 2,
-        symbolHeight: 10,
-        symbolWidth: 10,
-      },
-      tooltip: {
-        enabled: true,
-        formatter: function (this: any) {
-          const point = this.point;
-
-          const mainPoint = this.series.chart.series[0]?.data?.find(
-            (p: any) => p.name === point.name,
-          );
-          const comparePoint = this.series.chart.series[1]?.data?.find(
-            (p: any) => p.name === point.name,
-          );
-
-          const mainValue = mainPoint?.y || 0;
-          const compareValue = comparePoint?.y || 0;
-
-          let tooltipText = `<div >`;
-
-          tooltipText += `
-            <div style="display:flex; justify-content:space-between; width:100%;">
-              <span>${point.name}:</span>
-              <span><b>${NumberFormatPipe.numberFormat(mainValue)}</b></span>
-            </div></br>`;
-
-          if (compareValue > 0) {
-            tooltipText += `
-              <div style="display:flex; justify-content:space-between; width:100%;">
-                <span>Referinta:</span>
-                <span><b>${NumberFormatPipe.numberFormat(compareValue)}</b></span>
-              </div></br>`;
-
-            const diff = mainValue - compareValue;
-            if (diff !== 0) {
-              const diffFormatted = NumberFormatPipe.numberFormat(
-                Math.abs(diff),
-              );
-              const diffPercent =
-                compareValue > 0
-                  ? ((diff / compareValue) * 100).toFixed(1)
-                  : '0';
-              const sign = diff < 0 ? '' : '+';
-              const color =
-                diff < 0 ? 'var(--theme-danger)' : 'var(--theme-success)';
-              const arrow = diff < 0 ? '▼' : '▲';
-
-              tooltipText += `
-                <div style="display:flex; justify-content:space-between; width:100%;">
-                  <span>Diferenta:</span>
-                  <span style="color:${color};font-weight:bold;">${arrow} ${sign}${diffFormatted} (${sign}${diffPercent}%)</span>
-                </div>`;
-            }
-          }
-
-          tooltipText += `</div>`;
-          return tooltipText;
-        },
-        borderWidth: 1,
-        borderRadius: 6,
-        shadow: true,
-        style: { fontSize: '11px' },
-        padding: 8,
-      },
+      legend: { enabled: false },
+      tooltip: { enabled: false },
       xAxis: {
         type: 'category',
         categories: barChartData.map((d) => d.name),
@@ -282,13 +271,20 @@ export namespace InterestProgressChartBarUtils {
         gridLineWidth: 0.5,
       },
       plotOptions: {
+        series: {
+          enableMouseTracking: false,
+          states: {
+            hover: { enabled: false },
+            inactive: { opacity: 1 },
+          },
+        },
         bar: {
           borderRadius: 3,
           dataLabels: {
             enabled: true,
             format: '{point.amountCompact}',
             style: {
-              fontSize: '8px',
+              fontSize: isMobile ? '8px' : '10px',
               fontWeight: 'bold',
               color: 'var(--theme-text-primary)',
               textOutline: 'none',
@@ -302,6 +298,28 @@ export namespace InterestProgressChartBarUtils {
       series: [
         {
           type: 'bar',
+          name: 'Simulare',
+          data: simulationData.map((d) => ({
+            ...d,
+            y: hasSimulationData ? d.y : 0,
+            color: d.color,
+            amount: hasSimulationData ? d.y : 0,
+            amountCompact: hasSimulationData ? d.amountCompact : '0',
+          })),
+          colorByPoint: true,
+          colors: simulationData.map((d) => d.color),
+          pointWidth: 8,
+          pointPadding: 0.2,
+          groupPadding: 0.15,
+          grouping: true,
+          opacity: 0.85,
+          zIndex: 1,
+          borderWidth: 0,
+          showInLegend: false,
+          dataLabels: { enabled: false },
+        } as SeriesOptionsType,
+        {
+          type: 'bar',
           name: 'Principal',
           data: barChartData.map((d, index) => ({
             ...d,
@@ -310,9 +328,10 @@ export namespace InterestProgressChartBarUtils {
           colorByPoint: true,
           colors: barChartData.map((d) => d.color),
           showInLegend: false,
-          pointWidth: isMobile ? 16 : 22,
-          pointPadding: hasCompareData ? 0.35 : 0.3,
+          pointWidth: 8,
+          pointPadding: 0.2,
           groupPadding: 0.15,
+          grouping: true,
           zIndex: 2,
           borderWidth: 0,
         } as SeriesOptionsType,
@@ -330,23 +349,15 @@ export namespace InterestProgressChartBarUtils {
                 })),
                 colorByPoint: true,
                 colors: compareData.map((d) => d.color),
-                pointWidth: isMobile ? 8 : 12,
-                pointPadding: hasCompareData ? 0.35 : 0.3,
+                pointWidth: 8,
+                pointPadding: 0.2,
                 groupPadding: 0.15,
+                grouping: true,
                 opacity: 0.7,
                 zIndex: 1,
                 borderWidth: 0,
                 showInLegend: false,
-                dataLabels: {
-                  enabled: true,
-                  format: '{point.amountCompact}',
-                  style: {
-                    fontSize: isMobile ? '7px' : '8px',
-                  },
-                  position: 'right',
-                  overflow: 'allow',
-                  crop: false,
-                },
+                dataLabels: { enabled: false },
               } as SeriesOptionsType,
             ]
           : []),

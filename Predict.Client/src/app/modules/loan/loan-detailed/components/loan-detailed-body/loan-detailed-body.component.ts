@@ -67,6 +67,11 @@ export class LoanDetailedBodyComponent {
     InterestProgressChartBarUtils.getChart(
       this.historicalInstalments(),
       this.historicalCompareToInstalmentPayments(),
+      this.includeSimulation()
+        ? this.simulationMonthlyInstalmentBatches().flatMap(
+            (batch) => batch.instalments,
+          )
+        : [],
     ),
   );
 
