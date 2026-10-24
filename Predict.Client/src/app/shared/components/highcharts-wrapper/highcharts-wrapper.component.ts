@@ -22,7 +22,7 @@ import { HighchartsWrapperUtils } from './utils/highcharts-wrapper.utils';
 export class HighchartWrapperComponent
   implements OnChanges, AfterViewInit, OnDestroy
 {
-  @Input({ required: true }) chartOptions: Highcharts.Options;
+  @Input({ required: true }) chartOptions: Highcharts.Options | null;
   private chart: Highcharts.Chart | undefined;
 
   constructor(private el: ElementRef<HTMLElement>) {
@@ -37,9 +37,14 @@ export class HighchartWrapperComponent
   private readonly themeService = inject(ThemeService);
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.chart && changes['chartOptions']) {
+    if (!changes['chartOptions']) return;
+
+    if (!this.chartOptions) {
+      this.chart?.destroy();
+      this.chart = undefined;
+    } else if (this.chart) {
       this.updateChart();
-    } else if (this.chartOptions) {
+    } else {
       this.createChart();
     }
   }
@@ -51,7 +56,7 @@ export class HighchartWrapperComponent
   private createChart(): void {
     const container =
       this.el.nativeElement.querySelector<HTMLElement>('.chart-container');
-    if (!container || this.chart) return;
+    if (!container || this.chart || !this.chartOptions) return;
 
     const options = HighchartsWrapperUtils.buildChartOptions(
       this.chartOptions,

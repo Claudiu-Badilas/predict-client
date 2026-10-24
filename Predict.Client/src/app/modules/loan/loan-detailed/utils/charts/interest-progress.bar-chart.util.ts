@@ -9,7 +9,7 @@ export namespace InterestProgressChartBarUtils {
   export function getChart(
     rates: HistoricalInstalmentPayment[],
     compareToRates: HistoricalInstalmentPayment[],
-  ): Highcharts.Options {
+  ): Highcharts.Options | null {
     if (!rates.length) return null;
 
     const paidRates = rates.filter(

@@ -9,7 +9,7 @@ export namespace LoanMonthlyPaymentsChartUtils {
   export function getChart(
     instalments: HistoricalInstalmentPayment[],
     fixedPeriod: boolean,
-  ): Highcharts.Options {
+  ): Highcharts.Options | null {
     if (!instalments.length) return null;
 
     const scheduledPayments = instalments.filter((r) => r.instalmentPayment);
