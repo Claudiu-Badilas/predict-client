@@ -1,5 +1,12 @@
 import { RepaymentSchedule } from '../../models/loan.model';
 
+export const SIMULATION_ROWS_STORAGE_KEY = 'LoanSimulator_SimulationRows';
+
+export interface InstalmentSimulationRow {
+  monthlyAmount: number | null;
+  payments: number | null;
+}
+
 export function mapInstalmentSimulation(
   base: RepaymentSchedule | null,
   startOf: number = 0,
@@ -41,4 +48,21 @@ export function mapInstalmentSimulation(
   }
 
   return [selectedInstalmentPayments, selectedEarlyPayments];
+}
+
+export function mapInstalmentSimulations(
+  base: RepaymentSchedule | null,
+  rows: InstalmentSimulationRow[],
+): [number[], number[]] {
+  const instalmentPayments: number[] = [];
+  const earlyPayments: number[] = [];
+
+  rows.forEach((row) => {
+    const startOf = instalmentPayments.length + earlyPayments.length;
+    const [instalments, early] = mapInstalmentSimulation(base, startOf, row);
+    instalmentPayments.push(...(instalments ?? []));
+    earlyPayments.push(...(early ?? []));
+  });
+
+  return [instalmentPayments, earlyPayments];
 }

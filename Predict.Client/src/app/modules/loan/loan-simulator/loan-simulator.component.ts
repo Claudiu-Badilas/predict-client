@@ -20,12 +20,14 @@ import { AppState } from 'src/app/store/app-state.reducer';
 import { LoanSimulatorBodyTableComponent } from './components/loan-simulator-body-table/loan-simulator-body-table.component';
 import { LoanSimulatorHeaderComponent } from './components/loan-simulator-header/loan-simulator-header.component';
 import { LoanInsightsComponent } from './components/loan-simulator-insights/loan-simulator-insights.component';
-import { mapInstalmentSimulation } from './utils/instalment-simulation.utils';
+import {
+  InstalmentSimulationRow,
+  mapInstalmentSimulations,
+  SIMULATION_ROWS_STORAGE_KEY,
+} from './utils/instalment-simulation.utils';
 
-export interface SimulationRow {
+export interface SimulationRow extends InstalmentSimulationRow {
   id: string;
-  monthlyAmount: number | null;
-  payments: number | null;
 }
 
 type SimulationRowForm = FormGroup<{
@@ -61,8 +63,6 @@ export class LoanSimulatorComponent {
   calculateRepaymentSchedules = this.loanStore.calculateRepaymentSchedules;
 
   /** LocalStorage key */
-  private readonly simulationRowsKey = 'LoanSimulator_SimulationRows';
-
   /** Multiple simulation combinations — defaults to a single row */
   simulationRows = signal<SimulationRow[]>(this.loadRows());
   readonly simulationForm = new FormGroup({
@@ -91,26 +91,17 @@ export class LoanSimulatorComponent {
       const rows = this.simulationRows();
       const schedule = this.selectedRepaymentScheduleBase();
       this.updatePaymentValidators(schedule?.monthlyInstalments.length);
-      const instalmentPayments: number[] = [];
-      const earlyPayments: number[] = [];
-
-      rows.forEach((row) => {
-        const startOf = instalmentPayments.length + earlyPayments.length;
-        const [instalment, early] = mapInstalmentSimulation(schedule, startOf, {
-          monthlyAmount: row.monthlyAmount,
-          payments: row.payments,
-        });
-        instalmentPayments.push(...(instalment ?? []));
-        earlyPayments.push(...(early ?? []));
-      });
-
+      const [instalmentPayments, earlyPayments] = mapInstalmentSimulations(
+        schedule,
+        rows,
+      );
       this.loanStore.setSimulationPayments(instalmentPayments, earlyPayments);
     });
 
     // Persist rows on any change
     effect(() => {
       this._localStorageService.setItem(
-        this.simulationRowsKey,
+        SIMULATION_ROWS_STORAGE_KEY,
         this.simulationRows(),
       );
     });
@@ -149,7 +140,9 @@ export class LoanSimulatorComponent {
   // --- Load / persist helpers ---
 
   private loadRows(): SimulationRow[] {
-    const stored = this._localStorageService.getItem(this.simulationRowsKey);
+    const stored = this._localStorageService.getItem(
+      SIMULATION_ROWS_STORAGE_KEY,
+    );
     if (Array.isArray(stored) && stored.length > 0) {
       return stored as SimulationRow[];
     }

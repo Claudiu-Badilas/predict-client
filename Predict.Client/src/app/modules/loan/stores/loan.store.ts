@@ -72,6 +72,11 @@ export const LoanStore = signalStore(
     const selectedEarlyPayments = computed(() =>
       state.overview.selectedEarlyPayments(),
     );
+    const hasSimulationPayments = computed(
+      () =>
+        state.overview.selectedInstalmentPayments().length > 0 ||
+        state.overview.selectedEarlyPayments().length > 0,
+    );
     const detailedSelectedName = computed(
       () =>
         state.detailed.selectedRepaymentScheduleName() ||
@@ -148,6 +153,15 @@ export const LoanStore = signalStore(
       selectedOverviewSchedule,
       selectedInstalmentPayments,
       selectedEarlyPayments,
+      simulationMonthlyInstalmentBatches: computed(() =>
+        hasSimulationPayments()
+          ? generateMonthlyInstalmentBatches(
+              selectedOverviewSchedule(),
+              state.overview.selectedInstalmentPayments(),
+              state.overview.selectedEarlyPayments(),
+            )
+          : [],
+      ),
       monthlyInstalmentBatches: computed(() =>
         generateMonthlyInstalmentBatches(
           selectedOverviewSchedule(),

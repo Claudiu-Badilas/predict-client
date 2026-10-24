@@ -86,6 +86,21 @@
   line-height: 1.2;
 }
 
+.simulation-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 5px;
+  border: 1px solid var(--theme-accent);
+  border-radius: 5px;
+  background: var(--theme-accent-subtle);
+  color: var(--theme-accent);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
 .desktop-view {
   display: block;
   width: 100%;
@@ -164,6 +179,22 @@
 
 .instalment-table tbody tr:hover td.col-month {
   background: var(--surface-soft);
+}
+
+.instalment-table tbody tr.simulation-row td {
+  background: var(--theme-accent-subtle);
+  border-top: 1px dashed var(--theme-accent);
+  border-bottom: 1px dashed var(--theme-accent);
+}
+
+.instalment-table tbody tr.simulation-row td.col-month {
+  background: var(--theme-accent-subtle);
+}
+
+.month-row.simulation-row {
+  background: var(--theme-accent-subtle);
+  border-top: 1px dashed var(--theme-accent);
+  border-bottom: 1px dashed var(--theme-accent);
 }
 
 .cell-month {
