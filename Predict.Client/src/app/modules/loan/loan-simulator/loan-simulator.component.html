@@ -4,24 +4,31 @@
 </p-top-bar>
 
 <div class="loan-controls-card mx-2 mb-2">
-  <p-dropdown-select
-    [items]="dropDownSelectOptions()"
-    [selectedItem]="selectedRepaymentScheduleName()"
-    placeholder="No Selection"
-    (selectionChange)="onDropdownSelected($event)"
-  />
-  <p-simulation-combinations [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length" />
-  <div class="pt-2 d-flex align-items-center justify-content-between">
-    <div class="sidebar-label">Dobanda Fixa 5.79%</div>
-    <p-platform-toggle
-      [config]="{
-        type: 'switch',
-        value: calculateRepaymentSchedules(),
-        ariaLabel: 'Calculate repayment schedules',
-      }"
-      (toggleChange)="onCalculateRepaymentSchedulesChanged($event)"
+  <div class="loan-controls-top-row">
+    <p-dropdown-select
+      class="loan-controls-select"
+      [items]="dropDownSelectOptions()"
+      [selectedItem]="selectedRepaymentScheduleName()"
+      placeholder="No Selection"
+      (selectionChange)="onDropdownSelected($event)"
     />
   </div>
+  <p-simulation-combinations
+    [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length"
+  >
+    <div class="loan-controls-toggle" combination-leading-action>
+      <span>Fixed rate · 5.79%</span>
+      <p-platform-toggle
+        [config]="{
+          type: 'switch',
+          value: calculateRepaymentSchedules(),
+          ariaLabel: 'Calculate repayment schedules',
+          size: 'xsmall',
+        }"
+        (toggleChange)="onCalculateRepaymentSchedulesChanged($event)"
+      />
+    </div>
+  </p-simulation-combinations>
 </div>
 
 <div class="m-2">

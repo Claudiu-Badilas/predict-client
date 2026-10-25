@@ -1,23 +1,36 @@
 .loan-controls-card {
-  padding: 0.75rem;
-  border: 1px solid var(--theme-border);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--theme-border) 75%, transparent);
   border-radius: 12px;
   background: var(--theme-surface);
   color: var(--theme-text-primary);
   box-shadow: var(--theme-shadow);
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
 }
 
-.sidebar-label {
-  margin: 0;
-  color: var(--theme-text-primary);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.4;
+.loan-controls-top-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.loan-controls-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.loan-controls-toggle {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--theme-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
 .loan-info-button {
@@ -44,6 +57,16 @@
 
 @media (max-width: 480px) {
   .loan-controls-card {
-    padding: 0.5rem;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .loan-controls-top-row {
+    gap: 8px;
+  }
+
+  .loan-controls-toggle {
+    gap: 5px;
+    font-size: 11px;
   }
 }
