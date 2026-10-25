@@ -13,6 +13,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 
 export interface PlatformToggleOption {
   label: string;
+  value?: string;
   iconPath?: string;
 }
 
@@ -74,8 +75,8 @@ export class PlatformToggleComponent implements OnChanges {
 
     const previous = configChange.previousValue as
       PlatformToggleConfig | undefined;
-    const labels = this.config.options.map((option) =>
-      this.getOptionLabel(option),
+    const values = this.config.options.map((option) =>
+      this.getOptionValue(option),
     );
     const currentSelection = this.selected();
 
@@ -84,9 +85,9 @@ export class PlatformToggleComponent implements OnChanges {
       previous.type === 'switch' ||
       previous.type !== this.config.type ||
       previous.selected !== this.config.selected ||
-      !labels.includes(currentSelection ?? '')
+      !values.includes(currentSelection ?? '')
     ) {
-      this.selected.set(this.config.selected ?? labels[0] ?? null);
+      this.selected.set(this.config.selected ?? values[0] ?? null);
     }
   }
 
@@ -107,13 +108,17 @@ export class PlatformToggleComponent implements OnChanges {
       return;
     }
 
-    const value = this.getOptionLabel(option);
+    const value = this.getOptionValue(option);
     this.selected.set(value);
     this.selectionChange.emit(value);
   }
 
   getOptionLabel(option: string | PlatformToggleOption): string {
     return typeof option === 'string' ? option : option.label;
+  }
+
+  getOptionValue(option: string | PlatformToggleOption): string {
+    return typeof option === 'string' ? option : option.value ?? option.label;
   }
 
   getOptionIcon(option: string | PlatformToggleOption): string | undefined {
@@ -125,7 +130,7 @@ export class PlatformToggleComponent implements OnChanges {
 
   getSelectedIndex(options: (string | PlatformToggleOption)[]): number {
     return options.findIndex(
-      (option) => this.getOptionLabel(option) === this.selected(),
+      (option) => this.getOptionValue(option) === this.selected(),
     );
   }
 

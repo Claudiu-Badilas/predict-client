@@ -3,10 +3,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   effect,
   inject,
   signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoanStore } from 'src/app/modules/loan/stores/loan.store';
 import { mapInstalmentSimulations } from 'src/app/modules/loan/loan-simulator/utils/instalment-simulation.utils';
 import { SimulationCombinationsStore } from 'src/app/modules/loan/components/simulation-combinations/simulation-combinations.store';
@@ -32,6 +35,9 @@ import { HistoricalInstalmentsTableComponent } from '../historical-instalments-t
   styleUrl: './loan-detailed-body.component.scss',
 })
 export class LoanDetailedBodyComponent {
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly loanStore = inject(LoanStore);
   private readonly combinationsStore = inject(SimulationCombinationsStore);
 
@@ -95,9 +101,24 @@ export class LoanDetailedBodyComponent {
   colors = Colors;
   chartBasePaymentChange = signal<
     'pie-chart' | 'bars-chart' | 'Prd. Fixa' | 'Prd. Totala' | 'dot-bar-chart'
-  >('dot-bar-chart');
+  >('pie-chart');
 
   constructor() {
+    this.route.queryParamMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        const querySelection = params.get('chartSelection');
+        const selection = this.fromQuerySelection(querySelection);
+        if (selection) {
+          this.chartBasePaymentChange.set(selection);
+          if (querySelection !== this.toQuerySelection(selection)) {
+            this.persistChartSelection(selection);
+          }
+        } else {
+          this.persistChartSelection('pie-chart');
+        }
+      });
+
     effect(() => {
       const schedule = this.loanStore.selectedOverviewSchedule();
       const simulationRows = this.combinationsStore.rows();
@@ -112,13 +133,75 @@ export class LoanDetailedBodyComponent {
   }
 
   onChartBasePaymentChange($event: string) {
-    this.chartBasePaymentChange.set(
-      $event as
-        | 'pie-chart'
-        | 'bars-chart'
-        | 'Prd. Fixa'
-        | 'Prd. Totala'
-        | 'dot-bar-chart',
+    if (this.isChartSelection($event)) this.persistChartSelection($event);
+  }
+
+  private isChartSelection(value: string | null): value is ChartSelection {
+    return (
+      value === 'pie-chart' ||
+      value === 'bars-chart' ||
+      value === 'Prd. Fixa' ||
+      value === 'Prd. Totala' ||
+      value === 'dot-bar-chart'
     );
   }
+
+  private fromQuerySelection(value: string | null): ChartSelection | null {
+    switch (value) {
+      case 'pie-chart':
+        return 'pie-chart';
+      case 'bar-chart':
+      case 'bars-chart':
+        return 'bars-chart';
+      case 'payments-5-years':
+      case 'Prd. Fixa':
+        return 'Prd. Fixa';
+      case 'payments-full-term':
+      case 'Prd. Totala':
+        return 'Prd. Totala';
+      case 'rate-comparison':
+      case 'dot-bar-chart':
+        return 'dot-bar-chart';
+      default:
+        return null;
+    }
+  }
+
+  private toQuerySelection(selection: ChartSelection): string {
+    switch (selection) {
+      case 'pie-chart':
+        return 'pie-chart';
+      case 'bars-chart':
+        return 'bar-chart';
+      case 'Prd. Fixa':
+        return 'payments-5-years';
+      case 'Prd. Totala':
+        return 'payments-full-term';
+      case 'dot-bar-chart':
+        return 'rate-comparison';
+    }
+  }
+
+  private persistChartSelection(selection: ChartSelection): void {
+    this.chartBasePaymentChange.set(selection);
+    if (
+      this.route.snapshot.queryParamMap.get('chartSelection') ===
+      this.toQuerySelection(selection)
+    ) {
+      return;
+    }
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { chartSelection: this.toQuerySelection(selection) },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
 }
+
+type ChartSelection =
+  | 'pie-chart'
+  | 'bars-chart'
+  | 'Prd. Fixa'
+  | 'Prd. Totala'
+  | 'dot-bar-chart';
