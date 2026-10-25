@@ -10,6 +10,7 @@ export type HistoricalInstalmentPayment = {
   principalAmount: number;
   interestAmount: number;
   insuranceCost: number;
+  totalInstalment?: number;
   remainingBalance: number;
   instalmentPayment: boolean;
   earlyPayment: boolean;

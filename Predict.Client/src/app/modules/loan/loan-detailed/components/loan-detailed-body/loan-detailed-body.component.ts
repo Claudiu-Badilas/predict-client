@@ -20,6 +20,7 @@ import { CompareRatesTrendChartUtils } from '../../utils/charts/compare-loan-rat
 import { InterestProgressChartBarUtils } from '../../utils/charts/interest-progress.bar-chart.util';
 import { InterestProgressChartPieUtils } from '../../utils/charts/interest-progress.pie-chart.util';
 import { LoanMonthlyPaymentsChartUtils } from '../../utils/charts/loan-monthly-payments.chart.util';
+import { SimulatedPaymentProjectionUtils } from '../../utils/charts/simulated-payment-projection.utils';
 import { HistoricalInstalmentsTableComponent } from '../historical-instalments-table/historical-instalments-table.component';
 
 @Component({
@@ -53,6 +54,14 @@ export class LoanDetailedBodyComponent {
   includeSimulation = this.loanStore.includeDetailedSimulation;
   visibleSimulationMonthlyInstalmentBatches = computed(() =>
     this.includeSimulation() ? this.simulationMonthlyInstalmentBatches() : [],
+  );
+  simulatedRemainingPayments = computed(() =>
+    this.includeSimulation()
+      ? SimulatedPaymentProjectionUtils.getRemainingPayments(
+          this.historicalInstalments(),
+          this.combinationsStore.rows(),
+        )
+      : [],
   );
 
   baseRepaymentSchedule = this.loanStore.baseRepaymentSchedule;
@@ -95,6 +104,7 @@ export class LoanDetailedBodyComponent {
     LoanMonthlyPaymentsChartUtils.getChart(
       this.historicalInstalments(),
       this.chartBasePaymentChange() !== 'Prd. Totala',
+      this.simulatedRemainingPayments(),
     ),
   );
 

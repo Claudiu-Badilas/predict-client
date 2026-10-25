@@ -26,6 +26,7 @@ export namespace HistoricalInstalmentPaymentsUtils {
         principalAmount: instalment.principalAmount,
         interestAmount: instalment.interestAmount,
         insuranceCost: instalment.insuranceCost,
+        totalInstalment: instalment.totalInstalment,
         remainingBalance: instalment.remainingBalance,
         instalmentPayment: isNormalPayment,
         earlyPayment: isExtraPayment,
