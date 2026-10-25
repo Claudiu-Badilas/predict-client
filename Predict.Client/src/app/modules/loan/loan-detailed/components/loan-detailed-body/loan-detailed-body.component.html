@@ -4,9 +4,21 @@
       class="chart-wrapper"
       [chartOptions]="interestProgressPieChart()"
       ><ng-container p-highcharts-wrapper-content>
-        <div class="my-2 d-flex align-items-center justify-content-between">
-          <div class="w-100">
+        <div class="chart-toolbar my-2">
+          <div class="chart-type-toggle">
             <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+          <div class="simulation-toggle">
+            <span>Simulation</span>
+            <p-platform-toggle
+              [config]="{
+                type: 'switch',
+                value: includeSimulation(),
+                ariaLabel: 'Include simulated values in detailed view',
+                size: 'xsmall',
+              }"
+              (toggleChange)="onIncludeSimulationChanged($event)"
+            />
           </div>
         </div> </ng-container
     ></p-highcharts-wrapper>
@@ -19,18 +31,42 @@
       [chartOptions]="loanMonthlyPaymentsChart()"
     >
       <ng-container p-highcharts-wrapper-content>
-        <div class="my-2 d-flex align-items-center justify-content-between">
-          <div class="w-100">
+        <div class="chart-toolbar my-2">
+          <div class="chart-type-toggle">
             <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+          <div class="simulation-toggle">
+            <span>Simulation</span>
+            <p-platform-toggle
+              [config]="{
+                type: 'switch',
+                value: includeSimulation(),
+                ariaLabel: 'Include simulated values in detailed view',
+                size: 'xsmall',
+              }"
+              (toggleChange)="onIncludeSimulationChanged($event)"
+            />
           </div>
         </div> </ng-container
     ></p-highcharts-wrapper>
   } @else if (chartBasePaymentChange() === 'dot-bar-chart') {
     <p-highcharts-wrapper class="chart-wrapper" [chartOptions]="dotBarChart()">
       <ng-container p-highcharts-wrapper-content>
-        <div class="my-2 d-flex align-items-center justify-content-between">
-          <div class="w-100">
+        <div class="chart-toolbar my-2">
+          <div class="chart-type-toggle">
             <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+          <div class="simulation-toggle">
+            <span>Simulation</span>
+            <p-platform-toggle
+              [config]="{
+                type: 'switch',
+                value: includeSimulation(),
+                ariaLabel: 'Include simulated values in detailed view',
+                size: 'xsmall',
+              }"
+              (toggleChange)="onIncludeSimulationChanged($event)"
+            />
           </div>
         </div> </ng-container
     ></p-highcharts-wrapper>
@@ -39,9 +75,21 @@
       class="chart-wrapper"
       [chartOptions]="interestProgressBarChart()"
       ><ng-container p-highcharts-wrapper-content>
-        <div class="my-2 d-flex align-items-center justify-content-between">
-          <div class="w-100">
+        <div class="chart-toolbar my-2">
+          <div class="chart-type-toggle">
             <ng-container *ngTemplateOutlet="chartTypeSelector"></ng-container>
+          </div>
+          <div class="simulation-toggle">
+            <span>Simulation</span>
+            <p-platform-toggle
+              [config]="{
+                type: 'switch',
+                value: includeSimulation(),
+                ariaLabel: 'Include simulated values in detailed view',
+                size: 'xsmall',
+              }"
+              (toggleChange)="onIncludeSimulationChanged($event)"
+            />
           </div>
         </div> </ng-container
     ></p-highcharts-wrapper>

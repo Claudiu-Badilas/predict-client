@@ -42,7 +42,6 @@ export class LoanSimulatorComponent {
   dropDownSelectOptions = computed(() =>
     this.loanStore.repaymentSchedules().map((schedule) => schedule.name),
   );
-
   selectedRepaymentScheduleBase = this.loanStore.selectedOverviewSchedule;
   calculateRepaymentSchedules = this.loanStore.calculateRepaymentSchedules;
 
@@ -67,15 +66,12 @@ export class LoanSimulatorComponent {
 
   }
 
-  // --- Existing handlers ---
-
   onDropdownSelected(value: string) {
     this.loanStore.selectOverviewLoan(value);
   }
 
   onCalculateRepaymentSchedulesChanged(state: boolean) {
     this.loanStore.setCalculateRepaymentSchedules(state);
-
     this.store.dispatch(LoanActions.loadRepaymentSchedules());
   }
 }

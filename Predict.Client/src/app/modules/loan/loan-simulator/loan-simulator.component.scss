@@ -42,3 +42,23 @@
   line-height: 1.4;
 }
 
+.loan-controls-card {
+  padding: 0.75rem;
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  box-shadow: var(--theme-shadow);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+@media (max-width: 480px) {
+  .loan-controls-card {
+    padding: 0.5rem;
+  }
+}
+

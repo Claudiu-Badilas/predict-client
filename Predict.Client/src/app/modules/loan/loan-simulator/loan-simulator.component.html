@@ -1,32 +1,28 @@
-<p-top-bar [hasFiltersContent]="true">
+<p-top-bar>
   <ng-container module-navigation> </ng-container>
   <p-loan-insights topbar-actions />
-
-  <ng-container filter-content>
-    <p-dropdown-select
-      [items]="dropDownSelectOptions()"
-      [selectedItem]="selectedRepaymentScheduleName()"
-      placeholder="No Selection"
-      (selectionChange)="onDropdownSelected($event)"
-    />
-
-    <p-simulation-combinations [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length" />
-
-    <div class="pt-2 d-flex align-items-center justify-content-between">
-      <div class="sidebar-label">Dobanda Fixa 5.79%</div>
-      <div>
-        <p-platform-toggle
-          [config]="{
-            type: 'switch',
-            value: calculateRepaymentSchedules(),
-            ariaLabel: 'Calculate repayment schedules',
-          }"
-          (toggleChange)="onCalculateRepaymentSchedulesChanged($event)"
-        />
-      </div>
-    </div>
-  </ng-container>
 </p-top-bar>
+
+<div class="loan-controls-card mx-2 mb-2">
+  <p-dropdown-select
+    [items]="dropDownSelectOptions()"
+    [selectedItem]="selectedRepaymentScheduleName()"
+    placeholder="No Selection"
+    (selectionChange)="onDropdownSelected($event)"
+  />
+  <p-simulation-combinations [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length" />
+  <div class="pt-2 d-flex align-items-center justify-content-between">
+    <div class="sidebar-label">Dobanda Fixa 5.79%</div>
+    <p-platform-toggle
+      [config]="{
+        type: 'switch',
+        value: calculateRepaymentSchedules(),
+        ariaLabel: 'Calculate repayment schedules',
+      }"
+      (toggleChange)="onCalculateRepaymentSchedulesChanged($event)"
+    />
+  </div>
+</div>
 
 <div class="m-2">
   <p-loan-simulator-header

@@ -39,10 +39,9 @@ export class LoanDetailedComponent {
     this.loanStore.repaymentSchedules().map((schedule) => schedule.name),
   );
   calculateRepaymentSchedules = this.loanStore.calculateRepaymentSchedules;
-  includeSimulation = this.loanStore.includeDetailedSimulation;
   selectedOverviewSchedule = this.loanStore.selectedOverviewSchedule;
   constructor(
-    private store: Store<AppState>,
+    private readonly store: Store<AppState>,
     @Inject(LoanStore)
     private readonly loanStore: InstanceType<typeof LoanStore>,
   ) {}
@@ -53,11 +52,7 @@ export class LoanDetailedComponent {
 
   onCalculateRepaymentSchedulesChanged(state: boolean) {
     this.loanStore.setCalculateRepaymentSchedules(state);
-
     this.store.dispatch(LoanActions.loadRepaymentSchedules());
   }
 
-  onIncludeSimulationChanged(includeSimulation: boolean) {
-    this.loanStore.setIncludeDetailedSimulation(includeSimulation);
-  }
 }

@@ -26,7 +26,7 @@ type CombinationForm = FormGroup<{
         </div>
       }
     </div>
-    <div class="pt-2">
+    <div class="add-combination-actions pt-2">
       <button type="button" class="btn-add" [disabled]="form.invalid" (click)="addRow()">+ Add combination</button>
     </div>
   `,
@@ -38,6 +38,16 @@ type CombinationForm = FormGroup<{
     .btn-add { width:100%; padding:8px 12px; border:1px dashed var(--theme-text-muted); border-radius:6px; background:transparent; color:var(--theme-text-primary); font-size:14px; font-weight:500; cursor:pointer; }
     .btn-add:hover { background:var(--theme-hover); border-color:var(--theme-border-strong); }
     .btn-add:disabled { opacity:.45; cursor:not-allowed; }
+    @media (max-width: 575.98px) {
+      .simulation-row.pt-2 { padding-top:.35rem !important; }
+      .simulation-row > .gap-2 { gap:.25rem !important; }
+      .simulation-row p-numeric-input { flex:1 1 0; min-width:0; }
+      .simulation-row .btn-delete { width:24px; height:24px; padding:0; }
+      .add-combination-actions.pt-2 { padding-top:.35rem !important; }
+      .btn-add { padding:5px 8px; font-size:13px; }
+      :host ::ng-deep .simulation-row .numeric-input { height:34px; padding:0 6px; font-size:13px; }
+      :host ::ng-deep .simulation-row .numeric-input-label { left:7px; font-size:11px; }
+    }
   `],
   changeDetection: ChangeDetectionStrategy.Eager,
 })

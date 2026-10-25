@@ -1,3 +1,25 @@
+.loan-controls-card {
+  padding: 0.75rem;
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  background: var(--theme-surface);
+  color: var(--theme-text-primary);
+  box-shadow: var(--theme-shadow);
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.sidebar-label {
+  margin: 0;
+  color: var(--theme-text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .loan-info-button {
   display: inline-flex;
   align-items: center;
@@ -18,4 +40,10 @@
   background: transparent;
   box-shadow: none;
   transform: none;
+}
+
+@media (max-width: 480px) {
+  .loan-controls-card {
+    padding: 0.5rem;
+  }
 }

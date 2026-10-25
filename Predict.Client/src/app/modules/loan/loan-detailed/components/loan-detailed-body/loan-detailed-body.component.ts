@@ -136,6 +136,10 @@ export class LoanDetailedBodyComponent {
     if (this.isChartSelection($event)) this.persistChartSelection($event);
   }
 
+  onIncludeSimulationChanged(includeSimulation: boolean): void {
+    this.loanStore.setIncludeDetailedSimulation(includeSimulation);
+  }
+
   private isChartSelection(value: string | null): value is ChartSelection {
     return (
       value === 'pie-chart' ||
