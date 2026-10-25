@@ -316,15 +316,12 @@ export namespace InterestProgressChartBarUtils {
           zIndex: 1,
           borderWidth: 0,
           showInLegend: false,
-          dataLabels: { enabled: false },
+          dataLabels: { enabled: true, format: '{point.amountCompact}' },
         } as SeriesOptionsType,
         {
           type: 'bar',
           name: 'Principal',
-          data: barChartData.map((d, index) => ({
-            ...d,
-            color: d.color,
-          })),
+          data: barChartData.map((d) => ({ ...d, color: d.color })),
           colorByPoint: true,
           colors: barChartData.map((d) => d.color),
           showInLegend: false,
@@ -334,6 +331,7 @@ export namespace InterestProgressChartBarUtils {
           grouping: true,
           zIndex: 2,
           borderWidth: 0,
+          dataLabels: { enabled: true, format: '{point.amountCompact}' },
         } as SeriesOptionsType,
         ...(hasCompareData
           ? [
@@ -357,7 +355,7 @@ export namespace InterestProgressChartBarUtils {
                 zIndex: 1,
                 borderWidth: 0,
                 showInLegend: false,
-                dataLabels: { enabled: false },
+                dataLabels: { enabled: true, format: '{point.amountCompact}' },
               } as SeriesOptionsType,
             ]
           : []),
