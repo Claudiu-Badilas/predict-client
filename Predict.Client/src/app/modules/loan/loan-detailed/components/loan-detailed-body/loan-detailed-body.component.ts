@@ -83,6 +83,7 @@ export class LoanDetailedBodyComponent {
             (batch) => batch.instalments,
           )
         : [],
+      this.includeSimulation(),
     ),
   );
 

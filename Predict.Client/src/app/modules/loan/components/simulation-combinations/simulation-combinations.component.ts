@@ -31,43 +31,47 @@ type CombinationForm = FormGroup<{
   template: `
     <div class="combinations-header">
       <ng-content select="[combination-leading-action]"></ng-content>
-      <button
-        type="button"
-        class="btn-add"
-        [disabled]="form.invalid"
-        (click)="addRow()"
-      >
-        + Add combination
-      </button>
-    </div>
-    <div class="simulation-rows">
-      @for (row of store.rows(); track row.id; let i = $index) {
-        <div class="combination-card">
-          <span class="combination-index">{{ i + 1 }}</span>
-          <div class="combination-inputs">
-            <p-numeric-input
-              [id]="'monthlyAmount_' + row.id"
-              label="Amount"
-              [control]="rows.at(i).controls.monthlyAmount"
-            />
-            <p-numeric-input
-              [id]="'payments_' + row.id"
-              label="Payments"
-              [control]="rows.at(i).controls.payments"
-            />
-          </div>
-          <button
-            type="button"
-            class="btn-delete"
-            [disabled]="store.rows().length === 1"
-            [attr.aria-label]="'Delete combination ' + (i + 1)"
-            (click)="removeRow(row.id)"
-          >
-            ✕
-          </button>
-        </div>
+      @if (showCombinations()) {
+        <button
+          type="button"
+          class="btn-add"
+          [disabled]="form.invalid"
+          (click)="addRow()"
+        >
+          + Add combination
+        </button>
       }
     </div>
+    @if (showCombinations()) {
+      <div class="simulation-rows">
+        @for (row of store.rows(); track row.id; let i = $index) {
+          <div class="combination-card">
+            <span class="combination-index">{{ i + 1 }}</span>
+            <div class="combination-inputs">
+              <p-numeric-input
+                [id]="'monthlyAmount_' + row.id"
+                label="Amount"
+                [control]="rows.at(i).controls.monthlyAmount"
+              />
+              <p-numeric-input
+                [id]="'payments_' + row.id"
+                label="Payments"
+                [control]="rows.at(i).controls.payments"
+              />
+            </div>
+            <button
+              type="button"
+              class="btn-delete"
+              [disabled]="store.rows().length === 1"
+              [attr.aria-label]="'Delete combination ' + (i + 1)"
+              (click)="removeRow(row.id)"
+            >
+              ✕
+            </button>
+          </div>
+        }
+      </div>
+    }
   `,
   styles: [
     `
@@ -241,6 +245,7 @@ type CombinationForm = FormGroup<{
 })
 export class SimulationCombinationsComponent {
   readonly maxPayments = input<number | undefined>();
+  readonly showCombinations = input(true);
   readonly form = new FormGroup({ rows: new FormArray<CombinationForm>([]) });
   readonly rows = this.form.controls.rows;
 

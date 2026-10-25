@@ -15,6 +15,7 @@
   </div>
   <p-simulation-combinations
     [maxPayments]="selectedOverviewSchedule()?.monthlyInstalments?.length"
+    [showCombinations]="includeSimulation()"
   >
     <div class="loan-controls-toggle" combination-leading-action>
       <span>Fixed rate · 5.79%</span>

@@ -11,6 +11,7 @@ export namespace InterestProgressChartBarUtils {
     rates: HistoricalInstalmentPayment[],
     compareToRates: HistoricalInstalmentPayment[],
     simulatedPayments: LoanSimulatorInstalment[] = [],
+    includeSimulation = simulatedPayments.length > 0,
   ): Highcharts.Options | null {
     if (!rates.length) return null;
 
@@ -180,7 +181,8 @@ export namespace InterestProgressChartBarUtils {
       ),
     };
 
-    const hasCompareData = compareToRates && compareToRates.length > 0;
+    const hasCompareData =
+      !includeSimulation && compareToRates && compareToRates.length > 0;
     const mainData = categories
       .map((cat) => ({
         ...cat,
@@ -215,7 +217,7 @@ export namespace InterestProgressChartBarUtils {
     const simulationData = barChartData.map((d) => ({
       ...d,
       y: d.simulatedAmount,
-      color: d.color + 'B3',
+      color: d.color,
       amount: d.simulatedAmount,
       amountCompact: d.simulatedAmountCompact,
     }));
@@ -223,7 +225,7 @@ export namespace InterestProgressChartBarUtils {
     const compareData = barChartData.map((d, index) => ({
       ...d,
       y: d.compareAmount || 0,
-      color: d.color + '80',
+      color: d.color,
       amountCompact:
         d.compareAmount !== undefined && d.compareAmount > 0
           ? NumberFormatPipe.numberFormat(d.compareAmount)
@@ -232,8 +234,10 @@ export namespace InterestProgressChartBarUtils {
 
     const allValues = [
       ...barChartData.map((d) => d.y),
-      ...compareData.map((d) => d.y),
-      ...(hasSimulationData ? simulationData.map((d) => d.y) : []),
+      ...(hasCompareData ? compareData.map((d) => d.y) : []),
+      ...(includeSimulation && hasSimulationData
+        ? simulationData.map((d) => d.y)
+        : []),
     ];
     const maxY = Math.max(...allValues, 1);
 
@@ -241,7 +245,10 @@ export namespace InterestProgressChartBarUtils {
       chart: {
         type: 'bar',
         spacing: isMobile ? [12, 12, 12, 8] : [20, 24, 20, 16],
-        height: Math.max(isMobile ? 340 : 320, barChartData.length * 48 + 80),
+        height: Math.max(
+          isMobile ? 340 : 250,
+          barChartData.length * (isMobile ? 48 : 30) + (isMobile ? 80 : 60),
+        ),
       },
       title: { text: null, align: 'left' },
       legend: { enabled: false },
@@ -280,6 +287,8 @@ export namespace InterestProgressChartBarUtils {
         },
         bar: {
           borderRadius: 3,
+          groupPadding: isMobile ? 0.08 : 0,
+          pointPadding: isMobile ? 0.02 : 0,
           dataLabels: {
             enabled: true,
             format: '{point.amountCompact}',
@@ -296,28 +305,33 @@ export namespace InterestProgressChartBarUtils {
         },
       },
       series: [
-        {
-          type: 'bar',
-          name: 'Simulare',
-          data: simulationData.map((d) => ({
-            ...d,
-            y: hasSimulationData ? d.y : 0,
-            color: d.color,
-            amount: hasSimulationData ? d.y : 0,
-            amountCompact: hasSimulationData ? d.amountCompact : '0',
-          })),
-          colorByPoint: true,
-          colors: simulationData.map((d) => d.color),
-          pointWidth: 8,
-          pointPadding: 0.2,
-          groupPadding: 0.15,
-          grouping: true,
-          opacity: 0.85,
-          zIndex: 1,
-          borderWidth: 0,
-          showInLegend: false,
-          dataLabels: { enabled: true, format: '{point.amountCompact}' },
-        } as SeriesOptionsType,
+        ...(includeSimulation
+          ? [
+              {
+                type: 'bar',
+                name: 'Simulare',
+                data: simulationData.map((d) => ({
+                  ...d,
+                  y: hasSimulationData ? d.y : 0,
+                  color: d.color,
+                  amount: hasSimulationData ? d.y : 0,
+                  amountCompact: hasSimulationData ? d.amountCompact : '0',
+                })),
+                colorByPoint: true,
+                colors: simulationData.map((d) => d.color),
+                pointWidth: 8,
+                grouping: true,
+                opacity: 0.45,
+                zIndex: 1,
+                borderWidth: 0,
+                showInLegend: false,
+                dataLabels: {
+                  enabled: true,
+                  format: '{point.amountCompact}',
+                },
+              } as SeriesOptionsType,
+            ]
+          : []),
         {
           type: 'bar',
           name: 'Principal',
@@ -325,15 +339,13 @@ export namespace InterestProgressChartBarUtils {
           colorByPoint: true,
           colors: barChartData.map((d) => d.color),
           showInLegend: false,
-          pointWidth: 8,
-          pointPadding: 0.2,
-          groupPadding: 0.15,
+          pointWidth: 14,
           grouping: true,
           zIndex: 2,
           borderWidth: 0,
           dataLabels: { enabled: true, format: '{point.amountCompact}' },
         } as SeriesOptionsType,
-        ...(hasCompareData
+        ...(!includeSimulation && hasCompareData
           ? [
               {
                 type: 'bar',
@@ -348,10 +360,8 @@ export namespace InterestProgressChartBarUtils {
                 colorByPoint: true,
                 colors: compareData.map((d) => d.color),
                 pointWidth: 8,
-                pointPadding: 0.2,
-                groupPadding: 0.15,
                 grouping: true,
-                opacity: 0.7,
+                opacity: 0.35,
                 zIndex: 1,
                 borderWidth: 0,
                 showInLegend: false,

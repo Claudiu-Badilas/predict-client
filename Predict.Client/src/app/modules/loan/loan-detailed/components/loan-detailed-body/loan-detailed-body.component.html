@@ -12,12 +12,12 @@
             <span>Simulation</span>
             <p-platform-toggle
               [config]="{
-                type: 'switch',
-                value: includeSimulation(),
+                type: 'sliding',
+                options: ['OFF', 'ON'],
+                selected: includeSimulation() ? 'ON' : 'OFF',
                 ariaLabel: 'Include simulated values in detailed view',
-                size: 'xsmall',
               }"
-              (toggleChange)="onIncludeSimulationChanged($event)"
+              (selectionChange)="onIncludeSimulationChanged($event === 'ON')"
             />
           </div>
         </div> </ng-container
@@ -39,12 +39,12 @@
             <span>Simulation</span>
             <p-platform-toggle
               [config]="{
-                type: 'switch',
-                value: includeSimulation(),
+                type: 'sliding',
+                options: ['OFF', 'ON'],
+                selected: includeSimulation() ? 'ON' : 'OFF',
                 ariaLabel: 'Include simulated values in detailed view',
-                size: 'xsmall',
               }"
-              (toggleChange)="onIncludeSimulationChanged($event)"
+              (selectionChange)="onIncludeSimulationChanged($event === 'ON')"
             />
           </div>
         </div> </ng-container
@@ -60,12 +60,12 @@
             <span>Simulation</span>
             <p-platform-toggle
               [config]="{
-                type: 'switch',
-                value: includeSimulation(),
+                type: 'sliding',
+                options: ['OFF', 'ON'],
+                selected: includeSimulation() ? 'ON' : 'OFF',
                 ariaLabel: 'Include simulated values in detailed view',
-                size: 'xsmall',
               }"
-              (toggleChange)="onIncludeSimulationChanged($event)"
+              (selectionChange)="onIncludeSimulationChanged($event === 'ON')"
             />
           </div>
         </div> </ng-container
@@ -83,12 +83,12 @@
             <span>Simulation</span>
             <p-platform-toggle
               [config]="{
-                type: 'switch',
-                value: includeSimulation(),
+                type: 'sliding',
+                options: ['OFF', 'ON'],
+                selected: includeSimulation() ? 'ON' : 'OFF',
                 ariaLabel: 'Include simulated values in detailed view',
-                size: 'xsmall',
               }"
-              (toggleChange)="onIncludeSimulationChanged($event)"
+              (selectionChange)="onIncludeSimulationChanged($event === 'ON')"
             />
           </div>
         </div> </ng-container

@@ -40,6 +40,7 @@ export class LoanDetailedComponent {
   );
   calculateRepaymentSchedules = this.loanStore.calculateRepaymentSchedules;
   selectedOverviewSchedule = this.loanStore.selectedOverviewSchedule;
+  includeSimulation = this.loanStore.includeDetailedSimulation;
   constructor(
     private readonly store: Store<AppState>,
     @Inject(LoanStore)

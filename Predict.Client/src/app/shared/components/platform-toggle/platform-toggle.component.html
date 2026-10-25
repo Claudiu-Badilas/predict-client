@@ -67,11 +67,11 @@
       <button
         class="platform-toggle__option"
         [class.platform-toggle__option--active]="
-          getOptionLabel(option) === selected()
+          getOptionValue(option) === selected()
         "
         [disabled]="config.disabled"
         [attr.aria-label]="getOptionLabel(option)"
-        [attr.aria-pressed]="getOptionLabel(option) === selected()"
+        [attr.aria-pressed]="getOptionValue(option) === selected()"
         (click)="select(option)"
         type="button"
       >
