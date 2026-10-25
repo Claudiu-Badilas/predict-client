@@ -43,7 +43,7 @@ const initialState: LoanState = {
   },
   detailed: {
     selectedRepaymentScheduleName: null,
-    includeSimulation: true,
+    includeSimulation: false,
   },
 };
 
