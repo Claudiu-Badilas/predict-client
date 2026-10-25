@@ -12,8 +12,7 @@
     ></p-highcharts-wrapper>
   } @else if (
     chartBasePaymentChange() === 'Prd. Fixa' ||
-    chartBasePaymentChange() === 'Prd. Totala' ||
-    chartBasePaymentChange() === 'Simulator'
+    chartBasePaymentChange() === 'Prd. Totala'
   ) {
     <p-highcharts-wrapper
       class="chart-wrapper"
@@ -70,10 +69,7 @@
           label: 'Prd. Totala',
           iconPath: 'assets/icons/column-chart.svg',
         },
-        {
-          label: 'Simulator',
-          iconPath: 'assets/icons/column-chart.svg',
-        },
+
         {
           label: 'dot-bar-chart',
           iconPath: 'assets/icons/dot-bar-chart.svg',

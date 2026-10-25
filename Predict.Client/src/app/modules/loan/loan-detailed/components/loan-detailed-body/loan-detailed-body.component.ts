@@ -8,9 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { LoanStore } from 'src/app/modules/loan/stores/loan.store';
-import {
-  mapInstalmentSimulations,
-} from 'src/app/modules/loan/loan-simulator/utils/instalment-simulation.utils';
+import { mapInstalmentSimulations } from 'src/app/modules/loan/loan-simulator/utils/instalment-simulation.utils';
 import { SimulationCombinationsStore } from 'src/app/modules/loan/components/simulation-combinations/simulation-combinations.store';
 import { HighchartWrapperComponent } from 'src/app/shared/components/highcharts-wrapper/highcharts-wrapper.component';
 import { PlatformToggleComponent } from 'src/app/shared/components/platform-toggle/platform-toggle.component';
@@ -96,13 +94,8 @@ export class LoanDetailedBodyComponent {
 
   colors = Colors;
   chartBasePaymentChange = signal<
-    | 'pie-chart'
-    | 'bars-chart'
-    | 'Prd. Fixa'
-    | 'Prd. Totala'
-    | 'dot-bar-chart'
-    | 'Simulator'
-  >('Simulator');
+    'pie-chart' | 'bars-chart' | 'Prd. Fixa' | 'Prd. Totala' | 'dot-bar-chart'
+  >('dot-bar-chart');
 
   constructor() {
     effect(() => {
@@ -125,8 +118,7 @@ export class LoanDetailedBodyComponent {
         | 'bars-chart'
         | 'Prd. Fixa'
         | 'Prd. Totala'
-        | 'dot-bar-chart'
-        | 'Simulator',
+        | 'dot-bar-chart',
     );
   }
 }
