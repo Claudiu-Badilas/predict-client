@@ -8,6 +8,10 @@
       placeholder="No Selection"
       (selectionChange)="onDropdownSelected($event)"
     />
+
+    <p-simulation-combinations
+      [maxPayments]="selectedOverviewSchedule()?.monthlyInstalments?.length"
+    />
     <div class="pt-2 d-flex align-items-center justify-content-between">
       <div class="sidebar-label">Dobanda Fixa 5.79%</div>
       <div>

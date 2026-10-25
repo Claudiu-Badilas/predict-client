@@ -10,46 +10,7 @@
       (selectionChange)="onDropdownSelected($event)"
     />
 
-    <!-- Simulation combination rows -->
-    <div class="simulation-rows">
-      @for (row of simulationRows(); track row.id; let i = $index) {
-        <div class="simulation-row pt-2">
-          <div class="gap-2 d-flex align-items-center justify-content-between">
-            <p-numeric-input
-              [id]="'monthlyAmount_' + row.id"
-              label="Amount"
-              [control]="simulationRowsFormArray.at(i).controls.monthlyAmount"
-            />
-            <p-numeric-input
-              [id]="'payments_' + row.id"
-              label="Payments"
-              [control]="simulationRowsFormArray.at(i).controls.payments"
-            />
-
-            <button
-              type="button"
-              class="btn-delete"
-              [disabled]="simulationRows().length === 1"
-              [attr.aria-label]="'Delete simulation row ' + (i + 1)"
-              (click)="removeRow(row.id)"
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      }
-    </div>
-
-    <div class="pt-2">
-      <button
-        type="button"
-        class="btn-add"
-        [disabled]="simulationForm.invalid"
-        (click)="addRow()"
-      >
-        + Add combination
-      </button>
-    </div>
+    <p-simulation-combinations [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length" />
 
     <div class="pt-2 d-flex align-items-center justify-content-between">
       <div class="sidebar-label">Dobanda Fixa 5.79%</div>

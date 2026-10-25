@@ -15,6 +15,7 @@ import { TopBarComponent } from 'src/app/shared/components/top-bar/top-bar.compo
 import { AppState } from 'src/app/store/app-state.reducer';
 import { LoanDetailedBodyComponent } from './components/loan-detailed-body/loan-detailed-body.component';
 import { LoanDetailedHeaderComponent } from './components/loan-detailed-header/loan-detailed-header.component';
+import { SimulationCombinationsComponent } from '../components/simulation-combinations/simulation-combinations.component';
 
 @Component({
   selector: 'p-loan-detailed',
@@ -26,6 +27,7 @@ import { LoanDetailedHeaderComponent } from './components/loan-detailed-header/l
     DropdownSelectComponent,
     TopBarComponent,
     PlatformToggleComponent,
+    SimulationCombinationsComponent,
   ],
   templateUrl: './loan-detailed.component.html',
   changeDetection: ChangeDetectionStrategy.Eager,
@@ -38,6 +40,7 @@ export class LoanDetailedComponent {
   );
   calculateRepaymentSchedules = this.loanStore.calculateRepaymentSchedules;
   includeSimulation = this.loanStore.includeDetailedSimulation;
+  selectedOverviewSchedule = this.loanStore.selectedOverviewSchedule;
   constructor(
     private store: Store<AppState>,
     @Inject(LoanStore)

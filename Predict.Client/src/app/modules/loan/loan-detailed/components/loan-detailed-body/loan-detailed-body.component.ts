@@ -7,13 +7,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { LoanStore } from 'src/app/modules/loan/stores/loan.store';
 import {
-  InstalmentSimulationRow,
   mapInstalmentSimulations,
-  SIMULATION_ROWS_STORAGE_KEY,
 } from 'src/app/modules/loan/loan-simulator/utils/instalment-simulation.utils';
+import { SimulationCombinationsStore } from 'src/app/modules/loan/components/simulation-combinations/simulation-combinations.store';
 import { HighchartWrapperComponent } from 'src/app/shared/components/highcharts-wrapper/highcharts-wrapper.component';
 import { PlatformToggleComponent } from 'src/app/shared/components/platform-toggle/platform-toggle.component';
 import { Colors } from 'src/app/shared/styles/colors';
@@ -37,7 +35,7 @@ import { HistoricalInstalmentsTableComponent } from '../historical-instalments-t
 })
 export class LoanDetailedBodyComponent {
   private readonly loanStore = inject(LoanStore);
-  private readonly localStorageService = inject(LocalStorageService);
+  private readonly combinationsStore = inject(SimulationCombinationsStore);
 
   historicalCompareToInstalmentPayments =
     this.loanStore.historicalCompareInstalments;
@@ -107,16 +105,9 @@ export class LoanDetailedBodyComponent {
   >('Simulator');
 
   constructor() {
-    const storedRows = this.localStorageService.getItem(
-      SIMULATION_ROWS_STORAGE_KEY,
-    );
-    const simulationRows: InstalmentSimulationRow[] =
-      Array.isArray(storedRows) && storedRows.length
-        ? storedRows
-        : [{ monthlyAmount: 3750, payments: 1 }];
-
     effect(() => {
       const schedule = this.loanStore.selectedOverviewSchedule();
+      const simulationRows = this.combinationsStore.rows();
       if (!schedule) return;
 
       const [instalmentPayments, earlyPayments] = mapInstalmentSimulations(
