@@ -37,32 +37,32 @@
                   )
                 }}
               </span>
+
+              <button
+                type="button"
+                class="category-chip"
+                (click)="categorySelected.emit(transaction.category)"
+                [attr.aria-label]="
+                  'Filter by category ' + getCategoryLabel(transaction)
+                "
+              >
+                <span
+                  class="category-dot"
+                  [style.background]="getCategoryColor(transaction.category)"
+                  aria-hidden="true"
+                ></span>
+                {{ getCategoryLabel(transaction) }}
+              </button>
+              <div class="transaction-meta">
+                <span class="transaction-date-desktop">{{
+                  formatDate(
+                    transaction.completionDate || transaction.registrationDate
+                  )
+                }}</span>
+              </div>
             </div>
           </div>
-          <div class="merchant-category-row">
-            <button
-              type="button"
-              class="category-chip"
-              (click)="categorySelected.emit(transaction.category)"
-              [attr.aria-label]="
-                'Filter by category ' + getCategoryLabel(transaction)
-              "
-            >
-              <span
-                class="category-dot"
-                [style.background]="getCategoryColor(transaction.category)"
-                aria-hidden="true"
-              ></span>
-              {{ getCategoryLabel(transaction) }}
-            </button>
-            <span class="transaction-date-mobile">
-              {{
-                formatDate(
-                  transaction.completionDate || transaction.registrationDate
-                )
-              }}
-            </span>
-          </div>
+
           @if (transaction.description?.trim()) {
             <div class="transaction-description">
               @for (
@@ -77,13 +77,6 @@
               }
             </div>
           }
-          <div class="transaction-meta">
-            <span class="transaction-date-desktop">{{
-              formatDate(
-                transaction.completionDate || transaction.registrationDate
-              )
-            }}</span>
-          </div>
         </div>
 
         <div class="transaction-side">
