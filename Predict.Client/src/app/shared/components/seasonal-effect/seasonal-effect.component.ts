@@ -27,34 +27,34 @@ export class SeasonalEffectComponent implements OnDestroy {
     '✤',
     '✥',
     '✢',
-    '✧',
-    '✩',
-    '✪',
-    '✫',
-    '✬',
-    '✭',
-    '✮',
-    '✯',
-    '✰',
-    '✱',
-    '✲',
-    '✴',
-    '✵',
-    '✶',
-    '✷',
-    '✸',
-    '✹',
-    '✺',
     '✻',
     '✼',
     '✽',
     '❉',
     '❊',
     '❋',
-    '۞',
-    '⁕',
-    '⁂',
-    '✦',
+    '✳',
+    '✣',
+    '✤',
+    '✥',
+    '✢',
+    '✻',
+    '✼',
+    '✽',
+    '❉',
+    '❊',
+    '❋',
+    '❄',
+    '❅',
+    '❆',
+    '✳',
+    '✣',
+    '✤',
+    '✥',
+    '✢',
+    '✻',
+    '✼',
+    '✽',
   ];
   private readonly leafPatterns = [
     '🍂',
@@ -86,7 +86,6 @@ export class SeasonalEffectComponent implements OnDestroy {
     () => this.updateSeason(),
     60 * 60 * 1000,
   );
-
   constructor() {
     this.updateSeason();
   }
@@ -102,15 +101,6 @@ export class SeasonalEffectComponent implements OnDestroy {
     const patterns = type === 'snow' ? this.snowPatterns : this.leafPatterns;
     particle.textContent =
       patterns[Math.floor(Math.random() * patterns.length)];
-    particle.style.setProperty('--particle-left', `${Math.random() * 90 + 5}%`);
-    particle.style.setProperty(
-      '--particle-size',
-      `${type === 'snow' ? 12 + Math.random() * 15 : 18 + Math.random() * 16}px`,
-    );
-    particle.style.setProperty(
-      '--particle-duration',
-      `${7 + Math.random() * 5}s`,
-    );
   }
 
   private updateSeason(): void {
@@ -123,4 +113,5 @@ export class SeasonalEffectComponent implements OnDestroy {
           : 'spring-summer';
     document.documentElement.dataset['season'] = season;
   }
+
 }

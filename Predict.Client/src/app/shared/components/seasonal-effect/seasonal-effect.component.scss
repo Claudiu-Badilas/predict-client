@@ -24,7 +24,7 @@
   line-height: 1;
   opacity: var(--snow-opacity);
   text-shadow: 0 1px 4px rgb(255 255 255 / 0.35);
-  animation: snowfall-drift var(--particle-duration, 10s) linear infinite;
+  animation: snowfall-drift 12s linear infinite;
   will-change: transform;
 }
 
@@ -33,7 +33,7 @@
   opacity: 0.92;
   text-shadow: 0 2px 5px rgb(92 48 10 / 0.2);
   animation-name: leaf-drift;
-  animation-duration: var(--particle-duration, 10s);
+  animation-duration: 14s;
 }
 
 .snowfall span:nth-child(1), .leaffall span:nth-child(1) { --particle-left: 5%; animation-delay: -2s; }
