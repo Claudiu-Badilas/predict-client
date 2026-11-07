@@ -36,6 +36,52 @@ body {
   }
 }
 
+.snowfall {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: var(--snow-opacity);
+}
+
+.snowfall::before,
+.snowfall::after {
+  position: absolute;
+  inset: -100% 0 0;
+  content: '';
+  background-image:
+    radial-gradient(2px 2px at 40px 60px, var(--snow-color) 98%, transparent),
+    radial-gradient(3px 3px at 120px 180px, var(--snow-color) 98%, transparent),
+    radial-gradient(1.5px 1.5px at 220px 90px, var(--snow-color) 98%, transparent),
+    radial-gradient(2px 2px at 310px 240px, var(--snow-color) 98%, transparent),
+    radial-gradient(3px 3px at 430px 130px, var(--snow-color) 98%, transparent);
+  background-size: 500px 300px;
+  animation: snowfall-drift 18s linear infinite;
+}
+
+.snowfall::after {
+  background-position: 60px 150px;
+  background-size: 650px 380px;
+  opacity: 0.65;
+  animation-duration: 28s;
+  animation-delay: -12s;
+}
+
+@keyframes snowfall-drift {
+  to {
+    transform: translate3d(35px, 100vh, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snowfall::before,
+  .snowfall::after {
+    animation: none;
+    inset: 0;
+  }
+}
+
 /* Scrollbars stay quiet until the user approaches a scroll surface. */
 .scrollable-container {
   position: relative;

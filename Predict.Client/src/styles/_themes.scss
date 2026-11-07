@@ -1,4 +1,6 @@
 :root {
+  --snow-opacity: 0.9;
+  --snow-color: #7894a3;
   color-scheme: light;
   --theme-background: #f8fafc;
   --theme-surface: #ffffff;
@@ -36,6 +38,8 @@
 }
 
 [data-theme='dark'] {
+  --snow-opacity: 0.78;
+  --snow-color: #fff;
   color-scheme: dark;
   --theme-background: #00141e;
   --theme-surface: #001e28;
