@@ -1,0 +1,67 @@
+.snowfall,
+.leaffall {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+  display: none;
+}
+
+[data-season='winter'] .snowfall,
+[data-season='autumn'] .leaffall {
+  display: block;
+}
+
+.snowfall span,
+.leaffall span {
+  position: absolute;
+  top: -10%;
+  left: var(--particle-left, 50%);
+  color: var(--snow-color);
+  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', sans-serif;
+  font-size: var(--particle-size, 20px);
+  line-height: 1;
+  opacity: var(--snow-opacity);
+  text-shadow: 0 1px 4px rgb(255 255 255 / 0.35);
+  animation: snowfall-drift var(--particle-duration, 10s) linear infinite;
+  will-change: transform;
+}
+
+.leaffall span {
+  font-family: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+  opacity: 0.92;
+  text-shadow: 0 2px 5px rgb(92 48 10 / 0.2);
+  animation-name: leaf-drift;
+  animation-duration: var(--particle-duration, 10s);
+}
+
+.snowfall span:nth-child(1), .leaffall span:nth-child(1) { --particle-left: 5%; animation-delay: -2s; }
+.snowfall span:nth-child(2), .leaffall span:nth-child(2) { --particle-left: 18%; animation-delay: -8s; }
+.snowfall span:nth-child(3), .leaffall span:nth-child(3) { --particle-left: 31%; animation-delay: -4s; }
+.snowfall span:nth-child(4), .leaffall span:nth-child(4) { --particle-left: 44%; animation-delay: -10s; }
+.snowfall span:nth-child(5), .leaffall span:nth-child(5) { --particle-left: 57%; animation-delay: -6s; }
+.snowfall span:nth-child(6), .leaffall span:nth-child(6) { --particle-left: 70%; animation-delay: -1s; }
+.snowfall span:nth-child(7), .leaffall span:nth-child(7) { --particle-left: 83%; animation-delay: -9s; }
+.snowfall span:nth-child(8), .leaffall span:nth-child(8) { --particle-left: 95%; animation-delay: -5s; }
+
+@keyframes snowfall-drift {
+  0% { transform: translate3d(0, -5vh, 0) rotate(0deg); }
+  50% { transform: translate3d(28px, 52vh, 0) rotate(180deg); }
+  100% { transform: translate3d(-14px, 110vh, 0) rotate(360deg); }
+}
+
+@keyframes leaf-drift {
+  0% { transform: translate3d(0, -5vh, 0) rotate(-35deg); }
+  30% { transform: translate3d(55px, 28vh, 0) rotate(95deg); }
+  65% { transform: translate3d(-30px, 70vh, 0) rotate(210deg); }
+  100% { transform: translate3d(40px, 110vh, 0) rotate(330deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snowfall span,
+  .leaffall span {
+    animation: none;
+    top: 12%;
+  }
+}

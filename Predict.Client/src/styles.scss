@@ -36,54 +36,6 @@ body {
   }
 }
 
-.snowfall {
-  position: fixed;
-  inset: 0;
-  z-index: 1000;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.snowfall span {
-  position: absolute;
-  top: -10%;
-  left: var(--snow-left);
-  color: var(--snow-color);
-  font-family: 'Segoe UI Symbol', 'Noto Sans Symbols 2', sans-serif;
-  font-size: var(--snow-size);
-  line-height: 1;
-  opacity: var(--snow-opacity);
-  text-shadow: 0 1px 4px rgb(255 255 255 / 0.35);
-  animation: snowfall-drift var(--snow-duration) linear var(--snow-delay) infinite;
-  will-change: transform;
-}
-
-.snowfall span:nth-child(1) { --snow-left: 4%; --snow-size: 18px; --snow-duration: 17s; --snow-delay: -12s; }
-.snowfall span:nth-child(2) { --snow-left: 13%; --snow-size: 13px; --snow-duration: 23s; --snow-delay: -4s; }
-.snowfall span:nth-child(3) { --snow-left: 22%; --snow-size: 21px; --snow-duration: 20s; --snow-delay: -17s; }
-.snowfall span:nth-child(4) { --snow-left: 31%; --snow-size: 12px; --snow-duration: 26s; --snow-delay: -8s; }
-.snowfall span:nth-child(5) { --snow-left: 40%; --snow-size: 16px; --snow-duration: 19s; --snow-delay: -2s; }
-.snowfall span:nth-child(6) { --snow-left: 49%; --snow-size: 22px; --snow-duration: 25s; --snow-delay: -20s; }
-.snowfall span:nth-child(7) { --snow-left: 58%; --snow-size: 14px; --snow-duration: 18s; --snow-delay: -10s; }
-.snowfall span:nth-child(8) { --snow-left: 67%; --snow-size: 19px; --snow-duration: 24s; --snow-delay: -15s; }
-.snowfall span:nth-child(9) { --snow-left: 76%; --snow-size: 12px; --snow-duration: 21s; --snow-delay: -6s; }
-.snowfall span:nth-child(10) { --snow-left: 84%; --snow-size: 18px; --snow-duration: 27s; --snow-delay: -23s; }
-.snowfall span:nth-child(11) { --snow-left: 92%; --snow-size: 15px; --snow-duration: 19s; --snow-delay: -13s; }
-.snowfall span:nth-child(12) { --snow-left: 55%; --snow-size: 11px; --snow-duration: 22s; --snow-delay: -1s; }
-
-@keyframes snowfall-drift {
-  0% { transform: translate3d(0, -5vh, 0) rotate(0deg); }
-  50% { transform: translate3d(28px, 52vh, 0) rotate(180deg); }
-  100% { transform: translate3d(-14px, 110vh, 0) rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .snowfall span {
-    animation: none;
-    top: 12%;
-  }
-}
-
 /* Scrollbars stay quiet until the user approaches a scroll surface. */
 .scrollable-container {
   position: relative;

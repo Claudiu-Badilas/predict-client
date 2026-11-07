@@ -1,0 +1,10 @@
+<div class="snowfall" aria-hidden="true">
+  @for (particle of snowParticles; track $index) {
+    <span (animationiteration)="cycleParticle($event, 'snow')">{{ particle }}</span>
+  }
+</div>
+<div class="leaffall" aria-hidden="true">
+  @for (particle of leafParticles; track $index) {
+    <span (animationiteration)="cycleParticle($event, 'leaf')">{{ particle }}</span>
+  }
+</div>
