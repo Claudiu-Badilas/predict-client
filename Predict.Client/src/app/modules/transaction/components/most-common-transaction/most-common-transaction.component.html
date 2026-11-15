@@ -23,6 +23,16 @@
           />
         </div>
 
+        <label class="exclude-internal-toggle">
+          <input
+            type="checkbox"
+            [checked]="excludeInternalTransactions()"
+            (change)="excludeInternalTransactions.set($any($event.target).checked)"
+            aria-label="Exclude internal transactions"
+          />
+          <span>Exclude internal</span>
+        </label>
+
         <div class="period-control">
           <p-platform-toggle
             class="period-switch"

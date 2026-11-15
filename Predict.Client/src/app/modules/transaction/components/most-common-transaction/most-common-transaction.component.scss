@@ -1172,11 +1172,11 @@
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: minmax(360px, 1.8fr) minmax(180px, 0.9fr) minmax(
-      200px,
-      1fr
-    ) 210px 44px;
-  grid-template-areas: 'dates period search sort upload';
+  grid-template-columns: minmax(360px, 1.8fr) minmax(165px, 0.8fr) minmax(
+      150px,
+      0.8fr
+    ) minmax(200px, 1fr) 210px 44px;
+  grid-template-areas: 'dates exclude period search sort upload';
   align-items: center;
   gap: 10px;
   margin-bottom: 12px;
@@ -1185,6 +1185,26 @@
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
   box-shadow: var(--shadow-xs);
+}
+
+.exclude-internal-toggle {
+  grid-area: exclude;
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.exclude-internal-toggle input {
+  width: 17px;
+  height: 17px;
+  accent-color: var(--theme-primary, #5266d8);
+  cursor: pointer;
 }
 
 .transaction-date-range {
@@ -1521,10 +1541,15 @@
 
 @media (max-width: 1024px) {
   .insights-toolbar {
-    grid-template-columns: minmax(340px, 1.5fr) minmax(170px, 1fr) 210px 44px;
+    grid-template-columns: minmax(300px, 1.5fr) minmax(160px, 1fr) 210px 44px;
     grid-template-areas:
-      'dates period sort upload'
+      'dates exclude sort upload'
+      'period period period period'
       'search search search search';
+  }
+
+  .exclude-internal-toggle {
+    justify-self: start;
   }
 
   .period-control {
@@ -1540,6 +1565,7 @@
     grid-template-columns: repeat(3, minmax(0, 1fr)) 44px;
     grid-template-areas:
       'dates dates dates dates'
+      'exclude exclude exclude exclude'
       'period period sort sort'
       'search search search upload';
     gap: 8px;

@@ -76,6 +76,7 @@ export class MostCommonTransactionComponent {
   sortMode = signal<TransactionSort>('recent');
   selectedCategory = signal<TransactionCategory | null>(null);
   selectedProvider = signal<string | null>(null);
+  excludeInternalTransactions = signal(false);
   datasetChanged = output<string>();
   storageSettingsRequested = output<void>();
 
@@ -165,6 +166,10 @@ export class MostCommonTransactionComponent {
     const category = this.selectedCategory();
     const provider = this.selectedProvider()?.toLocaleLowerCase();
     return this.selectedTransaction().filter((transaction) => {
+      if (
+        this.excludeInternalTransactions() &&
+        transaction.category === TransactionCategory.INTERNAL_TRANSFER
+      ) return false;
       if (category && transaction.category !== category) return false;
       if (provider) {
         const transactionProvider = (
