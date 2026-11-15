@@ -94,7 +94,38 @@
           <strong class="transactions-insights-value">
             {{ insightStories()[activeStory()].value }}
           </strong>
-          <p>{{ insightStories()[activeStory()].detail }}</p>
+          <span class="transactions-insights-value-label">total spent</span>
+          <div class="transactions-insights-summary">
+            <div class="transactions-insights-summary__row">
+              <span>Income</span>
+              <strong>{{ insightStories()[activeStory()].income }}</strong>
+            </div>
+            <div class="transactions-insights-summary__row">
+              <span>Left after spending</span>
+              <strong>{{ insightStories()[activeStory()].balance }}</strong>
+            </div>
+            <div class="transactions-insights-summary__row">
+              <span>Spending vs last month's income</span>
+              <strong>{{ insightStories()[activeStory()].comparison }}</strong>
+            </div>
+            <div class="transactions-insights-summary__row">
+              <span>Transactions</span>
+              <strong>{{ insightStories()[activeStory()].transactionCount }}</strong>
+            </div>
+          </div>
+          @if (insightStories()[activeStory()].topCategories?.length) {
+            <div class="transactions-insights-breakdown">
+              <strong>Top spending categories</strong>
+              @for (category of insightStories()[activeStory()].topCategories; track category) {
+                <span>{{ category }}</span>
+              }
+            </div>
+          }
+          @if (insightStories()[activeStory()].largestPurchase) {
+            <p class="transactions-insights-largest">
+              Largest purchase: {{ insightStories()[activeStory()].largestPurchase }}
+            </p>
+          }
           @if (insightStories()[activeStory()].monthlySpend; as monthlySpend) {
             <div class="transactions-insights-months">
               @for (month of monthlySpend; track month.label) {

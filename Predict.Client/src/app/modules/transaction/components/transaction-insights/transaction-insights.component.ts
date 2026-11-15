@@ -14,13 +14,21 @@ import {
   ViewContainerRef,
   signal,
 } from '@angular/core';
-import { TransactionDomain } from '../../models/transactions.model';
+import {
+  TransactionCategory,
+  TransactionDomain,
+} from '../../models/transactions.model';
 
 interface TransactionInsight {
   eyebrow: string;
   title: string;
   value: string;
-  detail: string;
+  income?: string;
+  balance?: string;
+  comparison?: string;
+  transactionCount?: number;
+  topCategories?: string[];
+  largestPurchase?: string;
   monthlySpend?: { label: string; amount: string; barWidth: number }[];
 }
 
@@ -176,28 +184,12 @@ export class TransactionInsightsComponent implements OnDestroy {
   ): TransactionInsight[] {
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastMonthStart = new Date(
-      currentMonthStart.getFullYear(),
-      currentMonthStart.getMonth() - 1,
-      1,
-    );
-    const sixMonthStart = new Date(
-      lastMonthStart.getFullYear(),
-      lastMonthStart.getMonth() - 5,
-      1,
-    );
-    const lastMonthLabel = lastMonthStart.toLocaleDateString('en-US', {
-      month: 'long',
-      year: 'numeric',
-    });
+    const lastMonthStart = new Date(currentMonthStart.getFullYear(), currentMonthStart.getMonth() - 1, 1);
     const transactionDate = (transaction: TransactionDomain) =>
       transaction.completionDate || transaction.registrationDate;
-    const lastMonthTransactions = transactions.filter((transaction) => {
-      const date = transactionDate(transaction);
-      return (
-        date !== null && date >= lastMonthStart && date < currentMonthStart
-      );
-    });
+    const eligibleTransactions = transactions.filter(
+      (transaction) => transaction.category !== TransactionCategory.INTERNAL_TRANSFER,
+    );
     const currency =
       transactions
         .find((transaction) => transaction.currency?.trim())
@@ -209,185 +201,69 @@ export class TransactionInsightsComponent implements OnDestroy {
       }).format(amount)} ${currency}`;
     const signedAmount = (amount: number) =>
       `${amount > 0 ? '+' : amount < 0 ? '−' : ''}${formatAmount(Math.abs(amount))}`;
-    const selectedStartMonth = new Date(
-      this.startDate().getFullYear(),
-      this.startDate().getMonth(),
-      1,
+    const months = Array.from({ length: 6 }, (_, index) =>
+      new Date(lastMonthStart.getFullYear(), lastMonthStart.getMonth() - index, 1),
     );
-    const selectedEndMonth = new Date(
-      this.endDate().getFullYear(),
-      this.endDate().getMonth(),
-      1,
-    );
-    const comparisonStart = new Date(
-      Math.max(sixMonthStart.getTime(), selectedStartMonth.getTime()),
-    );
-    const comparisonEnd =
-      selectedEndMonth < currentMonthStart
-        ? new Date(
-            selectedEndMonth.getFullYear(),
-            selectedEndMonth.getMonth() + 1,
-            1,
-          )
-        : currentMonthStart;
-    const monthlySpend: {
-      label: string;
-      amount: string;
-      total: number;
-      barWidth: number;
-    }[] = [];
-
-    for (
-      let monthStart = comparisonStart;
-      monthStart < comparisonEnd;
-      monthStart = new Date(
-        monthStart.getFullYear(),
-        monthStart.getMonth() + 1,
-        1,
-      )
-    ) {
-      const nextMonth = new Date(
-        monthStart.getFullYear(),
-        monthStart.getMonth() + 1,
-        1,
-      );
-      const monthExpense = transactions
-        .filter((transaction) => {
-          const date = transactionDate(transaction);
-          return (
-            date !== null &&
-            date >= monthStart &&
-            date < nextMonth &&
-            (transaction.amount ?? 0) < 0
-          );
-        })
-        .reduce(
-          (sum, transaction) => sum + Math.abs(transaction.amount ?? 0),
-          0,
-        );
-      monthlySpend.push({
-        label: monthStart.toLocaleDateString('en-US', {
-          month: 'short',
-          year: '2-digit',
-        }),
-        amount: formatAmount(monthExpense),
-        total: monthExpense,
-        barWidth: 0,
+    const monthlyTotals = months.map((monthStart) => {
+      const nextMonth = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
+      const monthTransactions = eligibleTransactions.filter((transaction) => {
+        const date = transactionDate(transaction);
+        return date !== null && date >= monthStart && date < nextMonth;
       });
-    }
-
-    const maxMonthlySpend = Math.max(
-      0,
-      ...monthlySpend.map((month) => month.total),
-    );
-    for (const month of monthlySpend) {
-      month.barWidth =
-        maxMonthlySpend > 0 ? (month.total / maxMonthlySpend) * 100 : 0;
-    }
-
-    const stories: TransactionInsight[] = [];
-    if (!lastMonthTransactions.length) {
-      stories.push({
-        eyebrow: 'Last month',
-        title: `No activity in ${lastMonthLabel}`,
-        value: 'A quiet month',
-        detail: `There are no ${isEconomii ? 'savings' : 'transaction'} records for ${lastMonthLabel}.`,
-      });
-    } else {
-      const incoming = lastMonthTransactions
+      const expenses = monthTransactions.filter((transaction) => (transaction.amount ?? 0) < 0);
+      const income = monthTransactions
         .filter((transaction) => (transaction.amount ?? 0) > 0)
         .reduce((sum, transaction) => sum + (transaction.amount ?? 0), 0);
-      const outgoing = lastMonthTransactions
-        .filter((transaction) => (transaction.amount ?? 0) < 0)
-        .reduce(
-          (sum, transaction) => sum + Math.abs(transaction.amount ?? 0),
-          0,
-        );
-      const net = incoming - outgoing;
-      const expenses = lastMonthTransactions.filter(
-        (transaction) => (transaction.amount ?? 0) < 0,
-      );
-      const merchants = new Map<string, number>();
-
+      const spent = expenses.reduce((sum, transaction) => sum + Math.abs(transaction.amount ?? 0), 0);
+      const categories = new Map<string, number>();
       for (const transaction of expenses) {
-        const merchant =
-          transaction.serviceProvider?.trim() ||
-          transaction.merchantName?.trim() ||
-          transaction.provider?.trim();
-        if (merchant) {
-          merchants.set(
-            merchant,
-            (merchants.get(merchant) ?? 0) + Math.abs(transaction.amount ?? 0),
-          );
-        }
+        const category = transaction.categoryLabel?.trim() || 'Other';
+        categories.set(category, (categories.get(category) ?? 0) + Math.abs(transaction.amount ?? 0));
       }
-
-      stories.push({
-        eyebrow: lastMonthLabel,
-        title: isEconomii ? 'Your savings movement' : 'Your money in and out',
-        value: signedAmount(net),
-        detail: `${formatAmount(incoming)} in and ${formatAmount(outgoing)} out across ${lastMonthTransactions.length} ${lastMonthTransactions.length === 1 ? 'transaction' : 'transactions'}.`,
-      });
-
+      const topCategories = Array.from(categories.entries())
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([name, amount]) => `${name}: ${formatAmount(amount)}`);
       const largestExpense = expenses.reduce<TransactionDomain | null>(
-        (largest, transaction) =>
-          Math.abs(transaction.amount ?? 0) > Math.abs(largest?.amount ?? 0)
-            ? transaction
-            : largest,
+        (largest, transaction) => Math.abs(transaction.amount ?? 0) > Math.abs(largest?.amount ?? 0) ? transaction : largest,
         null,
       );
-      if (largestExpense) {
-        const merchant =
-          largestExpense.serviceProvider?.trim() ||
-          largestExpense.merchantName?.trim() ||
-          largestExpense.provider?.trim() ||
-          'A merchant';
-        const date = transactionDate(largestExpense);
-        stories.push({
-          eyebrow: 'Biggest outflow',
-          title: 'Your largest transaction',
-          value: formatAmount(Math.abs(largestExpense.amount ?? 0)),
-          detail: `${merchant}${date ? ` on ${date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}.`,
-        });
-      }
-
-      const topMerchant = Array.from(merchants.entries()).sort(
-        (first, second) => second[1] - first[1],
-      )[0];
-      if (topMerchant) {
-        stories.push({
-          eyebrow: 'Where it went',
-          title: 'Your top merchant',
-          value: topMerchant[0],
-          detail: `${formatAmount(topMerchant[1])} spent there last month.`,
-        });
-      }
-    }
-
-    if (
-      monthlySpend.length > 1 &&
-      monthlySpend.some((month) => month.total > 0)
-    ) {
-      const comparisonTotal = monthlySpend.reduce(
-        (sum, month) => sum + month.total,
-        0,
-      );
-      const highestMonth = monthlySpend.reduce((highest, month) =>
-        month.total > highest.total ? month : highest,
-      );
-      stories.push({
-        eyebrow: 'Six-month view',
-        title: 'How your outgoings changed',
-        value: formatAmount(comparisonTotal),
-        detail: `Highest month: ${highestMonth.label} at ${highestMonth.amount}. Average: ${formatAmount(comparisonTotal / monthlySpend.length)} per month.`,
-        monthlySpend: monthlySpend.map(({ label, amount, barWidth }) => ({
-          label,
-          amount,
-          barWidth,
-        })),
-      });
-    }
-
-    return stories;
+      const biggestMerchant =
+        largestExpense?.serviceProvider?.trim() ||
+        largestExpense?.merchantName?.trim() ||
+        largestExpense?.provider?.trim();
+      const biggestExpense = largestExpense
+        ? Math.abs(largestExpense.amount ?? 0)
+        : 0;
+      return {
+        monthStart,
+        monthTransactions,
+        income,
+        spent,
+        topCategories,
+        biggestMerchant,
+        biggestExpense,
+      };
+    });
+    const lastMonthIncome = monthlyTotals[0]?.income ?? 0;
+    return monthlyTotals.map(({ monthStart, monthTransactions, income, spent, topCategories, biggestMerchant, biggestExpense }) => {
+      const monthLabel = monthStart.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      const comparison = lastMonthIncome > 0
+        ? `${(spent / lastMonthIncome * 100).toFixed(0)}% of last month's income (${formatAmount(lastMonthIncome)})`
+        : 'No income recorded last month';
+      return {
+        eyebrow: `Six-month story · ${monthLabel}`,
+        title: isEconomii ? `Savings activity in ${monthLabel}` : `Your money in ${monthLabel}`,
+        value: formatAmount(spent),
+        income: formatAmount(income),
+        balance: signedAmount(income - spent),
+        comparison,
+        transactionCount: monthTransactions.length,
+        topCategories,
+        largestPurchase: biggestExpense
+          ? `${formatAmount(biggestExpense)}${biggestMerchant ? ` at ${biggestMerchant}` : ''}`
+          : undefined,
+      };
+    });
   }
 }
