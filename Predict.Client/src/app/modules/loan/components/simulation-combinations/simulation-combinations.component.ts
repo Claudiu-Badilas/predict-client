@@ -31,16 +31,6 @@ type CombinationForm = FormGroup<{
   template: `
     <div class="combinations-header">
       <ng-content select="[combination-leading-action]"></ng-content>
-      @if (showCombinations()) {
-        <button
-          type="button"
-          class="btn-add"
-          [disabled]="form.invalid"
-          (click)="addRow()"
-        >
-          + Add combination
-        </button>
-      }
     </div>
     @if (showCombinations()) {
       <div class="simulation-rows">
@@ -67,6 +57,16 @@ type CombinationForm = FormGroup<{
               (click)="removeRow(row.id)"
             >
               ✕
+            </button>
+            <button
+              type="button"
+              class="btn-add"
+              [disabled]="form.invalid"
+              [attr.aria-label]="'Copy combination ' + (i + 1)"
+              title="Copy this combination"
+              (click)="addRow(row.id)"
+            >
+              +
             </button>
           </div>
         }
@@ -155,26 +155,22 @@ type CombinationForm = FormGroup<{
         line-height: 1;
         flex-shrink: 0;
       }
-      .btn-delete:hover:not(:disabled) {
-        background: var(--theme-danger-subtle);
-        color: var(--theme-danger);
-        border-color: var(--theme-danger);
-      }
-      .btn-delete:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-      }
       .btn-add {
-        width: auto;
-        padding: 5px 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        padding: 0;
         border: 1px solid var(--theme-border);
-        border-radius: 7px;
+        border-radius: 50%;
         background: var(--theme-surface-muted);
         color: var(--theme-text-primary);
-        font-size: 12px;
+        font-size: 18px;
         font-weight: 600;
-        white-space: nowrap;
+        line-height: 1;
         cursor: pointer;
+        flex-shrink: 0;
       }
       .btn-add:hover:not(:disabled) {
         border-color: var(--theme-accent);
@@ -183,6 +179,15 @@ type CombinationForm = FormGroup<{
       }
       .btn-add:disabled {
         opacity: 0.45;
+        cursor: not-allowed;
+      }
+      .btn-delete:hover:not(:disabled) {
+        background: var(--theme-danger-subtle);
+        color: var(--theme-danger);
+        border-color: var(--theme-danger);
+      }
+      .btn-delete:disabled {
+        opacity: 0.35;
         cursor: not-allowed;
       }
       @media (max-width: 575.98px) {
@@ -225,8 +230,9 @@ type CombinationForm = FormGroup<{
           gap: 4px;
         }
         .btn-add {
-          padding: 4px 8px;
-          font-size: 12px;
+          width: 24px;
+          height: 24px;
+          font-size: 17px;
         }
         :host ::ng-deep .combination-card .numeric-input {
           height: 34px;
@@ -259,17 +265,18 @@ export class SimulationCombinationsComponent {
     this.rows.valueChanges.subscribe(() => this.syncRows());
   }
 
-  addRow(): void {
+  addRow(sourceId: string): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    const last = this.store.rows().at(-1);
+    const source = this.store.rows().find((row) => row.id === sourceId);
+    if (!source) return;
     this.rows.push(
       this.createForm({
         id: this.newId(),
-        monthlyAmount: last?.monthlyAmount ?? 3750,
-        payments: last?.payments ?? 1,
+        monthlyAmount: source.monthlyAmount,
+        payments: source.payments,
       }),
     );
     this.updateValidators();

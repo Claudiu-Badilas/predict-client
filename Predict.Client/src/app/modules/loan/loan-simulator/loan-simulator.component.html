@@ -12,12 +12,8 @@
       placeholder="No Selection"
       (selectionChange)="onDropdownSelected($event)"
     />
-  </div>
-  <p-simulation-combinations
-    [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length"
-  >
-    <div class="loan-controls-toggle" combination-leading-action>
-      <span>Fixed rate · 5.79%</span>
+    <div class="loan-controls-toggle">
+      <span class="loan-controls-rate-label">Dob 5.79%</span>
       <p-platform-toggle
         [config]="{
           type: 'switch',
@@ -28,6 +24,10 @@
         (toggleChange)="onCalculateRepaymentSchedulesChanged($event)"
       />
     </div>
+  </div>
+  <p-simulation-combinations
+    [maxPayments]="selectedRepaymentScheduleBase()?.monthlyInstalments?.length"
+  >
   </p-simulation-combinations>
 </div>
 
