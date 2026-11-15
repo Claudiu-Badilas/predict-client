@@ -47,6 +47,16 @@ export class TransactionFeedComponent {
     );
   }
 
+  hasDistinctDescription(transaction: TransactionDomain): boolean {
+    const description = transaction.description?.trim();
+    if (!description) return false;
+    const merchantName = this.merchantLabel(transaction).trim();
+    return (
+      merchantName === 'Transaction' ||
+      description.toLocaleLowerCase() !== merchantName.toLocaleLowerCase()
+    );
+  }
+
   selectProvider(transaction: TransactionDomain): void {
     const provider =
       transaction.serviceProvider?.trim() ||

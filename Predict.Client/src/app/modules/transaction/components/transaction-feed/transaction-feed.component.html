@@ -63,7 +63,7 @@
             </div>
           </div>
 
-          @if (transaction.description?.trim()) {
+          @if (hasDistinctDescription(transaction)) {
             <div class="transaction-description">
               @for (
                 part of highlightParts(transaction.description ?? '');
