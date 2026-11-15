@@ -94,25 +94,36 @@
           <strong class="insights-story__value">
             {{ insightStories()[activeStory()].value }}
           </strong>
-          <p>{{ insightStories()[activeStory()].detail }}</p>
-          @if (insightStories()[activeStory()].monthlySpend; as monthlySpend) {
-            <div
-              class="insights-monthly"
-              aria-label="Monthly spending breakdown"
-            >
-              @for (month of monthlySpend; track month.label) {
-                <div class="insights-monthly__row">
-                  <div class="insights-monthly__labels">
-                    <span>{{ month.label }}</span>
-                    <strong>{{ month.amount }}</strong>
-                  </div>
-                  <div class="insights-monthly__track" aria-hidden="true">
-                    <span
-                      class="insights-monthly__bar"
-                      [style.width.%]="month.barWidth"
-                    ></span>
-                  </div>
-                </div>
+          <span class="insights-story__value-label">total spent on receipts</span>
+          <div class="insights-summary">
+            <div class="insights-summary__row">
+              <span>Receipts</span>
+              <strong>{{ insightStories()[activeStory()].receiptCount }}</strong>
+            </div>
+            <div class="insights-summary__row">
+              <span>Average per receipt</span>
+              <strong>{{ insightStories()[activeStory()].average }}</strong>
+            </div>
+            <div class="insights-summary__row">
+              <span>Compared with last month's spending</span>
+              <strong>{{ insightStories()[activeStory()].comparison }}</strong>
+            </div>
+            <div class="insights-summary__row">
+              <span>Discounts</span>
+              <strong>{{ insightStories()[activeStory()].discounts }}</strong>
+            </div>
+          </div>
+          @if (insightStories()[activeStory()].topStore || insightStories()[activeStory()].topProduct || insightStories()[activeStory()].largestReceipt) {
+            <div class="insights-breakdown">
+              <strong>Receipt highlights</strong>
+              @if (insightStories()[activeStory()].largestReceipt) {
+                <span>Largest receipt: {{ insightStories()[activeStory()].largestReceipt }}</span>
+              }
+              @if (insightStories()[activeStory()].topStore) {
+                <span>Top store: {{ insightStories()[activeStory()].topStore }}</span>
+              }
+              @if (insightStories()[activeStory()].topProduct) {
+                <span>Top product spend: {{ insightStories()[activeStory()].topProduct }}</span>
               }
             </div>
           }
