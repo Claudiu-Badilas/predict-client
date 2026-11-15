@@ -20,7 +20,7 @@ const initialState: State = {
   economii: [],
   startDate: new Date('2017-01-01'),
   endDate: new Date(),
-  viewMode: 'all',
+  viewMode: 'monthly',
 };
 
 export const TransactionsStore = signalStore(

@@ -1562,12 +1562,11 @@
 
 @media (max-width: 768px) {
   .insights-toolbar {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) 44px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     grid-template-areas:
-      'dates dates dates dates'
-      'exclude exclude exclude exclude'
-      'period period sort sort'
-      'search search search upload';
+      'dates dates dates dates dates'
+      'period period exclude sort sort'
+      'search search search search upload';
     gap: 8px;
     margin-bottom: 10px;
     padding: 8px;
@@ -1577,8 +1576,22 @@
   .period-control {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
+    justify-content: center;
+    gap: 4px;
+  }
+
+  .exclude-internal-toggle {
+    justify-self: center;
+    gap: 5px;
+    font-size: 0.7rem;
+    line-height: 1.1;
+    white-space: normal;
+  }
+
+  .exclude-internal-toggle input {
+    flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
   }
 
   .period-control > span {
