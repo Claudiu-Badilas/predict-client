@@ -3,8 +3,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   effect,
+  inject,
   input,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   FormArray,
   FormControl,
@@ -13,6 +15,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { NumericInputComponent } from 'src/app/shared/components/numeric-input/numeric-input.component';
+import { LoanStore } from '../../stores/loan.store';
 import {
   SimulationCombination,
   SimulationCombinationsStore,
@@ -247,22 +250,26 @@ type CombinationForm = FormGroup<{
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SimulationCombinationsComponent {
+  private readonly loanStore = inject(LoanStore);
   readonly maxPayments = input<number | undefined>();
   readonly showCombinations = input(true);
   readonly form = new FormGroup({ rows: new FormArray<CombinationForm>([]) });
   readonly rows = this.form.controls.rows;
+  readonly store = inject(SimulationCombinationsStore);
 
-  constructor(readonly store: SimulationCombinationsStore) {
-    store.rows().forEach((row) => this.rows.push(this.createForm(row)));
+  constructor() {
+    this.store.rows().forEach((row) => this.rows.push(this.createForm(row)));
     this.updateValidators();
     effect(() => {
       this.maxPayments();
       this.updateValidators();
     });
-    this.rows.valueChanges.subscribe(() => this.syncRows());
+    this.rows.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.syncRows());
   }
 
   addRow(sourceId: string): void {
@@ -280,7 +287,6 @@ export class SimulationCombinationsComponent {
       }),
     );
     this.updateValidators();
-    this.syncRows();
   }
 
   removeRow(id: string): void {
@@ -291,7 +297,6 @@ export class SimulationCombinationsComponent {
     if (index >= 0) {
       this.rows.removeAt(index);
       this.updateValidators();
-      this.syncRows();
     }
   }
 
@@ -320,6 +325,7 @@ export class SimulationCombinationsComponent {
 
   private syncRows(): void {
     this.store.setRows(this.rows.getRawValue());
+    this.loanStore.resetSimulationPaymentOverrides();
   }
   private newId(): string {
     return `row_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;

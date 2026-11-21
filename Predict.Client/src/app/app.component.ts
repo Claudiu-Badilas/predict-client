@@ -5,6 +5,7 @@ import { ToastNotificationComponent } from './core/toast-notifications/toast-not
 import { DeploymentBannerComponent } from './shared/components/deployment-update-banner/deployment-banner.component';
 import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 import { SeasonalEffectComponent } from './shared/components/seasonal-effect/seasonal-effect.component';
+import { AuthenticationStore } from './core/authentication/authentication.store';
 
 @Component({
   selector: 'p-root',
@@ -17,11 +18,12 @@ import { SeasonalEffectComponent } from './shared/components/seasonal-effect/sea
   ],
   providers: [],
   templateUrl: './app.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['app.component.scss'],
 })
 export class AppComponent {
   constructor() {
     inject(ThemeService);
+    inject(AuthenticationStore);
   }
 }

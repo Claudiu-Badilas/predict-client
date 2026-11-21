@@ -5,14 +5,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  HostListener,
   inject,
   input,
   OnDestroy,
   TemplateRef,
-  ViewChild,
   ViewContainerRef,
   signal,
+  viewChild,
 } from '@angular/core';
 import {
   TransactionCategory,
@@ -38,12 +37,13 @@ interface TransactionInsight {
   templateUrl: './transaction-insights.component.html',
   styleUrl: './transaction-insights.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'handleStoryKeyboard($event)' },
 })
 export class TransactionInsightsComponent implements OnDestroy {
   private readonly overlay = inject(Overlay);
   private readonly viewContainerRef = inject(ViewContainerRef);
-  @ViewChild('storyOverlay', { static: true })
-  private storyOverlay!: TemplateRef<unknown>;
+  private readonly storyOverlay =
+    viewChild.required<TemplateRef<unknown>>('storyOverlay');
 
   transactions = input<TransactionDomain[]>([]);
   economiiTransactions = input<TransactionDomain[]>([]);
@@ -84,7 +84,7 @@ export class TransactionInsightsComponent implements OnDestroy {
       panelClass: 'transaction-insights-overlay-pane',
     });
     this.overlayRef.attach(
-      new TemplatePortal(this.storyOverlay, this.viewContainerRef),
+      new TemplatePortal(this.storyOverlay(), this.viewContainerRef),
     );
     this.scheduleNextStory();
   }
@@ -144,7 +144,6 @@ export class TransactionInsightsComponent implements OnDestroy {
     this.overlayRef?.dispose();
   }
 
-  @HostListener('document:keydown', ['$event'])
   handleStoryKeyboard(event: KeyboardEvent): void {
     if (!this.showInsights()) return;
     if (event.key === 'Escape') this.closeInsights();
@@ -184,11 +183,16 @@ export class TransactionInsightsComponent implements OnDestroy {
   ): TransactionInsight[] {
     const now = new Date();
     const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const lastMonthStart = new Date(currentMonthStart.getFullYear(), currentMonthStart.getMonth() - 1, 1);
+    const lastMonthStart = new Date(
+      currentMonthStart.getFullYear(),
+      currentMonthStart.getMonth() - 1,
+      1,
+    );
     const transactionDate = (transaction: TransactionDomain) =>
       transaction.completionDate || transaction.registrationDate;
     const eligibleTransactions = transactions.filter(
-      (transaction) => transaction.category !== TransactionCategory.INTERNAL_TRANSFER,
+      (transaction) =>
+        transaction.category !== TransactionCategory.INTERNAL_TRANSFER,
     );
     const currency =
       transactions
@@ -201,31 +205,52 @@ export class TransactionInsightsComponent implements OnDestroy {
       }).format(amount)} ${currency}`;
     const signedAmount = (amount: number) =>
       `${amount > 0 ? '+' : amount < 0 ? '−' : ''}${formatAmount(Math.abs(amount))}`;
-    const months = Array.from({ length: 6 }, (_, index) =>
-      new Date(lastMonthStart.getFullYear(), lastMonthStart.getMonth() - index, 1),
+    const months = Array.from(
+      { length: 6 },
+      (_, index) =>
+        new Date(
+          lastMonthStart.getFullYear(),
+          lastMonthStart.getMonth() - index,
+          1,
+        ),
     );
     const monthlyTotals = months.map((monthStart) => {
-      const nextMonth = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
+      const nextMonth = new Date(
+        monthStart.getFullYear(),
+        monthStart.getMonth() + 1,
+        1,
+      );
       const monthTransactions = eligibleTransactions.filter((transaction) => {
         const date = transactionDate(transaction);
         return date !== null && date >= monthStart && date < nextMonth;
       });
-      const expenses = monthTransactions.filter((transaction) => (transaction.amount ?? 0) < 0);
+      const expenses = monthTransactions.filter(
+        (transaction) => (transaction.amount ?? 0) < 0,
+      );
       const income = monthTransactions
         .filter((transaction) => (transaction.amount ?? 0) > 0)
         .reduce((sum, transaction) => sum + (transaction.amount ?? 0), 0);
-      const spent = expenses.reduce((sum, transaction) => sum + Math.abs(transaction.amount ?? 0), 0);
+      const spent = expenses.reduce(
+        (sum, transaction) => sum + Math.abs(transaction.amount ?? 0),
+        0,
+      );
       const categories = new Map<string, number>();
       for (const transaction of expenses) {
         const category = transaction.categoryLabel?.trim() || 'Other';
-        categories.set(category, (categories.get(category) ?? 0) + Math.abs(transaction.amount ?? 0));
+        categories.set(
+          category,
+          (categories.get(category) ?? 0) + Math.abs(transaction.amount ?? 0),
+        );
       }
       const topCategories = Array.from(categories.entries())
         .sort((a, b) => b[1] - a[1])
         .slice(0, 3)
         .map(([name, amount]) => `${name}: ${formatAmount(amount)}`);
       const largestExpense = expenses.reduce<TransactionDomain | null>(
-        (largest, transaction) => Math.abs(transaction.amount ?? 0) > Math.abs(largest?.amount ?? 0) ? transaction : largest,
+        (largest, transaction) =>
+          Math.abs(transaction.amount ?? 0) > Math.abs(largest?.amount ?? 0)
+            ? transaction
+            : largest,
         null,
       );
       const biggestMerchant =
@@ -246,24 +271,40 @@ export class TransactionInsightsComponent implements OnDestroy {
       };
     });
     const lastMonthIncome = monthlyTotals[0]?.income ?? 0;
-    return monthlyTotals.map(({ monthStart, monthTransactions, income, spent, topCategories, biggestMerchant, biggestExpense }) => {
-      const monthLabel = monthStart.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      const comparison = lastMonthIncome > 0
-        ? `${(spent / lastMonthIncome * 100).toFixed(0)}% of last month's income (${formatAmount(lastMonthIncome)})`
-        : 'No income recorded last month';
-      return {
-        eyebrow: `Six-month story · ${monthLabel}`,
-        title: isEconomii ? `Savings activity in ${monthLabel}` : `Your money in ${monthLabel}`,
-        value: formatAmount(spent),
-        income: formatAmount(income),
-        balance: signedAmount(income - spent),
-        comparison,
-        transactionCount: monthTransactions.length,
+    return monthlyTotals.map(
+      ({
+        monthStart,
+        monthTransactions,
+        income,
+        spent,
         topCategories,
-        largestPurchase: biggestExpense
-          ? `${formatAmount(biggestExpense)}${biggestMerchant ? ` at ${biggestMerchant}` : ''}`
-          : undefined,
-      };
-    });
+        biggestMerchant,
+        biggestExpense,
+      }) => {
+        const monthLabel = monthStart.toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        });
+        const comparison =
+          lastMonthIncome > 0
+            ? `${((spent / lastMonthIncome) * 100).toFixed(0)}% of last month's income (${formatAmount(lastMonthIncome)})`
+            : 'No income recorded last month';
+        return {
+          eyebrow: `Six-month story · ${monthLabel}`,
+          title: isEconomii
+            ? `Savings activity in ${monthLabel}`
+            : `Your money in ${monthLabel}`,
+          value: formatAmount(spent),
+          income: formatAmount(income),
+          balance: signedAmount(income - spent),
+          comparison,
+          transactionCount: monthTransactions.length,
+          topCategories,
+          largestPurchase: biggestExpense
+            ? `${formatAmount(biggestExpense)}${biggestMerchant ? ` at ${biggestMerchant}` : ''}`
+            : undefined,
+        };
+      },
+    );
   }
 }

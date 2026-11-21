@@ -2,24 +2,21 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  EventEmitter,
-  Input,
   OnInit,
-  Output,
   inject,
+  computed,
   signal,
+  Signal,
+  input,
+  output,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Actions } from '@ngrx/effects';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { filter } from 'rxjs';
 import { StorageSettingsService } from 'src/app/shared/services/storage-settings.service';
 
 export interface StorageManagerConfig {
   title: string;
   storageKey: string;
-  loadFailureActionType: string;
+  loadError: Signal<string | null>;
   obsoleteStorageKeys?: string[];
   uploadValidator?: (data: unknown) => boolean;
 }
@@ -29,42 +26,32 @@ export interface StorageManagerConfig {
   imports: [CommonModule],
   templateUrl: './storage-manager-modal.component.html',
   styleUrl: './storage-manager-modal.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StorageManagerModalComponent implements OnInit {
-  @Input({ required: true }) config!: StorageManagerConfig;
-  @Output() reloadRequested = new EventEmitter<void>();
+  readonly config = input.required<StorageManagerConfig>();
+  readonly reloadRequested = output<void>();
 
   private readonly settingsService = inject(StorageSettingsService);
-  private readonly actions = inject(Actions);
-  private readonly destroyRef = inject(DestroyRef);
   readonly activeModal = inject(NgbActiveModal, { optional: true });
 
-  readonly errorMessage = signal<string | null>(null);
+  private readonly uploadError = signal<string | null>(null);
+  readonly errorMessage = computed(
+    () => this.uploadError() ?? this.config().loadError(),
+  );
   readonly hasStoredItem = signal(false);
 
   ngOnInit(): void {
-    this.config.obsoleteStorageKeys?.forEach((key) => {
+    this.config().obsoleteStorageKeys?.forEach((key) => {
       const oldValue = localStorage.getItem(key);
       if (oldValue === null) return;
 
-      if (localStorage.getItem(this.config.storageKey) === null) {
-        localStorage.setItem(this.config.storageKey, oldValue);
+      if (localStorage.getItem(this.config().storageKey) === null) {
+        localStorage.setItem(this.config().storageKey, oldValue);
       }
       localStorage.removeItem(key);
     });
     this.refreshStorageState();
-    this.actions
-      .pipe(
-        filter((action) => action.type === this.config.loadFailureActionType),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((action) => {
-        const message = 'message' in action ? action.message : null;
-        this.errorMessage.set(
-          typeof message === 'string' ? message : 'Failed to load stored data.',
-        );
-      });
   }
 
   onFileSelected(event: Event): void {
@@ -73,19 +60,19 @@ export class StorageManagerModalComponent implements OnInit {
     if (!file) return;
 
     input.value = '';
-    this.errorMessage.set(null);
+    this.uploadError.set(null);
     this.settingsService
       .uploadStorageItemFromJson(
-        this.config.storageKey,
+        this.config().storageKey,
         file,
-        this.config.uploadValidator,
+        this.config().uploadValidator,
       )
       .then(() => {
         this.refreshStorageState();
         this.reloadRequested.emit();
       })
       .catch((error: unknown) => {
-        this.errorMessage.set(
+        this.uploadError.set(
           error instanceof Error ? error.message : 'Failed to upload file.',
         );
       });
@@ -93,16 +80,16 @@ export class StorageManagerModalComponent implements OnInit {
 
   refreshStorageState(): void {
     this.hasStoredItem.set(
-      localStorage.getItem(this.config.storageKey) !== null,
+      localStorage.getItem(this.config().storageKey) !== null,
     );
   }
 
   downloadItem(): void {
-    this.settingsService.downloadStorageItem(this.config.storageKey);
+    this.settingsService.downloadStorageItem(this.config().storageKey);
   }
 
   removeItem(): void {
-    this.settingsService.removeStorageItem(this.config.storageKey);
+    this.settingsService.removeStorageItem(this.config().storageKey);
     this.refreshStorageState();
   }
 }

@@ -3,13 +3,12 @@ import { TemplatePortal } from '@angular/cdk/portal';
 import {
   ChangeDetectionStrategy,
   Component,
-  HostListener,
   inject,
   OnDestroy,
   TemplateRef,
-  ViewChild,
   ViewContainerRef,
   signal,
+  viewChild,
 } from '@angular/core';
 
 interface LoanInsight {
@@ -24,12 +23,13 @@ interface LoanInsight {
   templateUrl: './loan-simulator-insights.component.html',
   styleUrl: './loan-simulator-insights.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'handleStoryKeyboard($event)' },
 })
 export class LoanInsightsComponent implements OnDestroy {
   private readonly overlay = inject(Overlay);
   private readonly viewContainerRef = inject(ViewContainerRef);
-  @ViewChild('storyOverlay', { static: true })
-  private storyOverlay!: TemplateRef<unknown>;
+  private readonly storyOverlay =
+    viewChild.required<TemplateRef<unknown>>('storyOverlay');
 
   readonly insightStories: LoanInsight[] = [
     {
@@ -68,7 +68,7 @@ export class LoanInsightsComponent implements OnDestroy {
       panelClass: 'simulator-insights-overlay-pane',
     });
     this.overlayRef.attach(
-      new TemplatePortal(this.storyOverlay, this.viewContainerRef),
+      new TemplatePortal(this.storyOverlay(), this.viewContainerRef),
     );
     this.scheduleNextStory();
   }
@@ -128,7 +128,6 @@ export class LoanInsightsComponent implements OnDestroy {
     this.overlayRef?.dispose();
   }
 
-  @HostListener('document:keydown', ['$event'])
   handleStoryKeyboard(event: KeyboardEvent): void {
     if (!this.showInsights()) return;
     if (event.key === 'Escape') this.closeInsights();

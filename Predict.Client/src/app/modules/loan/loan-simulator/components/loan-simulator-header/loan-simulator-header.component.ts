@@ -15,7 +15,7 @@ import { MonthlyInstalmentManager } from '../../models/loan-simulator.model';
   selector: 'p-loan-simulator-header',
   imports: [CommonModule, NumberFormatPipe],
   templateUrl: './loan-simulator-header.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './loan-simulator-header.component.scss',
 })
 export class LoanSimulatorHeaderComponent {

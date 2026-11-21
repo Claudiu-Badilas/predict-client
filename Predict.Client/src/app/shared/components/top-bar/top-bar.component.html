@@ -15,11 +15,11 @@
     </div>
 
     <!-- Filter Button - Desktop only -->
-    @if (hasFiltersContent) {
+    @if (hasFiltersContent()) {
       <button
         type="button"
         class="actions__link filter-btn filter-btn--desktop"
-        [class.active]="isFilterPanelOpen"
+        [class.active]="isFilterPanelOpen()"
         (click)="toggleFilterPanel()"
       >
         <img [src]="getThemeIconPath('filter')" alt="filter" />
@@ -42,13 +42,13 @@
     </div>
 
     <!-- Mobile Actions (Icons only) - Only shown when NO module navigation content -->
-    <div class="actions actions--mobile" *ngIf="!hasModuleNavContent">
-      @if (hasFiltersContent) {
+    <div class="actions actions--mobile" *ngIf="!hasModuleNavContent()">
+      @if (hasFiltersContent()) {
         <button
           type="button"
           class="mobile-extended-menu__item"
           style="border: none"
-          [class.active]="isFilterPanelOpen"
+          [class.active]="isFilterPanelOpen()"
           (click)="toggleFilterPanel()"
         >
           <img [src]="getThemeIconPath('filter')" alt="filter" />
@@ -70,12 +70,12 @@
 
     <!-- Mobile Filter Button - Only shown when module-nav has content AND filters exist -->
     <!-- Combined mobile menu and filter control -->
-    <div class="mobile-menu" *ngIf="hasModuleNavContent">
+    <div class="mobile-menu" *ngIf="hasModuleNavContent()">
       <button
         type="button"
         class="burger-btn"
-        [class.active]="isMenuOpen || isFilterPanelOpen"
-        [attr.aria-expanded]="isMenuOpen || isFilterPanelOpen"
+        [class.active]="isMobileControlsOpen()"
+        [attr.aria-expanded]="isMobileControlsOpen()"
         aria-label="Open navigation and filters"
         (click)="toggleMobileControls()"
       >
@@ -93,7 +93,7 @@
   <!-- Extended Menu - Single row with icons below top bar -->
   <div
     class="mobile-extended-menu"
-    *ngIf="hasModuleNavContent && isMenuOpen"
+    *ngIf="hasModuleNavContent() && isMenuOpen()"
     #mobileMenuRef
   >
     <div class="mobile-extended-menu__items">
@@ -111,11 +111,11 @@
   </div>
 
   <!-- Filter Panel - Extends from top bar -->
-  @if (hasFiltersContent) {
+  @if (hasFiltersContent()) {
     <div
       class="filter-panel"
-      [class.open]="isFilterPanelOpen"
-      [class.animating]="isAnimating"
+      [class.open]="isFilterPanelOpen()"
+      [class.animating]="isAnimating()"
       #filterPanelRef
     >
       <div class="filter-panel__content">

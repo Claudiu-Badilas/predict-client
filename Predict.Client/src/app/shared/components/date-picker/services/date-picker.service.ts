@@ -1,3 +1,6 @@
+import { Injectable } from '@angular/core';
+
+@Injectable({ providedIn: 'root' })
 export class DatePickerService {
   private openDatepickers: Set<string> = new Set();
   private closeCallbacks: Map<string, () => void> = new Map();
@@ -26,7 +29,4 @@ export class DatePickerService {
     this.openDatepickers.delete(id);
   }
 
-  isDatepickerOpen(id: string): boolean {
-    return this.openDatepickers.has(id);
-  }
 }

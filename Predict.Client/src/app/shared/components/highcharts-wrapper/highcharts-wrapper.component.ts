@@ -4,11 +4,11 @@ import {
   Component,
   ElementRef,
   effect,
-  Input,
   inject,
   OnChanges,
   OnDestroy,
   SimpleChanges,
+  input,
 } from '@angular/core';
 import Highcharts from 'highcharts';
 import { ThemeService } from 'src/app/core/services/theme.service';
@@ -22,13 +22,13 @@ import { HighchartsWrapperUtils } from './utils/highcharts-wrapper.utils';
 export class HighchartWrapperComponent
   implements OnChanges, AfterViewInit, OnDestroy
 {
-  @Input({ required: true }) chartOptions: Highcharts.Options | null;
+  readonly chartOptions = input.required<Highcharts.Options | null>();
   private chart: Highcharts.Chart | undefined;
 
   constructor(private el: ElementRef<HTMLElement>) {
     effect(() => {
       this.themeService.theme();
-      if (this.chart && this.chartOptions) {
+      if (this.chart && this.chartOptions()) {
         this.updateChart();
       }
     });
@@ -39,7 +39,7 @@ export class HighchartWrapperComponent
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['chartOptions']) return;
 
-    if (!this.chartOptions) {
+    if (!this.chartOptions()) {
       this.chart?.destroy();
       this.chart = undefined;
     } else if (this.chart) {
@@ -56,19 +56,21 @@ export class HighchartWrapperComponent
   private createChart(): void {
     const container =
       this.el.nativeElement.querySelector<HTMLElement>('.chart-container');
-    if (!container || this.chart || !this.chartOptions) return;
+    const chartOptions = this.chartOptions();
+    if (!container || this.chart || !chartOptions) return;
 
     const options = HighchartsWrapperUtils.buildChartOptions(
-      this.chartOptions,
+      chartOptions,
       this.getThemeColors(),
     );
     this.chart = Highcharts.chart(container, options);
   }
 
   private updateChart(): void {
-    if (this.chart && this.chartOptions) {
+    const chartOptions = this.chartOptions();
+    if (this.chart && chartOptions) {
       const updatedOptions = HighchartsWrapperUtils.buildChartOptions(
-        this.chartOptions,
+        chartOptions,
         this.getThemeColors(),
       );
       this.chart.update(updatedOptions, true, true);

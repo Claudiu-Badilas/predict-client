@@ -22,7 +22,7 @@
         [config]="{
           type: 'tabs',
           options: ['Monthly', 'Yearly', 'All'],
-          selected: getSelectedViewLabel(),
+          selected: selectedViewLabel(),
           ariaLabel: 'Receipt view',
         }"
         (selectionChange)="onToggle($event)"

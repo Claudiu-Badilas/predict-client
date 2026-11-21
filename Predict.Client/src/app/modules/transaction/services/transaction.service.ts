@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { LocalStorageService } from 'src/app/core/services/local-storage.service';
 import { JsDateUtils } from 'src/app/shared/utils/js-date.utils';
@@ -25,8 +25,6 @@ export interface TransactionData {
 
 @Injectable({ providedIn: 'root' })
 export class TransactionService {
-  private parsedPreview: TransactionsApiResponse | null = null;
-
   constructor(
     private readonly httpClient: HttpClient,
     private readonly localStorage: LocalStorageService,
@@ -55,16 +53,7 @@ export class TransactionService {
 
     return source$.pipe(
       map((data) => {
-        const response = this.groupByAccount(data);
-        const allTransactions = [
-          ...response.transactions,
-          ...response.economii,
-        ];
-        const hasUnstoredPreview =
-          allTransactions.length > 0 &&
-          allTransactions.some((transaction) => transaction.id == null);
-        this.parsedPreview = hasUnstoredPreview ? response : null;
-        return response;
+        return this.groupByAccount(data);
       }),
       map((response: TransactionsApiResponse) => {
         const transactions = response.transactions ?? [];
@@ -75,35 +64,6 @@ export class TransactionService {
         };
       }),
     );
-  }
-
-  get canSaveParsedTransactions(): boolean {
-    return this.parsedPreview !== null;
-  }
-
-  saveParsedTransactions(): Observable<TransactionData> {
-    const preview = this.parsedPreview;
-    if (!preview) {
-      return throwError(
-        () => new Error('There are no parsed files ready to save.'),
-      );
-    }
-
-    return this.httpClient
-      .post<TransactionResponse[]>(
-        'https://localhost:8080/api/v1/transactions/import',
-        preview,
-      )
-      .pipe(
-        map((response) => {
-          this.parsedPreview = null;
-          const grouped = this.groupByAccount(response);
-          return {
-            transactions: this.convertToModels(grouped.transactions),
-            economii: this.convertToModels(grouped.economii),
-          };
-        }),
-      );
   }
 
   private groupByAccount(

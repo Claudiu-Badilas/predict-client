@@ -5,14 +5,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  HostListener,
   inject,
   input,
   OnDestroy,
   TemplateRef,
-  ViewChild,
   ViewContainerRef,
   signal,
+  viewChild,
 } from '@angular/core';
 import { ReceiptDomain } from '../../models/receipts-domain.model';
 
@@ -35,12 +34,13 @@ interface ReceiptInsight {
   templateUrl: './receipt-insights.component.html',
   styleUrl: './receipt-insights.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { '(document:keydown)': 'handleStoryKeyboard($event)' },
 })
 export class ReceiptInsightsComponent implements OnDestroy {
   private readonly overlay = inject(Overlay);
   private readonly viewContainerRef = inject(ViewContainerRef);
-  @ViewChild('storyOverlay', { static: true })
-  private storyOverlay!: TemplateRef<unknown>;
+  private readonly storyOverlay =
+    viewChild.required<TemplateRef<unknown>>('storyOverlay');
 
   receipts = input<ReceiptDomain[]>([]);
   startDate = input.required<Date>();
@@ -74,7 +74,7 @@ export class ReceiptInsightsComponent implements OnDestroy {
       panelClass: 'receipt-insights-overlay-pane',
     });
     this.overlayRef.attach(
-      new TemplatePortal(this.storyOverlay, this.viewContainerRef),
+      new TemplatePortal(this.storyOverlay(), this.viewContainerRef),
     );
     this.scheduleNextStory();
   }
@@ -134,7 +134,6 @@ export class ReceiptInsightsComponent implements OnDestroy {
     this.overlayRef?.dispose();
   }
 
-  @HostListener('document:keydown', ['$event'])
   handleStoryKeyboard(event: KeyboardEvent): void {
     if (!this.showInsights()) return;
     if (event.key === 'Escape') this.closeInsights();
@@ -185,57 +184,118 @@ export class ReceiptInsightsComponent implements OnDestroy {
         maximumFractionDigits: 2,
       }).format(amount)} ${currency}`;
 
-    const months = Array.from({ length: 6 }, (_, index) =>
-      new Date(lastMonthStart.getFullYear(), lastMonthStart.getMonth() - index, 1),
+    const months = Array.from(
+      { length: 6 },
+      (_, index) =>
+        new Date(
+          lastMonthStart.getFullYear(),
+          lastMonthStart.getMonth() - index,
+          1,
+        ),
     );
     const monthlyReceipts = months.map((monthStart) => {
-      const nextMonth = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 1);
-      const monthReceipts = receipts.filter(
-        (receipt) => receipt.date !== null && receipt.date >= monthStart && receipt.date < nextMonth,
+      const nextMonth = new Date(
+        monthStart.getFullYear(),
+        monthStart.getMonth() + 1,
+        1,
       );
-      const total = monthReceipts.reduce((sum, receipt) => sum + this.receiptTotal(receipt), 0);
+      const monthReceipts = receipts.filter(
+        (receipt) =>
+          receipt.date !== null &&
+          receipt.date >= monthStart &&
+          receipt.date < nextMonth,
+      );
+      const total = monthReceipts.reduce(
+        (sum, receipt) => sum + this.receiptTotal(receipt),
+        0,
+      );
       const providers = new Map<string, number>();
       const products = new Map<string, number>();
       for (const receipt of monthReceipts) {
         const provider = receipt.provider?.trim() || 'Unknown store';
-        providers.set(provider, (providers.get(provider) ?? 0) + this.receiptTotal(receipt));
+        providers.set(
+          provider,
+          (providers.get(provider) ?? 0) + this.receiptTotal(receipt),
+        );
         for (const product of receipt.products) {
           const name = product.name?.trim();
           if (name) {
-            products.set(name, (products.get(name) ?? 0) + (product.price ?? 0) * (product.quantity ?? 0));
+            products.set(
+              name,
+              (products.get(name) ?? 0) +
+                (product.price ?? 0) * (product.quantity ?? 0),
+            );
           }
         }
       }
       const largest = monthReceipts.reduce<ReceiptDomain | null>(
-        (current, receipt) => !current || this.receiptTotal(receipt) > this.receiptTotal(current) ? receipt : current,
+        (current, receipt) =>
+          !current || this.receiptTotal(receipt) > this.receiptTotal(current)
+            ? receipt
+            : current,
         null,
       );
-      const topProvider = Array.from(providers.entries()).sort((a, b) => b[1] - a[1])[0];
-      const topProduct = Array.from(products.entries()).sort((a, b) => b[1] - a[1])[0];
-      const discounts = monthReceipts.reduce((sum, receipt) => sum + (receipt.totalDiscount ?? 0), 0);
-      return { monthStart, monthReceipts, total, largest, topProvider, topProduct, discounts };
-    });
-    const lastMonthSpend = monthlyReceipts[0]?.total ?? 0;
-    return monthlyReceipts.map(({ monthStart, monthReceipts, total, largest, topProvider, topProduct, discounts }) => {
-      const monthLabel = monthStart.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-      const comparison = lastMonthSpend > 0
-        ? `${Math.round(total / lastMonthSpend * 100)}% of last month's receipt spending (${formatAmount(lastMonthSpend)})`
-        : 'No receipt spending recorded last month';
+      const topProvider = Array.from(providers.entries()).sort(
+        (a, b) => b[1] - a[1],
+      )[0];
+      const topProduct = Array.from(products.entries()).sort(
+        (a, b) => b[1] - a[1],
+      )[0];
+      const discounts = monthReceipts.reduce(
+        (sum, receipt) => sum + (receipt.totalDiscount ?? 0),
+        0,
+      );
       return {
-        eyebrow: `Six-month story · ${monthLabel}`,
-        title: `Your receipts in ${monthLabel}`,
-        value: formatAmount(total),
-        receiptCount: monthReceipts.length,
-        average: formatAmount(monthReceipts.length ? total / monthReceipts.length : 0),
-        comparison,
-        largestReceipt: largest
-          ? `${formatAmount(this.receiptTotal(largest))} at ${largest.provider?.trim() || 'Unknown store'}${largest.date ? ` on ${largest.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
-          : undefined,
-        topStore: topProvider ? `${topProvider[0]} · ${formatAmount(topProvider[1])}` : undefined,
-        topProduct: topProduct ? `${topProduct[0]} · ${formatAmount(topProduct[1])}` : undefined,
-        discounts: formatAmount(discounts),
+        monthStart,
+        monthReceipts,
+        total,
+        largest,
+        topProvider,
+        topProduct,
+        discounts,
       };
     });
+    const lastMonthSpend = monthlyReceipts[0]?.total ?? 0;
+    return monthlyReceipts.map(
+      ({
+        monthStart,
+        monthReceipts,
+        total,
+        largest,
+        topProvider,
+        topProduct,
+        discounts,
+      }) => {
+        const monthLabel = monthStart.toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        });
+        const comparison =
+          lastMonthSpend > 0
+            ? `${Math.round((total / lastMonthSpend) * 100)}% of last month's receipt spending (${formatAmount(lastMonthSpend)})`
+            : 'No receipt spending recorded last month';
+        return {
+          eyebrow: `Six-month story · ${monthLabel}`,
+          title: `Your receipts in ${monthLabel}`,
+          value: formatAmount(total),
+          receiptCount: monthReceipts.length,
+          average: formatAmount(
+            monthReceipts.length ? total / monthReceipts.length : 0,
+          ),
+          comparison,
+          largestReceipt: largest
+            ? `${formatAmount(this.receiptTotal(largest))} at ${largest.provider?.trim() || 'Unknown store'}${largest.date ? ` on ${largest.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
+            : undefined,
+          topStore: topProvider
+            ? `${topProvider[0]} · ${formatAmount(topProvider[1])}`
+            : undefined,
+          topProduct: topProduct
+            ? `${topProduct[0]} · ${formatAmount(topProduct[1])}`
+            : undefined,
+          discounts: formatAmount(discounts),
+        };
+      },
+    );
   }
 
   private receiptTotal(receipt: ReceiptDomain): number {

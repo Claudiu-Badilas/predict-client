@@ -3,17 +3,19 @@
     <input
       type="number"
       class="numeric-input"
-      [class.numeric-input-invalid]="hasValidationError"
-      [formControl]="control"
-      [disabled]="disabled"
+      [class.numeric-input-invalid]="hasValidationError()"
+      [formControl]="control()"
+      [disabled]="disabled()"
       (input)="onInput($event)"
       (blur)="onBlur($event)"
     />
-    @if (label) {
-      <label class="numeric-input-label">{{ label }}</label>
+    @if (label()) {
+      <label class="numeric-input-label">{{ label() }}</label>
     }
   </div>
-  @if (hasValidationError) {
-    <div class="numeric-input-error" role="alert">{{ validationMessage }}</div>
+  @if (hasValidationError()) {
+    <div class="numeric-input-error" role="alert">
+      {{ validationMessage() }}
+    </div>
   }
 </div>

@@ -43,10 +43,6 @@ export namespace DateUtils {
     return jsDate;
   }
 
-  export function getStartOfTheYear({ subtractYears = 0 } = {}) {
-    return new Date(`${new Date().getFullYear() - subtractYears}-01-01`);
-  }
-
   export function splitDate(date: string): string | null {
     if (!date) return null;
     return date.split('T')[0];

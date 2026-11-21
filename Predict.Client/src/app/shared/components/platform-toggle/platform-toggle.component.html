@@ -1,10 +1,10 @@
-@if (config.type === 'switch') {
+@if (switchConfig(); as switch) {
   <button
     class="platform-toggle__switch"
     [class.platform-toggle__switch--active]="checked()"
-    [class.platform-toggle__switch--xsmall]="config.size === 'xsmall'"
-    [disabled]="config.disabled"
-    [attr.aria-label]="config.ariaLabel"
+    [class.platform-toggle__switch--xsmall]="switch.size === 'xsmall'"
+    [disabled]="switch.disabled"
+    [attr.aria-label]="switch.ariaLabel"
     [attr.aria-checked]="checked()"
     (click)="toggle()"
     role="switch"
@@ -12,7 +12,7 @@
   >
     <span class="platform-toggle__switch-thumb"></span>
   </button>
-} @else if (config.type === 'theme') {
+} @else if (config().type === 'theme') {
   <button
     type="button"
     class="platform-toggle__theme"
@@ -43,33 +43,33 @@
       {{ themeService.theme() === 'light' ? 'Light' : 'Dark' }}
     </span>
   </button>
-} @else {
+} @else if (selectionConfig(); as selection) {
   <div
     class="platform-toggle__options"
-    [class.platform-toggle__options--tabs]="config.type === 'tabs'"
-    [class.platform-toggle__options--toolbar]="config.type === 'toolbar'"
+    [class.platform-toggle__options--tabs]="selection.type === 'tabs'"
+    [class.platform-toggle__options--toolbar]="selection.type === 'toolbar'"
     role="group"
-    [attr.aria-label]="config.ariaLabel"
+    [attr.aria-label]="selection.ariaLabel"
   >
-    @if (config.options.length > 0) {
+    @if (selection.options.length > 0) {
       <span
         class="platform-toggle__slider"
-        [style.width]="'calc((100% - 6px) / ' + config.options.length + ')'"
+        [style.width]="'calc((100% - 6px) / ' + selection.options.length + ')'"
         [style.transform]="
-          'translateX(' + getSelectedIndex(config.options) * 100 + '%)'
+          'translateX(' + getSelectedIndex(selection.options) * 100 + '%)'
         "
-        [style.background]="config.gradient ? getGradient(config) : null"
+        [style.background]="selection.gradient ? getGradient(selection) : null"
         aria-hidden="true"
       ></span>
     }
 
-    @for (option of config.options; track getOptionLabel(option)) {
+    @for (option of selection.options; track getOptionLabel(option)) {
       <button
         class="platform-toggle__option"
         [class.platform-toggle__option--active]="
           getOptionValue(option) === selected()
         "
-        [disabled]="config.disabled"
+        [disabled]="selection.disabled"
         [attr.aria-label]="getOptionLabel(option)"
         [attr.aria-pressed]="getOptionValue(option) === selected()"
         (click)="select(option)"

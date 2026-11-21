@@ -1,14 +1,12 @@
 import {
   ChangeDetectionStrategy,
+  computed,
   Component,
   inject,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Store } from '@ngrx/store';
-import * as ReceiptsActions from 'src/app/modules/receipts/actions/receipts.actions';
-import { ReceiptsStore } from 'src/app/modules/receipts/reducers/receipts.reducer';
+import { ReceiptsStore } from 'src/app/modules/receipts/stores/receipts.store';
 import { RangeSelectorComponent } from 'src/app/shared/components/date-range-picker/date-range-picker.component';
 import { PlatformToggleComponent } from 'src/app/shared/components/platform-toggle/platform-toggle.component';
 import { SearchInputComponent } from 'src/app/shared/components/search-input/search-input.component';
@@ -31,7 +29,7 @@ import { ReceiptInsightsComponent } from './components/receipt-insights/receipt-
     ReceiptInsightsComponent,
   ],
   templateUrl: './receipts.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./receipts.component.scss'],
 })
 export class ReceiptsComponent {
@@ -43,21 +41,22 @@ export class ReceiptsComponent {
   receipts = this.receiptsStore.availableReceipts;
   receiptSortMode = signal<ReceiptSortMode>('newest');
 
-  minDate = new Date('2016-01-01');
-  now = new Date();
+  readonly minDate = new Date('2016-01-01');
+  readonly now = new Date();
+  readonly selectedViewLabel = computed(() => {
+    const viewMode = this.viewMode();
+    if (viewMode === 'all') return 'All';
+    if (viewMode === 'yearly') return 'Yearly';
+    return 'Monthly';
+  });
 
-  constructor(
-    private readonly store: Store,
-    private readonly modalService: NgbModal,
-  ) {
-    this.store.dispatch(ReceiptsActions.loadReceipts());
+  constructor() {
+    this.receiptsStore.loadReceipts();
   }
 
   onToggle(value: string): void {
-    this.store.dispatch(
-      ReceiptsActions.receiptsViewModeChanged({
-        viewMode: value.toLowerCase() as 'all' | 'monthly' | 'yearly',
-      }),
+    this.receiptsStore.setReceiptsViewMode(
+      value.toLowerCase() as 'all' | 'monthly' | 'yearly',
     );
   }
 
@@ -73,25 +72,11 @@ export class ReceiptsComponent {
     );
   }
 
-  getSelectedViewLabel(): string {
-    if (this.viewMode() === 'all') return 'All';
-    if (this.viewMode() === 'yearly') return 'Yearly';
-    return 'Monthly';
-  }
-
   handleRangeChange(value: any): void {
-    this.store.dispatch(
-      ReceiptsActions.dateRangeChanged({
-        startDate: value.startDate,
-        endDate: value.endDate,
-      }),
-    );
-    this.store.dispatch(ReceiptsActions.loadReceipts());
+    this.receiptsStore.setDateRange(value.startDate, value.endDate);
   }
 
   onSearch(value: string): void {
-    this.store.dispatch(
-      ReceiptsActions.searchTermChanged({ searchTerm: value }),
-    );
+    this.receiptsStore.setSearchTerm(value);
   }
 }

@@ -15,7 +15,7 @@ import { MathUtil } from 'src/app/shared/utils/math.utils';
   selector: 'p-loan-detailed-header',
   imports: [CommonModule, NumberFormatPipe],
   templateUrl: './loan-detailed-header.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './loan-detailed-header.component.scss',
 })
 export class LoanDetailedHeaderComponent {
@@ -34,8 +34,7 @@ export class LoanDetailedHeaderComponent {
     this.simulationMonthlyInstalmentBatches()
       .flatMap((batch) => batch.instalments)
       .filter(
-        (instalment) =>
-          instalment.instalmentPayment || instalment.earlyPayment,
+        (instalment) => instalment.instalmentPayment || instalment.earlyPayment,
       ),
   );
   readonly hasSimulatedPayments = computed(
@@ -52,8 +51,9 @@ export class LoanDetailedHeaderComponent {
   );
   readonly simulatedPaidPrincipalPercent = computed(() => {
     const total = Calculator.sum(
-      this.updatedBaseRepaymentScheduleBasedOnLatestStates()
-        .map((instalment) => instalment.principalAmount ?? 0),
+      this.updatedBaseRepaymentScheduleBasedOnLatestStates().map(
+        (instalment) => instalment.principalAmount ?? 0,
+      ),
     );
 
     return MathUtil.percent(this.simulatedPaidPrincipal(), total);
@@ -89,8 +89,9 @@ export class LoanDetailedHeaderComponent {
     () => this.baseRepaymentSchedule()?.monthlyInstalments.length ?? 0,
   );
   readonly simulatedFirstInstalmentPaymentDate = computed(
-    () => this.simulatedPayments().find((payment) => payment.newPaymentDate)
-      ?.newPaymentDate ?? null,
+    () =>
+      this.simulatedPayments().find((payment) => payment.newPaymentDate)
+        ?.newPaymentDate ?? null,
   );
   readonly simulatedLastInstalmentPaymentDate = computed(
     () => this.simulatedPayments().at(-1)?.newPaymentDate ?? null,

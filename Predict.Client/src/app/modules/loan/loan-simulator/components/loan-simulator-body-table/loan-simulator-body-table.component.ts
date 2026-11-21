@@ -5,6 +5,7 @@ import {
   computed,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { LoanStore } from 'src/app/modules/loan/stores/loan.store';
@@ -12,25 +13,22 @@ import { NumberFormatPipe } from 'src/app/shared/pipes/number-format.pipe';
 import { ScrollableDirective } from 'src/app/shared/directives/scrollable.directive';
 import { Calculator } from 'src/app/shared/utils/calculator.utils';
 import { ThemeService } from 'src/app/core/services/theme.service';
-import {
-  LoanSimulatorInstalment,
-  MonthlyInstalmentManager,
-} from '../../models/loan-simulator.model';
+import { MonthlyInstalmentManager } from '../../models/loan-simulator.model';
 
 @Component({
   selector: 'p-loan-simulator-body-table',
   imports: [CommonModule, FormsModule, NumberFormatPipe, ScrollableDirective],
   templateUrl: './loan-simulator-body-table.component.html',
   styleUrl: './loan-simulator-body-table.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoanSimulatorBodyTableComponent {
-  monthlyInstalmentGroups = input<MonthlyInstalmentManager[]>([]);
-  gestureFeedback: {
+  readonly monthlyInstalmentGroups = input<MonthlyInstalmentManager[]>([]);
+  readonly gestureFeedback = signal<{
     group: MonthlyInstalmentManager;
     direction: 'left' | 'right' | 'down' | 'up';
     label: string;
-  } | null = null;
+  } | null>(null);
 
   private touchStart: {
     x: number;
@@ -56,7 +54,7 @@ export class LoanSimulatorBodyTableComponent {
     if (Date.now() < this.suppressGroupClickUntil) {
       return;
     }
-    group.expanded = !group.expanded;
+    group.expanded.update((expanded) => !expanded);
   }
 
   onMobileTouchStart(
@@ -133,7 +131,7 @@ export class LoanSimulatorBodyTableComponent {
     }
 
     if (!direction) {
-      this.gestureFeedback = null;
+      this.gestureFeedback.set(null);
       return;
     }
 
@@ -143,11 +141,11 @@ export class LoanSimulatorBodyTableComponent {
     this.suppressGroupClickUntil = Date.now() + 500;
 
     if (direction === 'left') {
-      this.onRemoveEarlyPayment(start.group, event);
+      this.onRemoveEarlyPayment(start.group);
     } else if (direction === 'right') {
-      this.onAddEarlyPayment(start.group, event);
+      this.onAddEarlyPayment(start.group);
     } else if (direction === 'down') {
-      this.onDispatchInstalment(start.group, event);
+      this.onDispatchInstalment(start.group);
     }
 
     this.showGestureFeedback(start.group, direction, true);
@@ -155,7 +153,7 @@ export class LoanSimulatorBodyTableComponent {
 
   onMobileTouchCancel() {
     this.touchStart = null;
-    this.gestureFeedback = null;
+    this.gestureFeedback.set(null);
   }
 
   private showGestureFeedback(
@@ -170,19 +168,15 @@ export class LoanSimulatorBodyTableComponent {
       up: 'Gest anulat',
     };
     const feedback = { group, direction, label: labels[direction] };
-    this.gestureFeedback = feedback;
+    this.gestureFeedback.set(feedback);
 
     if (clearAfter) {
       setTimeout(() => {
-        if (this.gestureFeedback === feedback) {
-          this.gestureFeedback = null;
+        if (this.gestureFeedback() === feedback) {
+          this.gestureFeedback.set(null);
         }
       }, 650);
     }
-  }
-
-  toggleRow(row: LoanSimulatorInstalment) {
-    row.instalmentPayment = !row.instalmentPayment;
   }
 
   getSubtotal(group: MonthlyInstalmentManager) {
@@ -208,13 +202,13 @@ export class LoanSimulatorBodyTableComponent {
     };
   }
 
-  onAddEarlyPayment(group: MonthlyInstalmentManager, event: Event) {
+  onAddEarlyPayment(group: MonthlyInstalmentManager) {
     this.store.toggleEarlyPayments([
       group.instalments?.at(-1)?.instalmentId + 1,
     ]);
   }
 
-  onRemoveEarlyPayment(group: MonthlyInstalmentManager, event: Event) {
+  onRemoveEarlyPayment(group: MonthlyInstalmentManager) {
     const selectedEarlyPayments = this.store.selectedEarlyPayments();
     const instalmentId = [...group.instalments]
       .reverse()
@@ -238,34 +232,20 @@ export class LoanSimulatorBodyTableComponent {
     }
   }
 
-  onDispatchInstalment(group: MonthlyInstalmentManager, event: Event) {
+  onDispatchInstalment(group: MonthlyInstalmentManager) {
     this.store.toggleInstalmentPayments([
       group.instalments?.at(-1)?.instalmentId + 1,
     ]);
   }
 
-  onSelectInstalmentPayment(instalment: LoanSimulatorInstalment) {
-    this.store.toggleInstalmentPayments([instalment.instalmentId]);
-  }
-
-  onSelectEarlyPayment(instalment: LoanSimulatorInstalment) {
-    this.store.toggleEarlyPayments([instalment.instalmentId]);
-  }
-
   onExpandAll() {
-    this.monthlyInstalmentGroups().forEach((group) => (group.expanded = true));
+    this.monthlyInstalmentGroups().forEach((group) => group.expanded.set(true));
   }
 
   onCollapseAll() {
-    this.monthlyInstalmentGroups().forEach((group) => (group.expanded = false));
-  }
-
-  expandState = true;
-
-  onExpandOrCollapse() {
-    this.expandState = !this.expandState;
-    this.monthlyInstalmentGroups().forEach(
-      (group) => (group.expanded = this.expandState),
+    this.monthlyInstalmentGroups().forEach((group) =>
+      group.expanded.set(false),
     );
   }
+
 }

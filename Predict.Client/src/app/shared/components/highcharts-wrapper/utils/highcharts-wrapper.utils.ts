@@ -35,7 +35,7 @@ export namespace HighchartsWrapperUtils {
     function (
       this: Highcharts.Tooltip,
       labelWidth: number,
-      labelHeight: number,
+      _labelHeight: number,
       point: Highcharts.Point,
     ): { x: number; y: number } {
       const chart = this.chart;

@@ -7,13 +7,13 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { LayoutStore } from 'src/app/store/reducers/layout.reducer';
+import { LayoutStore } from 'src/app/store/layout.store';
 
 @Component({
   selector: 'p-spinner',
   imports: [CommonModule],
   templateUrl: './spinner.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./spinner.component.scss'],
 })
 export class SpinnerComponent {

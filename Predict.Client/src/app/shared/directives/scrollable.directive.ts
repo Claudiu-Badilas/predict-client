@@ -2,7 +2,6 @@ import {
   AfterViewInit,
   Directive,
   ElementRef,
-  HostBinding,
   OnDestroy,
   Renderer2,
 } from '@angular/core';
@@ -10,11 +9,9 @@ import {
 @Directive({
   selector: '[scrollable]',
   standalone: true,
+  host: { '[class.scrollable-container]': 'true' },
 })
 export class ScrollableDirective implements AfterViewInit, OnDestroy {
-  @HostBinding('class.scrollable-container')
-  readonly scrollableContainer = true;
-
   private readonly element: HTMLElement;
   private readonly verticalThumb: HTMLElement;
   private readonly horizontalThumb: HTMLElement;

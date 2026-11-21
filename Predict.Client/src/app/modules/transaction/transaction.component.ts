@@ -8,12 +8,9 @@ import {
 } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
-import { Store } from '@ngrx/store';
 import { TopBarComponent } from 'src/app/shared/components/top-bar/top-bar.component';
 
-import * as TransactionsActions from 'src/app/modules/transaction/actions/transactions.actions';
-import * as fromTransactions from 'src/app/modules/transaction/reducers/transactions.reducer';
-import { TransactionsStore } from 'src/app/modules/transaction/reducers/transactions.reducer';
+import { TransactionsStore } from 'src/app/modules/transaction/stores/transactions.store';
 import { TransactionsSettingsComponent } from './components/transaction-settings/transaction-settings.component';
 import { MostCommonTransactionComponent } from './components/most-common-transaction/most-common-transaction.component';
 import { TransactionInsightsComponent } from './components/transaction-insights/transaction-insights.component';
@@ -27,7 +24,7 @@ import { TransactionInsightsComponent } from './components/transaction-insights/
     TransactionInsightsComponent,
   ],
   templateUrl: './transaction.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./transaction.component.scss'],
 })
 export class TransactionComponent {
@@ -35,8 +32,8 @@ export class TransactionComponent {
   startDate = this.transactionsStore.startDate;
   endDate = this.transactionsStore.endDate;
   viewMode = this.transactionsStore.viewMode;
-  transactions = this.transactionsStore.availableTransactions;
-  economii = this.transactionsStore.availableEconomii;
+  transactions = this.transactionsStore.transactions;
+  economii = this.transactionsStore.economii;
   selectedAccount = signal('');
   accountOptions = computed(() => {
     const accounts = new Set<string>([
@@ -81,14 +78,13 @@ export class TransactionComponent {
         )
       : [],
   );
-  minDate = new Date('2016-01-01');
-  maxDate = new Date('2030-01-01');
+  readonly minDate = new Date('2016-01-01');
+  readonly maxDate = new Date('2030-01-01');
 
-  constructor(
-    private readonly store: Store<fromTransactions.State>,
-    private readonly modalService: NgbModal,
-  ) {
-    this.store.dispatch(TransactionsActions.loadTransactions());
+  private readonly modalService = inject(NgbModal);
+
+  constructor() {
+    this.transactionsStore.loadTransactions();
   }
 
   openStorageSettings(): void {
@@ -100,16 +96,11 @@ export class TransactionComponent {
   }
 
   handleRangeChange(value: any) {
-    this.store.dispatch(
-      TransactionsActions.dateRangeChanged({
-        startDate: value.startDate,
-        endDate: value.endDate,
-      }),
-    );
+    this.transactionsStore.setDateRange(value.startDate, value.endDate);
   }
 
   onViewModeChange(viewMode: 'all' | 'monthly' | 'yearly') {
-    this.store.dispatch(TransactionsActions.viewModeChanged({ viewMode }));
+    this.transactionsStore.setViewMode(viewMode);
   }
 
   setInsightsDataset(account: string): void {

@@ -1,13 +1,13 @@
 <div class="dropdown-container" #dropdownContainer>
   <button
     class="btn dropdown-toggle-btn w-100 text-left d-flex justify-content-between align-items-center"
-    [class.filled]="selectedItem"
-    [class.open]="isOpen"
+    [class.filled]="selectedItem()"
+    [class.open]="isOpen()"
     type="button"
     #dropdownToggle
     (click)="toggleDropdown($event)"
   >
-    <span class="dropdown-text">{{ selectedItem || placeholder }}</span>
+    <span class="dropdown-text">{{ selectedItem() || placeholder() }}</span>
     <svg
       class="dropdown-icon"
       width="16"
@@ -30,7 +30,7 @@
   <ng-template #dropdownTemplate>
     <div
       class="dropdown-menu-custom"
-      [class.dropup]="shouldDropUp"
+      [class.dropup]="dropUp()"
       (click)="$event.stopPropagation()"
     >
       <!-- Search Input -->
@@ -60,7 +60,8 @@
           type="text"
           class="search-input"
           placeholder="Search items..."
-          [(ngModel)]="searchTerm"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
           (click)="$event.stopPropagation()"
           (keydown)="onSearchKeydown($event)"
         />
@@ -90,11 +91,11 @@
             <button
               class="dropdown-item-custom"
               (click)="selectItem(item)"
-              [class.selected]="item === selectedItem"
+              [class.selected]="item === selectedItem()"
               type="button"
             >
               <span>{{ item }}</span>
-              @if (item === selectedItem) {
+              @if (item === selectedItem()) {
                 <svg
                   class="check-icon"
                   width="16"

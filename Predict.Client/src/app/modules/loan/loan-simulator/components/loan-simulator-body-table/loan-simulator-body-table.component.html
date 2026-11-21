@@ -40,7 +40,7 @@
         @if (group.completed) {
           <tr
             class="group-header-subtotal-row"
-            [class.expanded-group]="group.expanded"
+            [class.expanded-group]="group.expanded()"
           >
             @let subtotal = getSubtotal(group);
 
@@ -92,7 +92,7 @@
                     type="button"
                     class="action-btn remove-early"
                     title="Elimină o rată anticipată"
-                    (click)="onRemoveEarlyPayment(group, $event)"
+                    (click)="onRemoveEarlyPayment(group)"
                   >
                     −
                   </button>
@@ -100,7 +100,7 @@
                     type="button"
                     class="action-btn add-early"
                     title="Adaugă următoarea rată ca anticipată"
-                    (click)="onAddEarlyPayment(group, $event)"
+                    (click)="onAddEarlyPayment(group)"
                   >
                     +
                   </button>
@@ -108,7 +108,7 @@
                     type="button"
                     class="action-btn dispatch-instalment"
                     title="Marchează o rată ca plătită"
-                    (click)="onDispatchInstalment(group, $event)"
+                    (click)="onDispatchInstalment(group)"
                   >
                     ✓
                   </button>
@@ -118,7 +118,7 @@
           }
         }
 
-        @if (!group.completed || group.expanded) {
+        @if (!group.completed || group.expanded()) {
           @for (
             row of group.instalments;
             let last = $last;
@@ -260,22 +260,22 @@
               </span>
             </div>
           </div>
-          @if (gestureFeedback?.group === group) {
+          @if (gestureFeedback()?.group === group) {
             <div
               class="gesture-feedback"
-              [class.remove-early]="gestureFeedback?.direction === 'left'"
-              [class.add-early]="gestureFeedback?.direction === 'right'"
+              [class.remove-early]="gestureFeedback()?.direction === 'left'"
+              [class.add-early]="gestureFeedback()?.direction === 'right'"
               [class.dispatch-instalment]="
-                gestureFeedback?.direction === 'down'
+                gestureFeedback()?.direction === 'down'
               "
               role="status"
             >
-              {{ gestureFeedback?.label }}
+              {{ gestureFeedback()?.label }}
             </div>
           }
         </div>
 
-        @if (group.expanded) {
+        @if (group.expanded()) {
           <div class="mobile-items-list">
             @for (row of group.instalments; track row.instalmentId) {
               <div

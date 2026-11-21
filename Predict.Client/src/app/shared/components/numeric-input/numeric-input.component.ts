@@ -1,45 +1,86 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
-  Input,
-  Output,
+  computed,
+  input,
+  output,
 } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { map, startWith, switchMap } from 'rxjs';
+
+interface NumericControlState {
+  invalid: boolean;
+  touched: boolean;
+  dirty: boolean;
+  required: boolean;
+  minimum?: number;
+  maximum?: number;
+}
 
 @Component({
   selector: 'p-numeric-input',
   imports: [ReactiveFormsModule],
   templateUrl: './numeric-input.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./numeric-input.component.scss'],
 })
 export class NumericInputComponent {
-  @Input() label = '';
-  @Input() disabled = false;
-  @Input({ required: true }) control!: FormControl<number | null>;
+  readonly label = input('');
+  readonly disabled = input(false);
+  readonly control = input.required<FormControl<number | null>>();
 
-  @Output() valueChange = new EventEmitter<number | null>();
+  readonly valueChange = output<number | null>();
 
-  get hasValidationError(): boolean {
-    return this.control.invalid && (this.control.touched || this.control.dirty);
-  }
+  private readonly controlState = toSignal(
+    toObservable(this.control).pipe(
+      switchMap((control) =>
+        control.events.pipe(
+          startWith(null),
+          map(() => ({
+            invalid: control.invalid,
+            touched: control.touched,
+            dirty: control.dirty,
+            required: control.hasError('required'),
+            minimum: control.getError('min')?.min as number | undefined,
+            maximum: control.getError('max')?.max as number | undefined,
+          })),
+        ),
+      ),
+    ),
+    {
+      initialValue: {
+        invalid: false,
+        touched: false,
+        dirty: false,
+        required: false,
+        minimum: undefined,
+        maximum: undefined,
+      } satisfies NumericControlState,
+    },
+  );
 
-  get validationMessage(): string {
-    if (this.control?.hasError('required')) {
+  readonly hasValidationError = computed(() => {
+    const state = this.controlState();
+    return state.invalid && (state.touched || state.dirty);
+  });
+
+  readonly validationMessage = computed(() => {
+    const state = this.controlState();
+    if (state.required) {
       return 'Required';
     }
 
-    if (this.control?.hasError('min')) {
-      return `Min: ${this.control.getError('min').min}`;
+    if (state.minimum !== undefined) {
+      return `Min: ${state.minimum}`;
     }
 
-    if (this.control?.hasError('max')) {
-      return `Max: ${this.control.getError('max').max}`;
+    if (state.maximum !== undefined) {
+      return `Max: ${state.maximum}`;
     }
 
     return 'Invalid number';
-  }
+  });
 
   onInput(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -49,7 +90,7 @@ export class NumericInputComponent {
       newValue = null;
     }
 
-    this.control.setValue(newValue);
+    this.control().setValue(newValue);
     this.valueChange.emit(newValue);
   }
 
@@ -60,7 +101,7 @@ export class NumericInputComponent {
       const numValue = Number(input.value);
       const formatted = Math.round(numValue * 100) / 100;
       if (formatted !== numValue) {
-        this.control.setValue(formatted);
+        this.control().setValue(formatted);
         this.valueChange.emit(formatted);
       }
     }

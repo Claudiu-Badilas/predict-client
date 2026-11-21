@@ -26,10 +26,6 @@ export namespace JsDateUtils {
     return isSame(d1, d2) || isAfter(d1, d2);
   }
 
-  export function isBetween(from: Date, target: Date, to: Date): boolean {
-    return isSameOrAfter(from, target) && isSameOrBefore(target, to);
-  }
-
   export function addMonths(date: Date, months: number): Date {
     const result = new Date(date);
 

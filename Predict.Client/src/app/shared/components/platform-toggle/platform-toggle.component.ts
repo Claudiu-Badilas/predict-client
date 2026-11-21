@@ -1,13 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
-  OnChanges,
-  Output,
-  SimpleChanges,
-  signal,
+  input,
+  linkedSignal,
+  output,
+  computed,
 } from '@angular/core';
 import { ThemeService } from '../../../core/services/theme.service';
 
@@ -49,50 +47,41 @@ export type PlatformToggleConfig =
   styleUrl: './platform-toggle.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.platform-toggle--full-width]':
-      'config?.type !== "switch" && config?.type !== "theme" && config?.fullWidth === true',
+    '[class.platform-toggle--full-width]': 'isFullWidth()',
   },
 })
-export class PlatformToggleComponent implements OnChanges {
+export class PlatformToggleComponent {
   readonly themeService = inject(ThemeService);
 
-  @Input({ required: true }) config!: PlatformToggleConfig;
-  @Output() toggleChange = new EventEmitter<boolean>();
-  @Output() selectionChange = new EventEmitter<string>();
+  readonly config = input.required<PlatformToggleConfig>();
+  readonly switchConfig = computed(() => {
+    const config = this.config();
+    return config.type === 'switch' ? config : null;
+  });
+  readonly selectionConfig = computed(() => {
+    const config = this.config();
+    return config.type === 'switch' || config.type === 'theme' ? null : config;
+  });
+  readonly isFullWidth = computed(
+    () => this.selectionConfig()?.fullWidth === true,
+  );
+  readonly toggleChange = output<boolean>();
+  readonly selectionChange = output<string>();
 
-  readonly checked = signal(false);
-  readonly selected = signal<string | null>(null);
-
-  ngOnChanges(changes: SimpleChanges): void {
-    const configChange = changes['config'];
-    if (!configChange) return;
-
-    if (this.config.type === 'switch') {
-      this.checked.set(this.config.value);
-      return;
-    }
-    if (this.config.type === 'theme') return;
-
-    const previous = configChange.previousValue as
-      PlatformToggleConfig | undefined;
-    const values = this.config.options.map((option) =>
-      this.getOptionValue(option),
-    );
-    const currentSelection = this.selected();
-
-    if (
-      !previous ||
-      previous.type === 'switch' ||
-      previous.type !== this.config.type ||
-      previous.selected !== this.config.selected ||
-      !values.includes(currentSelection ?? '')
-    ) {
-      this.selected.set(this.config.selected ?? values[0] ?? null);
-    }
-  }
+  readonly checked = linkedSignal(() => {
+    const config = this.config();
+    return config.type === 'switch' ? config.value : false;
+  });
+  readonly selected = linkedSignal(() => {
+    const config = this.config();
+    if (config.type === 'switch' || config.type === 'theme') return null;
+    const values = config.options.map((option) => this.getOptionValue(option));
+    return config.selected ?? values[0] ?? null;
+  });
 
   toggle(): void {
-    if (this.config.type !== 'switch' || this.config.disabled) return;
+    const config = this.config();
+    if (config.type !== 'switch' || config.disabled) return;
 
     const value = !this.checked();
     this.checked.set(value);
@@ -100,10 +89,11 @@ export class PlatformToggleComponent implements OnChanges {
   }
 
   select(option: string | PlatformToggleOption): void {
+    const config = this.config();
     if (
-      this.config.type === 'switch' ||
-      this.config.type === 'theme' ||
-      this.config.disabled
+      config.type === 'switch' ||
+      config.type === 'theme' ||
+      config.disabled
     ) {
       return;
     }
@@ -118,7 +108,7 @@ export class PlatformToggleComponent implements OnChanges {
   }
 
   getOptionValue(option: string | PlatformToggleOption): string {
-    return typeof option === 'string' ? option : option.value ?? option.label;
+    return typeof option === 'string' ? option : (option.value ?? option.label);
   }
 
   getOptionIcon(option: string | PlatformToggleOption): string | undefined {

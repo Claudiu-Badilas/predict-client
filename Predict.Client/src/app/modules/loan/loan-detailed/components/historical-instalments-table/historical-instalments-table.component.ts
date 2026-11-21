@@ -15,7 +15,7 @@ import { HistoricalInstalmentPaymentBatch } from '../../models/base-loan-rate.mo
   imports: [CommonModule, NumberFormatPipe],
   templateUrl: './historical-instalments-table.component.html',
   styleUrl: './historical-instalments-table.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HistoricalInstalmentsTableComponent {
   monthlyInstalmentGroups = input<HistoricalInstalmentPaymentBatch[]>([]);

@@ -27,21 +27,7 @@ export class LoanService {
         );
         return this._httpClient
           .get<RepaymentScheduleDto[]>('https://localhost:8080/api/v1/loan/bcr')
-          .pipe(
-            mergeMap((dtos) =>
-              from(
-                this._encryptionService.encode<RepaymentScheduleDto>(
-                  dtos,
-                  LoanEncryptionKeyBase64,
-                ),
-              ).pipe(
-                map((encoded) => {
-                  //console.warn('🚀 ~ encoded', JSON.stringify(encoded));
-                  return dtos.map((dto) => new RepaymentSchedule(dto));
-                }),
-              ),
-            ),
-          );
+          .pipe(map((dtos) => dtos.map((dto) => new RepaymentSchedule(dto))));
       }),
     );
   }

@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ElementRef,
-  ViewChild,
   Component,
   computed,
   input,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ScrollableDirective } from 'src/app/shared/directives/scrollable.directive';
@@ -55,12 +55,12 @@ interface AccountOption {
     PlatformToggleComponent,
   ],
   templateUrl: './most-common-transaction.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './most-common-transaction.component.scss',
 })
 export class MostCommonTransactionComponent {
-  @ViewChild('transactionsScroll')
-  private transactionsScroll?: ElementRef<HTMLElement>;
+  private readonly transactionsScroll =
+    viewChild<ElementRef<HTMLElement>>('transactionsScroll');
   transactions = input<TransactionDomain[]>([]);
   economiiTransactions = input<TransactionDomain[]>([]);
   viewMode = input<'all' | 'monthly' | 'yearly'>('monthly');
@@ -351,14 +351,14 @@ export class MostCommonTransactionComponent {
     this.scrollTransactionsToTop();
   }
 
-  selectedCategoryLabel(): string {
+  readonly selectedCategoryLabel = computed(() => {
     const category = this.selectedCategory();
     return (
       this.selectedTransaction().find(
         (transaction) => transaction.category === category,
       )?.categoryLabel ?? ''
     );
-  }
+  });
 
   selectProvider(provider: string): void {
     const selected = this.selectedProvider()?.toLocaleLowerCase();
@@ -432,7 +432,7 @@ export class MostCommonTransactionComponent {
 
   private scrollTransactionsToTop(): void {
     requestAnimationFrame(() => {
-      this.transactionsScroll?.nativeElement.scrollTo({
+      this.transactionsScroll()?.nativeElement.scrollTo({
         top: 0,
         behavior: 'smooth',
       });

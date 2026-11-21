@@ -7,7 +7,7 @@ import { TopBarComponent } from '../../shared/components/top-bar/top-bar.compone
   imports: [RouterModule, TopBarComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent {
   readonly modules = [

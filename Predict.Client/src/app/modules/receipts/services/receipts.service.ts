@@ -28,21 +28,7 @@ export class ReceiptsService {
           .get<ReceiptDto[]>(
             `https://localhost:8080/api/v1/receipts?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
           )
-          .pipe(
-            mergeMap((dtos) =>
-              from(
-                this._encryptionService.encode<ReceiptDto>(
-                  dtos,
-                  LoanEncryptionKeyBase64,
-                ),
-              ).pipe(
-                map((encoded) => {
-                  // console.warn('🚀 ~ encoded', JSON.stringify(encoded));
-                  return dtos.map((dto) => new ReceiptDomain(dto));
-                }),
-              ),
-            ),
-          );
+          .pipe(map((dtos) => dtos.map((dto) => new ReceiptDomain(dto))));
       }),
     );
   }

@@ -1,5 +1,12 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, computed, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap';
 import { ThemeService } from 'src/app/core/services/theme.service';
 
@@ -41,6 +48,7 @@ interface CalendarWeek {
   imports: [DecimalPipe, NgbTooltip],
   templateUrl: './activity-calendar.component.html',
   styleUrl: './activity-calendar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ActivityCalendarComponent {
   contributions = input<ActivityContribution[]>([]);
@@ -115,14 +123,6 @@ export class ActivityCalendarComponent {
     return this.themeService.theme() === 'dark'
       ? (option.darkColor ?? option.color)
       : option.color;
-  }
-
-  getColorLabel(date: Date): string {
-    const selectedId = this.getSelectedColorId(date) ?? DEFAULT_COLOR_OPTION_ID;
-    return (
-      this.colorOptions().find((option) => option.id === selectedId)?.label ??
-      'Default'
-    );
   }
 
   getDayAccessibleLabel(day: CalendarDay): string {

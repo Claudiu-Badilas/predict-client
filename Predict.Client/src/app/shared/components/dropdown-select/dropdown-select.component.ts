@@ -1,21 +1,24 @@
 import { Overlay, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
-import { CommonModule, DOCUMENT } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   AfterViewInit,
-  ChangeDetectorRef,
+  computed,
   Component,
+  DestroyRef,
   ElementRef,
-  EventEmitter,
-  Inject,
-  Input,
+  inject,
   OnDestroy,
-  Output,
   TemplateRef,
-  ViewChild,
   ViewContainerRef,
   ChangeDetectionStrategy,
+  input,
+  output,
+  viewChild,
+  linkedSignal,
+  signal,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -23,40 +26,45 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
   selector: 'p-dropdown-select',
   templateUrl: './dropdown-select.component.html',
   styleUrls: ['./dropdown-select.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NgbDropdownModule, FormsModule, CommonModule],
 })
 export class DropdownSelectComponent implements AfterViewInit, OnDestroy {
-  @Input({ required: true }) items: string[] = [];
-  @Input() selectedItem: string = '';
-  @Input() placeholder = 'Select';
-  @Input() dropUp: boolean = false;
+  readonly items = input.required<string[]>();
+  readonly selectedItemInput = input('', { alias: 'selectedItem' });
+  readonly selectedItem = linkedSignal(() => this.selectedItemInput());
+  readonly placeholder = input('Select');
+  readonly dropUp = input<boolean>(false);
 
-  @Output() selectionChange = new EventEmitter<string>();
+  readonly selectionChange = output<string>();
 
-  @ViewChild('dropdownToggle') dropdownToggle!: ElementRef;
-  @ViewChild('dropdownContainer') dropdownContainer!: ElementRef;
-  @ViewChild('dropdownTemplate') dropdownTemplate!: TemplateRef<any>;
+  readonly dropdownToggle = viewChild.required<ElementRef>('dropdownToggle');
+  readonly dropdownContainer =
+    viewChild.required<ElementRef>('dropdownContainer');
+  readonly dropdownTemplate =
+    viewChild.required<TemplateRef<any>>('dropdownTemplate');
 
-  searchTerm: string = '';
-  isOpen: boolean = false;
-  shouldDropUp: boolean = false;
+  readonly searchTerm = signal('');
+  readonly isOpen = signal(false);
+  readonly filteredItems = computed(() => {
+    const searchTerm = this.searchTerm().trim().toLowerCase();
+    if (!searchTerm) return this.items();
+    return this.items().filter((item) =>
+      item.toLowerCase().includes(searchTerm),
+    );
+  });
 
   private overlayRef: OverlayRef | null = null;
   private portal: TemplatePortal<any> | null = null;
-
-  constructor(
-    private overlay: Overlay,
-    private viewContainerRef: ViewContainerRef,
-    private cdr: ChangeDetectorRef,
-    @Inject(DOCUMENT) private document: Document,
-  ) {}
+  private readonly overlay = inject(Overlay);
+  private readonly viewContainerRef = inject(ViewContainerRef);
+  private readonly destroyRef = inject(DestroyRef);
 
   ngAfterViewInit() {
     // Create overlay
     const positionStrategy = this.overlay
       .position()
-      .flexibleConnectedTo(this.dropdownToggle.nativeElement)
+      .flexibleConnectedTo(this.dropdownToggle().nativeElement)
       .withPositions([
         {
           originX: 'start',
@@ -84,13 +92,14 @@ export class DropdownSelectComponent implements AfterViewInit, OnDestroy {
     });
 
     // Close on backdrop click
-    this.overlayRef.backdropClick().subscribe(() => {
-      this.closeDropdown();
-    });
+    this.overlayRef
+      .backdropClick()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => this.closeDropdown());
 
     // Create portal
     this.portal = new TemplatePortal(
-      this.dropdownTemplate,
+      this.dropdownTemplate(),
       this.viewContainerRef,
     );
 
@@ -107,7 +116,7 @@ export class DropdownSelectComponent implements AfterViewInit, OnDestroy {
 
   toggleDropdown(event: Event) {
     event.stopPropagation();
-    if (this.isOpen) {
+    if (this.isOpen()) {
       this.closeDropdown();
     } else {
       this.openDropdown();
@@ -117,25 +126,24 @@ export class DropdownSelectComponent implements AfterViewInit, OnDestroy {
   openDropdown() {
     if (!this.overlayRef || !this.portal) return;
 
-    this.isOpen = true;
+    this.isOpen.set(true);
     this.overlayRef.attach(this.portal);
     this.updateDropdownWidth();
-    this.cdr.detectChanges();
   }
 
   closeDropdown() {
     if (this.overlayRef) {
       this.overlayRef.detach();
     }
-    this.isOpen = false;
-    this.searchTerm = '';
-    this.cdr.detectChanges();
+    this.isOpen.set(false);
+    this.searchTerm.set('');
   }
 
   updateDropdownWidth() {
-    if (!this.overlayRef || !this.dropdownToggle) return;
+    const dropdownToggle = this.dropdownToggle();
+    if (!this.overlayRef || !dropdownToggle) return;
 
-    const width = this.dropdownToggle.nativeElement.offsetWidth;
+    const width = dropdownToggle.nativeElement.offsetWidth;
     const overlayElement = this.overlayRef.overlayElement;
     if (overlayElement) {
       overlayElement.style.width = width + 'px';
@@ -144,17 +152,10 @@ export class DropdownSelectComponent implements AfterViewInit, OnDestroy {
   }
 
   selectItem(item: string) {
-    this.selectedItem = item;
+    this.selectedItem.set(item);
     this.selectionChange.emit(item);
-    this.searchTerm = '';
+    this.searchTerm.set('');
     this.closeDropdown();
-  }
-
-  filteredItems() {
-    if (!this.searchTerm || this.searchTerm === '') return this.items;
-    return this.items.filter((item) =>
-      item.toLowerCase().includes(this.searchTerm.toLowerCase()),
-    );
   }
 
   onSearchKeydown(event: KeyboardEvent) {

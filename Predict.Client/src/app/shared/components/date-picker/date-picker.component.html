@@ -1,26 +1,26 @@
 <div
   class="datepicker"
-  [attr.data-datepicker-id]="datepickerId"
-  [class.right-side]="openSide === 'right'"
+  [attr.data-datepicker-id]="datepickerId()"
+  [class.right-side]="openSide() === 'right'"
 >
   <input
     type="text"
-    [value]="selectedDateValue"
+    [value]="selectedDateValue()"
     readonly
     (click)="toggle()"
     class="date-input"
     placeholder="Select date"
-    [title]="selectedDateValue"
+    [title]="selectedDateValue()"
   />
   <span class="calendar-icon">📅</span>
 
   @if (open()) {
-    <div class="calendar" [class.right-side]="openSide === 'right'">
+    <div class="calendar" [class.right-side]="openSide() === 'right'">
       <!-- Month/Year Dropdowns -->
       <div class="dropdowns-header">
         <select
-          [(ngModel)]="selectedYear"
-          (ngModelChange)="onYearMonthChange()"
+          [ngModel]="selectedYear()"
+          (ngModelChange)="setSelectedYear($event)"
           class="year-dropdown"
           title="Select year"
         >
@@ -32,8 +32,8 @@
         </select>
 
         <select
-          [(ngModel)]="selectedMonth"
-          (ngModelChange)="onYearMonthChange()"
+          [ngModel]="selectedMonth()"
+          (ngModelChange)="setSelectedMonth($event)"
           class="month-dropdown"
           title="Select month"
         >
@@ -74,7 +74,7 @@
       <!-- Days Grid -->
       <div class="days-grid">
         <!-- Empty cells before first day of month -->
-        @for (empty of getEmptyDays(); let i = $index; track i) {
+        @for (empty of emptyDays(); let i = $index; track i) {
           <span class="day empty"></span>
         }
 

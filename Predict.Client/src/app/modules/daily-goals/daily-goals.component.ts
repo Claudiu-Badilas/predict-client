@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TopBarComponent } from 'src/app/shared/components/top-bar/top-bar.component';
 import { RangeSelectorComponent } from '../../shared/components/date-range-picker/date-range-picker.component';
 import { DateRangePicker } from '../../shared/components/date-range-picker/models/date-range-picker.model';
@@ -13,6 +13,7 @@ import type {
   selector: 'app-daily-goals',
   styleUrl: './daily-goals.component.scss',
   templateUrl: './daily-goals.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DailyGoalsComponent {
   readonly activityCalendarConfig: ActivityCalendarConfig = {

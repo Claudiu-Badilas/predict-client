@@ -11,7 +11,7 @@ type ParticleType = 'snow' | 'leaf';
   selector: 'p-seasonal-effect',
   templateUrl: './seasonal-effect.component.html',
   styleUrls: ['./seasonal-effect.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
 export class SeasonalEffectComponent implements OnDestroy {
@@ -113,5 +113,4 @@ export class SeasonalEffectComponent implements OnDestroy {
           : 'spring-summer';
     document.documentElement.dataset['season'] = season;
   }
-
 }

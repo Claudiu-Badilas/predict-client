@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import {
   FormBuilder,
   FormControl,
@@ -8,13 +16,9 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { select, Store } from '@ngrx/store';
-import { combineLatest, debounceTime, filter, Subject, takeUntil } from 'rxjs';
+import { filter, map, startWith } from 'rxjs';
 import { AuthenticationValidators } from 'src/app/core/authentication/login-register/validators/authentication-validator';
-import * as NavigationAction from 'src/app/store/actions/navigation.actions';
-import * as fromAppStore from 'src/app/store/app-state.reducer';
-import * as fromState from 'src/app/store/app-state.reducer';
-import * as AuthActions from '../actions/authentication.actions';
+import { AuthenticationStore } from '../authentication.store';
 import { AuthenticationAction } from './models/authentication-actions.enum';
 import { ThemeService } from 'src/app/core/services/theme.service';
 
@@ -22,16 +26,17 @@ import { ThemeService } from 'src/app/core/services/theme.service';
   selector: 'p-login-register',
   imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './login-register.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./login-register.component.scss'],
 })
-export class LoginRegisterComponent implements OnDestroy {
-  private ngUnsubscribe$: Subject<void> = new Subject<void>();
+export class LoginRegisterComponent {
+  private readonly authenticationStore = inject(AuthenticationStore);
+  private readonly router = inject(Router);
 
-  registerMessage: string = `You do not have an account, start journey with us from`;
-  loginMessage: string = `You already have an account, just log in from`;
-  isRegisterActive: boolean = false;
-  isVisiblePassword: boolean = false;
+  readonly registerMessage = `You do not have an account, start journey with us from`;
+  readonly loginMessage = `You already have an account, just log in from`;
+  readonly isRegisterActive = signal(false);
+  readonly isVisiblePassword = signal(false);
 
   credentialForm: FormGroup = this.formBuilder.group(
     {
@@ -53,30 +58,43 @@ export class LoginRegisterComponent implements OnDestroy {
     { validators: AuthenticationValidators.identityRevealedValidator },
   );
 
+  private readonly formRevision = toSignal(
+    this.credentialForm.events.pipe(
+      map((_, revision) => revision + 1),
+      startWith(0),
+    ),
+    { initialValue: 0 },
+  );
+  readonly isFormInvalid = computed(() => {
+    this.formRevision();
+    return this.calculateFormInvalid();
+  });
+
   constructor(
-    private store: Store<fromAppStore.AppState>,
     private formBuilder: FormBuilder,
     private readonly themeService: ThemeService,
   ) {
-    combineLatest([
-      this.store.pipe(select(fromState.getRouterUrl)),
-      this.store.pipe(select(fromState.selectRouteNestedParams)),
-    ])
+    this.updateAuthenticationAction();
+    this.router.events
       .pipe(
-        debounceTime(500),
-        filter(
-          ([url, params]) => url?.startsWith(`/authentication`) && !!params,
-        ),
-        takeUntil(this.ngUnsubscribe$.asObservable()),
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(),
       )
-      .subscribe(([, params]) => {
-        const authAction: AuthenticationAction = params['auth-type'];
-        this.isRegisterActive = authAction === AuthenticationAction.Register;
-        this.updateCredentialForm();
-      });
+      .subscribe(() => this.updateAuthenticationAction());
+  }
+
+  private updateAuthenticationAction(): void {
+    const findAuthType = (route: ActivatedRouteSnapshot): string | null =>
+      route.paramMap.get('auth-type') ??
+      route.children.map(findAuthType).find(Boolean) ??
+      null;
+    const authAction = findAuthType(this.router.routerState.snapshot.root);
+    this.isRegisterActive.set(authAction === AuthenticationAction.Register);
+    this.updateCredentialForm();
   }
 
   isInvalidInput(inputName: string) {
+    this.formRevision();
     return (
       this.getInputValue(inputName) &&
       this.credentialForm.get(inputName).invalid &&
@@ -86,10 +104,12 @@ export class LoginRegisterComponent implements OnDestroy {
   }
 
   getInputValidationError(inputName: string) {
+    this.formRevision();
     return this.credentialForm.controls[inputName]?.errors['value'];
   }
 
   getInputValue(inputName: string) {
+    this.formRevision();
     return this.credentialForm.controls[inputName]?.value;
   }
 
@@ -98,10 +118,10 @@ export class LoginRegisterComponent implements OnDestroy {
       email: form.controls['email'].value,
       password: form.controls['password'].value,
     };
-    if (!this.isRegisterActive) {
-      this.store.dispatch(AuthActions.login(credentials));
+    if (!this.isRegisterActive()) {
+      this.authenticationStore.login(credentials);
     } else {
-      this.store.dispatch(AuthActions.register(credentials));
+      this.authenticationStore.register(credentials);
     }
   }
 
@@ -109,28 +129,26 @@ export class LoginRegisterComponent implements OnDestroy {
     this.credentialForm.reset();
     this.credentialForm.patchValue({
       ...this.credentialForm,
-      authenticationAction: !this.isRegisterActive
+      authenticationAction: !this.isRegisterActive()
         ? AuthenticationAction.Login
         : AuthenticationAction.Register,
-      authenticationMessage: !this.isRegisterActive
+      authenticationMessage: !this.isRegisterActive()
         ? this.registerMessage
         : this.loginMessage,
     });
   }
 
   onChangeAuthAction() {
-    this.store.dispatch(
-      NavigationAction.navigateTo({
-        route: `/authentication/${
-          !this.isRegisterActive
-            ? AuthenticationAction.Register
-            : AuthenticationAction.Login
-        }`,
-      }),
+    void this.router.navigateByUrl(
+      `/authentication/${
+        !this.isRegisterActive()
+          ? AuthenticationAction.Register
+          : AuthenticationAction.Login
+      }`,
     );
   }
 
-  isFormInvalid() {
+  private calculateFormInvalid() {
     if (
       this.getInputValue('authenticationAction') ===
       AuthenticationAction.Register
@@ -154,15 +172,10 @@ export class LoginRegisterComponent implements OnDestroy {
   }
 
   onChangePasswordInputType() {
-    this.isVisiblePassword = !this.isVisiblePassword;
+    this.isVisiblePassword.update((visible) => !visible);
   }
 
-  getEyeIconPath(): string {
-    return `assets/icons/${this.themeService.theme()}/eye.svg`;
-  }
-
-  ngOnDestroy(): void {
-    this.ngUnsubscribe$.next();
-    this.ngUnsubscribe$.complete();
-  }
+  readonly eyeIconPath = computed(
+    () => `assets/icons/${this.themeService.theme()}/eye.svg`,
+  );
 }

@@ -1,3 +1,5 @@
+import { signal } from '@angular/core';
+
 export type LoanSimulatorInstalment = {
   instalmentId: number | null;
   paymentDate: Date | null;
@@ -24,8 +26,8 @@ export type LoanSimulatorRepaymentSchedule = {
 };
 
 export class MonthlyInstalmentManager {
-  public completed: boolean = false;
-  public expanded: boolean = false;
+  public readonly completed: boolean;
+  public readonly expanded = signal(false);
   public id: number;
   public title: Date;
 

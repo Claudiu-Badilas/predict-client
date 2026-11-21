@@ -3,19 +3,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   effect,
   inject,
-  signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoanStore } from 'src/app/modules/loan/stores/loan.store';
-import { mapInstalmentSimulations } from 'src/app/modules/loan/loan-simulator/utils/instalment-simulation.utils';
 import { SimulationCombinationsStore } from 'src/app/modules/loan/components/simulation-combinations/simulation-combinations.store';
 import { HighchartWrapperComponent } from 'src/app/shared/components/highcharts-wrapper/highcharts-wrapper.component';
 import { PlatformToggleComponent } from 'src/app/shared/components/platform-toggle/platform-toggle.component';
-import { Colors } from 'src/app/shared/styles/colors';
 import { CompareRatesTrendChartUtils } from '../../utils/charts/compare-loan-rates-trend.chart.util';
 import { InterestProgressChartBarUtils } from '../../utils/charts/interest-progress.bar-chart.util';
 import { InterestProgressChartPieUtils } from '../../utils/charts/interest-progress.pie-chart.util';
@@ -32,15 +28,17 @@ import { HistoricalInstalmentsTableComponent } from '../historical-instalments-t
     PlatformToggleComponent,
   ],
   templateUrl: './loan-detailed-body.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './loan-detailed-body.component.scss',
 })
 export class LoanDetailedBodyComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly destroyRef = inject(DestroyRef);
   private readonly loanStore = inject(LoanStore);
   private readonly combinationsStore = inject(SimulationCombinationsStore);
+  private readonly routeQueryParams = toSignal(this.route.queryParamMap, {
+    initialValue: this.route.snapshot.queryParamMap,
+  });
 
   historicalCompareToInstalmentPayments =
     this.loanStore.historicalCompareInstalments;
@@ -109,37 +107,23 @@ export class LoanDetailedBodyComponent {
     ),
   );
 
-  colors = Colors;
-  chartBasePaymentChange = signal<
+  readonly chartBasePaymentChange = computed<
     'pie-chart' | 'bars-chart' | 'Prd. Fixa' | 'Prd. Totala' | 'dot-bar-chart'
-  >('pie-chart');
+  >(
+    () =>
+      this.fromQuerySelection(this.routeQueryParams().get('chartSelection')) ??
+      'pie-chart',
+  );
 
   constructor() {
-    this.route.queryParamMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        const querySelection = params.get('chartSelection');
-        const selection = this.fromQuerySelection(querySelection);
-        if (selection) {
-          this.chartBasePaymentChange.set(selection);
-          if (querySelection !== this.toQuerySelection(selection)) {
-            this.persistChartSelection(selection);
-          }
-        } else {
-          this.persistChartSelection('pie-chart');
-        }
-      });
-
+    // Keep the URL canonical when it is missing or contains a legacy alias.
+    // Navigation is the side effect; the selected chart itself is computed from the route.
     effect(() => {
-      const schedule = this.loanStore.selectedOverviewSchedule();
-      const simulationRows = this.combinationsStore.rows();
-      if (!schedule) return;
-
-      const [instalmentPayments, earlyPayments] = mapInstalmentSimulations(
-        schedule,
-        simulationRows,
-      );
-      this.loanStore.setSimulationPayments(instalmentPayments, earlyPayments);
+      const querySelection = this.routeQueryParams().get('chartSelection');
+      const selection = this.fromQuerySelection(querySelection) ?? 'pie-chart';
+      if (querySelection !== this.toQuerySelection(selection)) {
+        this.persistChartSelection(selection);
+      }
     });
   }
 
@@ -198,7 +182,6 @@ export class LoanDetailedBodyComponent {
   }
 
   private persistChartSelection(selection: ChartSelection): void {
-    this.chartBasePaymentChange.set(selection);
     if (
       this.route.snapshot.queryParamMap.get('chartSelection') ===
       this.toQuerySelection(selection)
@@ -215,8 +198,4 @@ export class LoanDetailedBodyComponent {
 }
 
 type ChartSelection =
-  | 'pie-chart'
-  | 'bars-chart'
-  | 'Prd. Fixa'
-  | 'Prd. Totala'
-  | 'dot-bar-chart';
+  'pie-chart' | 'bars-chart' | 'Prd. Fixa' | 'Prd. Totala' | 'dot-bar-chart';

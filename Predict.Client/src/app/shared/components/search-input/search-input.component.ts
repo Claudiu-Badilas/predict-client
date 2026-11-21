@@ -1,29 +1,32 @@
 import {
   Component,
-  EventEmitter,
-  Input,
-  Output,
-  signal,
+  DestroyRef,
+  inject,
   ChangeDetectionStrategy,
+  output,
+  input,
+  linkedSignal,
 } from '@angular/core';
 
 @Component({
   selector: 'p-search-input',
   imports: [],
   templateUrl: './search-input.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./search-input.component.scss'],
 })
 export class SearchInputComponent {
-  @Output() search = new EventEmitter<string>();
+  readonly search = output<string>();
+  readonly value = input('');
 
-  query = signal('');
+  readonly query = linkedSignal(() => this.value());
+  private readonly destroyRef = inject(DestroyRef);
 
-  @Input() set value(value: string) {
-    this.query.set(value);
+  private debounceTimer?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    this.destroyRef.onDestroy(() => clearTimeout(this.debounceTimer));
   }
-
-  private debounceTimer: any;
 
   onInput(event: Event) {
     const value = (event.target as HTMLInputElement).value;

@@ -1,6 +1,6 @@
 <div class="storage-modal-header">
   <div>
-    <h5 class="storage-modal-title">{{ config.title }}</h5>
+    <h5 class="storage-modal-title">{{ config().title }}</h5>
     <span class="storage-modal-subtitle">
       {{
         hasStoredItem()
@@ -40,7 +40,7 @@
 
 <div class="storage-modal-body">
   @if (hasStoredItem()) {
-    <code>{{ config.storageKey }}</code>
+    <code>{{ config().storageKey }}</code>
     <div class="storage-item-actions">
       <button type="button" class="download-btn" (click)="downloadItem()">
         Download JSON

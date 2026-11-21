@@ -1,16 +1,16 @@
 <div class="d-flex flex-column w-100">
   <div class="w-100 d-flex align-items-center pickers">
     <date-picker
-      [initialDate]="startDate"
-      [minDate]="minDate"
-      [maxDate]="endDate"
+      [initialDate]="currentStartDate()"
+      [minDate]="minDate()"
+      [maxDate]="currentEndDate()"
       (dateChange)="onStartDateChange($event)"
     ></date-picker>
 
     <date-picker
-      [initialDate]="endDate"
-      [minDate]="startDate"
-      [maxDate]="maxDate"
+      [initialDate]="currentEndDate()"
+      [minDate]="currentStartDate()"
+      [maxDate]="maxDate()"
       (dateChange)="onEndDateChange($event)"
       openSide="right"
     ></date-picker>

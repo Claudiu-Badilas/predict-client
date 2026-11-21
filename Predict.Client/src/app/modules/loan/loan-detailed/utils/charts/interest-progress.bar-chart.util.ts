@@ -222,7 +222,7 @@ export namespace InterestProgressChartBarUtils {
       amountCompact: d.simulatedAmountCompact,
     }));
 
-    const compareData = barChartData.map((d, index) => ({
+    const compareData = barChartData.map((d) => ({
       ...d,
       y: d.compareAmount || 0,
       color: d.color,
@@ -350,7 +350,7 @@ export namespace InterestProgressChartBarUtils {
               {
                 type: 'bar',
                 name: 'Comparatie',
-                data: compareData.map((d, index) => ({
+                data: compareData.map((d) => ({
                   ...d,
                   y: d.y,
                   color: d.color,

@@ -5,14 +5,11 @@ import {
   computed,
   Inject,
 } from '@angular/core';
-import { Store } from '@ngrx/store';
-import * as LoanActions from 'src/app/modules/loan/actions/loan.actions';
 import { LoanStore } from 'src/app/modules/loan/stores/loan.store';
 import { LoanInsightsComponent } from 'src/app/modules/loan/loan-simulator/components/loan-simulator-insights/loan-simulator-insights.component';
 import { DropdownSelectComponent } from 'src/app/shared/components/dropdown-select/dropdown-select.component';
 import { PlatformToggleComponent } from 'src/app/shared/components/platform-toggle/platform-toggle.component';
 import { TopBarComponent } from 'src/app/shared/components/top-bar/top-bar.component';
-import { AppState } from 'src/app/store/app-state.reducer';
 import { LoanDetailedBodyComponent } from './components/loan-detailed-body/loan-detailed-body.component';
 import { LoanDetailedHeaderComponent } from './components/loan-detailed-header/loan-detailed-header.component';
 import { SimulationCombinationsComponent } from '../components/simulation-combinations/simulation-combinations.component';
@@ -30,7 +27,7 @@ import { SimulationCombinationsComponent } from '../components/simulation-combin
     SimulationCombinationsComponent,
   ],
   templateUrl: './loan-detailed.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './loan-detailed.component.scss',
 })
 export class LoanDetailedComponent {
@@ -42,7 +39,6 @@ export class LoanDetailedComponent {
   selectedOverviewSchedule = this.loanStore.selectedOverviewSchedule;
   includeSimulation = this.loanStore.includeDetailedSimulation;
   constructor(
-    private readonly store: Store<AppState>,
     @Inject(LoanStore)
     private readonly loanStore: InstanceType<typeof LoanStore>,
   ) {}
@@ -53,7 +49,6 @@ export class LoanDetailedComponent {
 
   onCalculateRepaymentSchedulesChanged(state: boolean) {
     this.loanStore.setCalculateRepaymentSchedules(state);
-    this.store.dispatch(LoanActions.loadRepaymentSchedules());
+    this.loanStore.loadRepaymentSchedules();
   }
-
 }

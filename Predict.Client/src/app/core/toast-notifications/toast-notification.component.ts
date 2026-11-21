@@ -11,7 +11,7 @@ import { ToastStore } from './toast.store';
   selector: 'p-toast',
   imports: [CommonModule],
   templateUrl: './toast-notification.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrls: ['./toast-notification.component.scss'],
 })
 export class ToastNotificationComponent {
