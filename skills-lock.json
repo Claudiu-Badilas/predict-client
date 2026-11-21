@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "skills": {
+    "angular-best-practices": {
+      "source": "alfredoperez/angular-best-practices",
+      "commit": "a499a4786182097a500dd2fb6ddc2489caee3854",
+      "sourceType": "github",
+      "skillPath": "skills/angular-best-practices/SKILL.md",
+      "computedHash": "c9fdf17b708b7990e0af9236e147d0ea317c6d7394473954973d8a193355214f"
+    },
+    "angular-best-practices-ngrx": {
+      "source": "alfredoperez/angular-best-practices",
+      "commit": "a499a4786182097a500dd2fb6ddc2489caee3854",
+      "sourceType": "github",
+      "skillPath": "skills/angular-best-practices-ngrx/SKILL.md",
+      "computedHash": "32a06d809a94a67ae48c0a52dfc0c07df78a6b687c0380470bfc0907965f7b37"
+    },
+    "angular-best-practices-signalstore": {
+      "source": "alfredoperez/angular-best-practices",
+      "commit": "a499a4786182097a500dd2fb6ddc2489caee3854",
+      "sourceType": "github",
+      "skillPath": "skills/angular-best-practices-signalstore/SKILL.md",
+      "computedHash": "c57b0ce726353d635605677ffaa17f65c9f8b974856881a513f91efc1e95afbd"
+    },
+    "angular-developer": {
+      "source": "angular/skills",
+      "commit": "97c663a02b376a19eccc60f75909f20f15a2c9c1",
+      "sourceType": "github",
+      "skillPath": "angular-developer/SKILL.md",
+      "computedHash": "05d5488f770874f6f12e6d365611a6eae449f29481a52cd8a89929e448426c54"
+    }
+  }
+}
