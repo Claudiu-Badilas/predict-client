@@ -1,6 +1,6 @@
 # Predict Client
 
-Predict Client is an Angular single-page application for personal finance tracking. It includes transaction, receipt, loan, and account screens. The client is in [`Predict.Client/`](Predict.Client/).
+Predict Client is an Angular single-page application for personal finance tracking. It includes transaction, receipt, and loan screens. The client is in [`Predict.Client/`](Predict.Client/).
 
 ## Requirements
 
@@ -15,7 +15,7 @@ npm ci
 npm start
 ```
 
-The development server is available at `http://localhost:4200/`. The client expects its API services to be available separately; some requests currently target `https://localhost:8080` and account requests use relative `server/api/v1/...` paths.
+The development server is available at `http://localhost:4200/`. The client expects its API services to be available separately; requests currently target `https://localhost:8080`.
 
 ## Build
 
@@ -34,7 +34,7 @@ The repository includes [a GitHub Actions workflow](.github/workflows/deploy.yml
 
 To enable deployment, open the repository's **Settings → Pages** and select **GitHub Actions** as the build and deployment source. Then push a commit to `main` and check the run in the **Actions** tab.
 
-GitHub Pages serves only static frontend files. The backend APIs are not included in this repository's Pages deployment. To use login, transactions, receipts, or loan features for visitors, host the backend separately and configure the client to call its public API URL. Never put private API credentials in frontend code: browser assets are public.
+GitHub Pages serves only static frontend files. The backend APIs are not included in this repository's Pages deployment. To use transactions, receipts, or loan features for visitors, host the backend separately and configure the client to call its public API URL. Never put private API credentials in frontend code: browser assets are public.
 
 ## Project notes
 

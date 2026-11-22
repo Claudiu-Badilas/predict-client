@@ -5,7 +5,6 @@ import { ToastNotificationComponent } from './core/toast-notifications/toast-not
 import { DeploymentBannerComponent } from './shared/components/deployment-update-banner/deployment-banner.component';
 import { SpinnerComponent } from './shared/components/spinner/spinner.component';
 import { SeasonalEffectComponent } from './shared/components/seasonal-effect/seasonal-effect.component';
-import { AuthenticationStore } from './core/authentication/authentication.store';
 
 @Component({
   selector: 'p-root',
@@ -24,6 +23,5 @@ import { AuthenticationStore } from './core/authentication/authentication.store'
 export class AppComponent {
   constructor() {
     inject(ThemeService);
-    inject(AuthenticationStore);
   }
 }

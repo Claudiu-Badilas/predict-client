@@ -7,7 +7,6 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { expect, vi } from 'vitest';
-import { AuthenticationStore } from '../core/authentication/authentication.store';
 import { DeploymentUpdateService } from '../core/services/deployment-update.service';
 import { ThemeService } from '../core/services/theme.service';
 import { ToastStore } from '../core/toast-notifications/toast.store';
@@ -234,10 +233,6 @@ function createProviders(): Provider[] {
       },
     },
     { provide: ThemeService, useValue: themeService },
-    {
-      provide: AuthenticationStore,
-      useValue: { login: vi.fn(), register: vi.fn() },
-    },
     { provide: ToastStore, useValue: toastStore },
     { provide: LayoutStore, useValue: layoutStore },
     { provide: LoanStore, useValue: loanStore },

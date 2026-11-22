@@ -16,6 +16,6 @@ The app uses hash-based routes, so page navigation works on static hosting witho
 
 ## Static hosting limitations
 
-Static hosting serves the UI only. It cannot run the APIs this app currently calls: account login and registration use relative `server/api/v1/...` endpoints, while transactions, receipts, and loan data call `https://localhost:8080`. Those requests will not work for visitors to the deployed site until a backend is hosted separately and the frontend API URLs are configured to use that backend. Do not put private API secrets in the frontend build; static assets are public.
+Static hosting serves the UI only. It cannot run the APIs this app currently calls: transactions, receipts, and loan data call `https://localhost:8080`. Those requests will not work for visitors to the deployed site until a backend is hosted separately and the frontend API URLs are configured to use that backend. Do not put private API secrets in the frontend build; static assets are public.
 
-Data stored in the browser remains local to that browser and device. Deploying the UI does not create shared accounts or shared storage.
+Data stored in the browser remains local to that browser and device. Deploying the UI does not create shared storage.

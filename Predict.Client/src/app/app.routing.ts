@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '',
+    redirectTo: 'loan/overview',
     pathMatch: 'full',
   },
   {
@@ -32,15 +32,8 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'authentication',
-    loadChildren: () =>
-      import('./core/authentication/authentication.routing').then(
-        (m) => m.authenticationRoutes,
-      ),
-  },
-  {
     path: '**',
-    redirectTo: '',
+    redirectTo: 'loan/overview',
     pathMatch: 'full',
   },
 ];
