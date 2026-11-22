@@ -28,16 +28,18 @@
     }
 
     <div class="actions actions--desktop">
-      @for (option of modules; track option) {
-        <button
-          type="button"
-          class="actions__link"
-          [class.active]="isActiveRoute(option.url)"
-          (click)="onNavigateTo(option.url)"
-        >
-          <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
-          <span class="action-label">{{ option.label }}</span>
-        </button>
+      @if (hasAccess()) {
+        @for (option of modules; track option) {
+          <button
+            type="button"
+            class="actions__link"
+            [class.active]="isActiveRoute(option.url)"
+            (click)="onNavigateTo(option.url)"
+          >
+            <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
+            <span class="action-label">{{ option.label }}</span>
+          </button>
+        }
       }
     </div>
 
@@ -56,15 +58,17 @@
         </button>
       }
 
-      @for (option of modules; track option) {
-        <button
-          class="mobile-extended-menu__item"
-          [class.active]="isActiveRoute(option.url)"
-          (click)="onNavigateTo(option.url); closeMenu()"
-        >
-          <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
-          <span class="mobile-extended-menu__label">{{ option.label }}</span>
-        </button>
+      @if (hasAccess()) {
+        @for (option of modules; track option) {
+          <button
+            class="mobile-extended-menu__item"
+            [class.active]="isActiveRoute(option.url)"
+            (click)="onNavigateTo(option.url); closeMenu()"
+          >
+            <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
+            <span class="mobile-extended-menu__label">{{ option.label }}</span>
+          </button>
+        }
       }
     </div>
 
@@ -97,16 +101,23 @@
     #mobileMenuRef
   >
     <div class="mobile-extended-menu__items">
-      @for (option of modules; track option) {
-        <button
-          class="mobile-extended-menu__item"
-          [class.active]="isActiveRoute(option.url)"
-          (click)="onNavigateTo(option.url); closeMenu()"
-        >
-          <img [src]="getThemeIconPath(option.icon)" [alt]="option.label" />
-          <span class="mobile-extended-menu__label">{{ option.label }}</span>
-        </button>
-      }
+        @if (hasAccess()) {
+          @for (option of modules; track option) {
+            <button
+              class="mobile-extended-menu__item"
+              [class.active]="isActiveRoute(option.url)"
+              (click)="onNavigateTo(option.url); closeMenu()"
+            >
+              <img
+                [src]="getThemeIconPath(option.icon)"
+                [alt]="option.label"
+              />
+              <span class="mobile-extended-menu__label">{{
+                option.label
+              }}</span>
+            </button>
+          }
+        }
     </div>
   </div>
 

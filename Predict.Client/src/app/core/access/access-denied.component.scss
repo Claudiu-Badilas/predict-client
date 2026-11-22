@@ -1,0 +1,56 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: var(--theme-background);
+  color: var(--theme-text-primary);
+}
+
+.access-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 24px;
+}
+
+.access-card {
+  width: min(100%, 520px);
+  padding: clamp(28px, 6vw, 48px);
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  background: var(--theme-surface);
+  box-shadow: var(--theme-shadow-raised);
+  text-align: center;
+}
+
+.access-card__mark {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 20px;
+  place-items: center;
+  border: 1px solid var(--theme-danger);
+  border-radius: 50%;
+  color: var(--theme-danger);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.access-card__eyebrow {
+  margin: 0 0 10px;
+  color: var(--theme-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.access-card h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+}
+
+.access-card__message {
+  margin: 16px 0 0;
+  color: var(--theme-text-secondary);
+  line-height: 1.6;
+}

@@ -10,6 +10,7 @@ import {
 import { NavigationEnd, Router } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
+import { AccessService } from 'src/app/core/access/access.service';
 import { ThemeService } from 'src/app/core/services/theme.service';
 import { PlatformToggleComponent } from '../platform-toggle/platform-toggle.component';
 
@@ -25,6 +26,7 @@ export class TopBarComponent {
   readonly hasFiltersContent = input<boolean>(false);
 
   private readonly themeService = inject(ThemeService);
+  private readonly accessService = inject(AccessService);
   private readonly router = inject(Router);
   readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -33,6 +35,10 @@ export class TopBarComponent {
     ),
     { initialValue: this.router.url },
   );
+  readonly hasAccess = computed(() => {
+    this.currentUrl();
+    return this.accessService.hasValidAccessKey();
+  });
 
   modules = [
     { label: 'Simulator', icon: 'home', url: '/loan/overview' },
