@@ -255,7 +255,7 @@ export class ReceiptInsightsComponent implements OnDestroy {
         discounts,
       };
     });
-    const lastMonthSpend = monthlyReceipts[0]?.total ?? 0;
+    const lastMonthSpend = monthlyReceipts[0].total;
     return monthlyReceipts.map(
       ({
         monthStart,
@@ -284,7 +284,7 @@ export class ReceiptInsightsComponent implements OnDestroy {
           ),
           comparison,
           largestReceipt: largest
-            ? `${formatAmount(this.receiptTotal(largest))} at ${largest.provider?.trim() || 'Unknown store'}${largest.date ? ` on ${largest.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}` : ''}`
+            ? `${formatAmount(this.receiptTotal(largest))} at ${largest.provider?.trim() || 'Unknown store'} on ${largest.date!.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
             : undefined,
           topStore: topProvider
             ? `${topProvider[0]} · ${formatAmount(topProvider[1])}`

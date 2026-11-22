@@ -9,6 +9,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:coverage": "ng test --coverage --watch=false --coverage-include=\"src/app/**/*.ts\" --coverage-exclude=\"src/app/**/*.spec.ts\" --coverage-exclude=\"src/app/testing/**/*.ts\"",
+    "test:coverage:components": "ng test --coverage --watch=false --coverage-include=\"src/app/**/*.component.ts\" --coverage-exclude=\"src/app/**/*.component.spec.ts\"",
     "format": "prettier --write \"src/**/*.{ts,html,scss,css}\" \"*.{js,json,md}\"",
     "npm run format": "npm run format:check && npm run test -- --watch=false && npm run build",
     "gh-build": "npm run build:version -- --configuration production"

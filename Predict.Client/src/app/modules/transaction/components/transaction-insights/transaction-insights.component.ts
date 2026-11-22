@@ -270,7 +270,7 @@ export class TransactionInsightsComponent implements OnDestroy {
         biggestExpense,
       };
     });
-    const lastMonthIncome = monthlyTotals[0]?.income ?? 0;
+    const lastMonthIncome = monthlyTotals[0].income;
     return monthlyTotals.map(
       ({
         monthStart,

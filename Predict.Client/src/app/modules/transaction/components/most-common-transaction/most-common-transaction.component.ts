@@ -99,7 +99,6 @@ export class MostCommonTransactionComponent {
     const accounts = new Map<string, AccountOption>();
     for (const item of this.accountTransactions()) {
       const key = item.account.toLocaleLowerCase();
-      if (!key) continue;
       if (!accounts.has(key)) {
         accounts.set(key, {
           key,
