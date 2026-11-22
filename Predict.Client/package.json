@@ -8,6 +8,7 @@
     "build:version": "ng build && node generate-version.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
+    "test:coverage": "ng test --coverage --watch=false --coverage-include=\"src/app/**/*.ts\" --coverage-exclude=\"src/app/**/*.spec.ts\" --coverage-exclude=\"src/app/testing/**/*.ts\"",
     "format": "prettier --write \"src/**/*.{ts,html,scss,css}\" \"*.{js,json,md}\"",
     "npm run format": "npm run format:check && npm run test -- --watch=false && npm run build",
     "gh-build": "npm run build:version -- --configuration production"
@@ -37,6 +38,7 @@
     "@angular/build": "^22.1.4",
     "@angular/cli": "^22.1.4",
     "@angular/compiler-cli": "^22.1.2",
+    "@vitest/coverage-v8": "^4.1.12",
     "angular-cli-ghpages": "^3.0.2",
     "jsdom": "^30.1.1",
     "prettier": "^3.9.9",
