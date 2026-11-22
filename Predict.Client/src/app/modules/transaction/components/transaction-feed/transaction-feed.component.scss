@@ -5,7 +5,7 @@
 .transaction-feed {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--theme-list-row-gap);
 }
 
 .show-more-transactions {
@@ -32,33 +32,33 @@
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--theme-border);
-  border-radius: 14px;
+  border-radius: var(--theme-list-row-radius);
   background: var(--theme-surface);
-  box-shadow: var(--theme-shadow);
   transition:
     border-color 0.16s ease,
-    box-shadow 0.16s ease;
+    background-color 0.16s ease;
 }
 
-.transaction-row:hover {
+.transaction-row:hover,
+.transaction-row:focus-within {
   border-color: var(--theme-border-strong);
-  box-shadow: var(--theme-shadow-raised);
+  background: var(--theme-table-row-hover);
 }
 
 .transaction-row__main {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
+  grid-template-columns: var(--theme-list-mark-size) minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
+  gap: var(--theme-list-item-gap);
+  padding: var(--theme-list-row-padding);
 }
 
 .merchant-mark {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: var(--theme-list-mark-size);
+  height: var(--theme-list-mark-size);
   place-items: center;
-  border-radius: 14px;
+  border-radius: var(--theme-list-mark-radius);
   background: color-mix(
     in srgb,
     var(--category-color, #9e9e9e) 18%,
@@ -166,8 +166,8 @@
 .search-match {
   padding: 0 2px;
   border-radius: 3px;
-  background: #ffe28a;
-  color: #3d2b00;
+  background: var(--theme-search-highlight);
+  color: var(--theme-search-highlight-text);
   font-weight: 800;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
@@ -183,7 +183,7 @@
 
 .transaction-amount {
   color: var(--theme-text-primary);
-  font-size: 1rem;
+  font-size: 0.96rem;
   font-variant-numeric: tabular-nums;
   font-weight: 750;
   text-align: right;
@@ -205,11 +205,17 @@
 }
 
 @media (max-width: 680px) {
+  :host {
+    --theme-list-mark-size: 38px;
+    --theme-list-row-padding: 12px;
+    --theme-list-item-gap: 10px;
+  }
+
   .transaction-row__main {
-    grid-template-columns: 38px minmax(0, 1fr) auto;
+    grid-template-columns: var(--theme-list-mark-size) minmax(0, 1fr) auto;
     align-items: start;
-    gap: 10px;
-    padding: 12px;
+    gap: var(--theme-list-item-gap);
+    padding: var(--theme-list-row-padding);
   }
 
   .transaction-copy {
@@ -217,9 +223,9 @@
   }
 
   .merchant-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: var(--theme-list-mark-size);
+    height: var(--theme-list-mark-size);
+    border-radius: var(--theme-list-mark-radius);
   }
 
   .merchant-line {

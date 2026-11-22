@@ -47,7 +47,7 @@ export class LoanSimulatorBodyTableComponent {
   private readonly themeService = inject(ThemeService);
 
   getThemeIconPath(icon: string): string {
-    return `assets/icons/${this.themeService.theme()}/${icon}.svg`;
+    return `assets/icons/${this.themeService.iconTheme()}/${icon}.svg`;
   }
 
   toggleGroup(group: MonthlyInstalmentManager) {
@@ -247,5 +247,4 @@ export class LoanSimulatorBodyTableComponent {
       group.expanded.set(false),
     );
   }
-
 }

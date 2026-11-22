@@ -120,7 +120,7 @@ export class ActivityCalendarComponent {
   }
 
   getColorOptionColor(option: ActivityCalendarColorOption): string {
-    return this.themeService.theme() === 'dark'
+    return this.themeService.theme() !== 'light'
       ? (option.darkColor ?? option.color)
       : option.color;
   }

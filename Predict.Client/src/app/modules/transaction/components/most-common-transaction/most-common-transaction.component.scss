@@ -649,9 +649,9 @@
 }
 
 .stat-economii-total {
-  background: #e8f2ff;
-  color: #1769c2;
-  border-color: #9cc8f5;
+  background: var(--theme-info-subtle);
+  color: var(--theme-info);
+  border-color: var(--theme-border-strong);
   font-size: 0.9rem;
   padding: 7px 13px;
 }

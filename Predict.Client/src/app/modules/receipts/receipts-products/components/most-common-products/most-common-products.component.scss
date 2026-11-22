@@ -37,13 +37,13 @@
 
 .provider-logo-button {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: var(--theme-list-mark-size);
+  height: var(--theme-list-mark-size);
   flex: 0 0 auto;
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 14px;
+  border-radius: var(--theme-list-mark-radius);
   background: transparent;
   cursor: pointer;
 }
@@ -67,7 +67,7 @@
 .provider-logo-button--product {
   width: 32px;
   height: 32px;
-  border-radius: 11px;
+  border-radius: 10px;
 }
 
 .provider-filter__clear {
@@ -84,8 +84,10 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
-  padding: 2px 0 10px;
-  border-bottom: 1px solid var(--receipt-border);
+  padding: 10px 12px;
+  border: 1px solid var(--receipt-border);
+  border-radius: 10px;
+  background: var(--receipt-surface);
 }
 
 .summary-item {
@@ -95,20 +97,22 @@
   align-items: flex-start;
   gap: 3px;
   padding: 2px 14px;
-  border-left: 2px solid var(--receipt-accent);
+}
+
+.summary-item + .summary-item {
+  border-left: 1px solid var(--receipt-border);
 }
 
 .summary-label {
   color: var(--receipt-muted);
-  font-size: 0.66rem;
-  font-weight: 650;
-  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 600;
 }
 
 .summary-value {
   overflow: hidden;
   color: var(--receipt-text);
-  font-size: 1rem;
+  font-size: 0.96rem;
   font-variant-numeric: tabular-nums;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -189,7 +193,7 @@
 .receipt-feed {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--theme-list-row-gap);
   min-width: 0;
 }
 
@@ -197,7 +201,7 @@
 .receipt-period {
   min-width: 0;
   border: 1px solid var(--receipt-border);
-  border-radius: 8px;
+  border-radius: var(--theme-list-row-radius);
   background: var(--receipt-surface);
   transition:
     border-color 0.16s ease,
@@ -218,15 +222,16 @@
 
 .receipt-row:hover {
   border-color: var(--receipt-border-strong);
+  background: var(--theme-table-row-hover);
 }
 
 .receipt-row__main {
   display: grid;
   width: 100%;
-  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-columns: var(--theme-list-mark-size) minmax(0, 1fr);
   align-items: center;
-  gap: 14px;
-  padding: 12px 14px;
+  gap: var(--theme-list-item-gap);
+  padding: var(--theme-list-row-padding);
 }
 
 .receipt-row__toggle {
@@ -234,7 +239,7 @@
   width: 100%;
   grid-template-columns: minmax(0, 1fr) 64px auto;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -252,10 +257,10 @@
 
 .receipt-mark {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: var(--theme-list-mark-size);
+  height: var(--theme-list-mark-size);
   place-items: center;
-  border-radius: 14px;
+  border-radius: var(--theme-list-mark-radius);
   background: color-mix(
     in srgb,
     hsl(var(--provider-hue) 70% 52%) 14%,
@@ -321,12 +326,9 @@
 .receipt-count,
 .period-count {
   flex: 0 0 auto;
-  padding: 3px 8px;
-  border: 1px solid var(--receipt-border);
-  border-radius: 999px;
-  background: var(--receipt-subtle);
-  color: var(--receipt-secondary);
-  font-size: 0.68rem;
+  padding: 0;
+  color: var(--receipt-muted);
+  font-size: 0.72rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -354,7 +356,7 @@
   align-items: center;
   gap: 1px;
   color: var(--receipt-muted);
-  font-size: 0.64rem;
+  font-size: 0.7rem;
   line-height: 1.2;
   text-align: center;
   white-space: nowrap;
@@ -362,7 +364,7 @@
 
 .receipt-date strong {
   color: var(--receipt-text);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
@@ -384,7 +386,7 @@
 .receipt-details {
   padding: 0 14px 12px;
   border-top: 1px solid var(--receipt-border);
-  background: color-mix(in srgb, var(--receipt-subtle) 55%, transparent);
+  background: var(--receipt-surface);
   animation: receipt-expand 0.2s ease-out;
 }
 
@@ -400,17 +402,23 @@
 }
 
 .receipt-details__heading {
+  padding: 10px 6px;
   border-bottom: 1px solid var(--receipt-border-strong);
+  background: var(--theme-table-header);
   color: var(--receipt-muted);
-  font-size: 0.66rem;
-  font-weight: 650;
-  text-transform: uppercase;
+  font-size: 0.74rem;
+  font-weight: 600;
 }
 
 .receipt-product {
-  border-bottom: 1px solid var(--receipt-border);
+  border-bottom: 1px solid var(--theme-table-divider);
   color: var(--receipt-secondary);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
+}
+
+.receipt-details .receipt-product:nth-of-type(even),
+.receipt-feed > .receipt-product--search:nth-of-type(even) {
+  background: var(--theme-table-row-alt);
 }
 
 .receipt-product__name {
@@ -445,6 +453,12 @@
   color: var(--receipt-muted);
 }
 
+.receipt-product__quantity,
+.receipt-product__price,
+.receipt-product__total {
+  text-align: right;
+}
+
 .receipt-product--search {
   grid-template-columns:
     32px minmax(0, 1fr) minmax(90px, auto) minmax(70px, 0.35fr)
@@ -458,8 +472,8 @@
 
 .search-match {
   border-radius: 2px;
-  background: var(--theme-warning-subtle);
-  color: inherit;
+  background: var(--theme-search-highlight);
+  color: var(--theme-search-highlight-text);
 }
 
 .receipt-adjustment,
@@ -507,13 +521,8 @@
   gap: 12px;
   padding: 13px 14px;
   border: 0;
-  border-left: 3px solid var(--receipt-accent);
-  border-radius: 0 8px 8px 0;
-  background: color-mix(
-    in srgb,
-    var(--receipt-accent) 6%,
-    var(--receipt-surface)
-  );
+  border-radius: 10px;
+  background: var(--theme-table-header);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -521,11 +530,7 @@
 }
 
 button.period-header:hover {
-  background: color-mix(
-    in srgb,
-    var(--receipt-accent) 10%,
-    var(--receipt-surface)
-  );
+  background: var(--theme-table-row-hover);
 }
 
 .period-header--static {
@@ -540,14 +545,14 @@ button.period-header:hover {
 
 .period-total {
   color: var(--receipt-text);
-  font-size: 0.88rem;
+  font-size: 0.94rem;
   font-variant-numeric: tabular-nums;
   text-align: right;
   white-space: nowrap;
 }
 
 .period-content {
-  padding: 8px 0 12px 12px;
+  padding: 8px 0 12px;
 }
 
 @keyframes receipt-expand {
@@ -562,22 +567,28 @@ button.period-header:hover {
 }
 
 @media (max-width: 680px) {
+  :host {
+    --theme-list-mark-size: 38px;
+    --theme-list-row-padding: 10px 12px;
+    --theme-list-item-gap: 10px;
+  }
+
   .receipt-summary {
     gap: 6px;
-    padding-bottom: 6px;
+    padding: 9px 10px;
   }
 
   .summary-item {
     gap: 2px;
-    padding: 1px 8px;
+    padding: 1px 10px;
   }
 
   .summary-label {
-    font-size: 0.64rem;
+    font-size: 0.68rem;
   }
 
   .summary-value {
-    font-size: 0.78rem;
+    font-size: 0.84rem;
   }
 
   .receipt-sort {
@@ -597,16 +608,16 @@ button.period-header:hover {
   }
 
   .receipt-row__main {
-    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-columns: var(--theme-list-mark-size) minmax(0, 1fr);
     align-items: start;
-    gap: 7px;
-    padding: 8px;
+    gap: var(--theme-list-item-gap);
+    padding: var(--theme-list-row-padding);
   }
 
   .provider-logo-button {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: var(--theme-list-mark-size);
+    height: var(--theme-list-mark-size);
+    border-radius: var(--theme-list-mark-radius);
   }
 
   .provider-logo-button--product {
@@ -622,9 +633,9 @@ button.period-header:hover {
   }
 
   .receipt-mark {
-    width: 38px;
-    height: 38px;
-    border-radius: 12px;
+    width: var(--theme-list-mark-size);
+    height: var(--theme-list-mark-size);
+    border-radius: var(--theme-list-mark-radius);
   }
 
   .receipt-mark--product {
@@ -645,14 +656,13 @@ button.period-header:hover {
     grid-column: 1;
     grid-row: 1;
     max-width: 110px;
-    font-size: 0.8rem;
+    font-size: 0.86rem;
   }
 
   .receipt-count {
     grid-column: 3;
     grid-row: 1;
-    padding: 2px 5px;
-    font-size: 0.6rem;
+    font-size: 0.68rem;
   }
 
   .receipt-description {
@@ -660,7 +670,7 @@ button.period-header:hover {
     grid-row: 2;
     display: block;
     margin-top: 0;
-    font-size: 0.68rem;
+    font-size: 0.72rem;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -672,19 +682,19 @@ button.period-header:hover {
     justify-content: flex-start;
     gap: 3px;
     margin: 0;
-    font-size: 0.6rem;
+    font-size: 0.68rem;
     text-align: left;
   }
 
   .receipt-date strong {
-    font-size: 0.68rem;
+    font-size: 0.72rem;
   }
 
   .receipt-total {
     grid-column: 5;
     grid-row: 1;
     align-self: center;
-    font-size: 0.74rem;
+    font-size: 0.82rem;
   }
 
   .receipt-details {
@@ -705,16 +715,15 @@ button.period-header:hover {
   }
 
   .period-count {
-    padding: 2px 6px;
-    font-size: 0.62rem;
+    font-size: 0.68rem;
   }
 
   .period-total {
-    font-size: 0.7rem;
+    font-size: 0.76rem;
   }
 
   .period-content {
-    padding: 5px 0 8px 8px;
+    padding: 5px 0 8px;
   }
 
   .receipt-details__heading {
@@ -773,27 +782,27 @@ button.period-header:hover {
   .receipt-product--search .receipt-product__date {
     grid-column: 1;
     grid-row: 2;
-    font-size: 0.62rem;
+    font-size: 0.68rem;
   }
 
   .receipt-product--search .receipt-product__quantity {
     grid-column: 2;
     grid-row: 2;
-    font-size: 0.62rem;
+    font-size: 0.68rem;
     text-align: center;
   }
 
   .receipt-product--search .receipt-product__price {
     grid-column: 3;
     grid-row: 2;
-    font-size: 0.62rem;
+    font-size: 0.68rem;
     text-align: right;
   }
 
   .receipt-product--search .receipt-product__total {
     grid-column: 4;
     grid-row: 2;
-    font-size: 0.62rem;
+    font-size: 0.68rem;
   }
 }
 

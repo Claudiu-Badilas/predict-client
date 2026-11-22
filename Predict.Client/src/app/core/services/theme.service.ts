@@ -1,9 +1,19 @@
 import { DOCUMENT } from '@angular/common';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 
-export type Theme = 'light' | 'dark';
+export type Theme = 'light' | 'dim' | 'dark';
 
 const THEME_STORAGE_KEY = 'theme';
+const THEMES: readonly Theme[] = ['light', 'dim', 'dark'];
+const THEME_LABELS: Record<Theme, string> = {
+  light: 'Light',
+  dim: 'Dim',
+  dark: 'Dark',
+};
+
+function isTheme(value: string | null | undefined): value is Theme {
+  return value === 'light' || value === 'dim' || value === 'dark';
+}
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
@@ -14,6 +24,10 @@ export class ThemeService {
   private manuallyChosen = false;
 
   readonly theme = this.themeSignal.asReadonly();
+  readonly themeLabel = computed(() => THEME_LABELS[this.themeSignal()]);
+  readonly iconTheme = computed(() =>
+    this.themeSignal() === 'light' ? 'light' : 'dark',
+  );
 
   private readonly handleSystemPreferenceChange = (
     event: MediaQueryListEvent,
@@ -26,7 +40,7 @@ export class ThemeService {
   constructor() {
     const savedTheme = this.view?.localStorage.getItem(THEME_STORAGE_KEY);
 
-    if (savedTheme === 'light' || savedTheme === 'dark') {
+    if (isTheme(savedTheme)) {
       // A saved selection is explicit and must not be overridden by OS changes.
       this.manuallyChosen = true;
       this.applyTheme(savedTheme);
@@ -43,9 +57,8 @@ export class ThemeService {
   }
 
   toggleTheme(): void {
-    const themes: Theme[] = ['light', 'dark'];
-    const currentIndex = themes.indexOf(this.getCurrentTheme());
-    this.setTheme(themes[(currentIndex + 1) % themes.length]);
+    const currentIndex = THEMES.indexOf(this.getCurrentTheme());
+    this.setTheme(THEMES[(currentIndex + 1) % THEMES.length]);
   }
 
   setTheme(theme: Theme): void {

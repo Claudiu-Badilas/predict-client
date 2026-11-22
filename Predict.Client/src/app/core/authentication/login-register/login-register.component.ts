@@ -176,6 +176,6 @@ export class LoginRegisterComponent {
   }
 
   readonly eyeIconPath = computed(
-    () => `assets/icons/${this.themeService.theme()}/eye.svg`,
+    () => `assets/icons/${this.themeService.iconTheme()}/eye.svg`,
   );
 }

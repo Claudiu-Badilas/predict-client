@@ -114,7 +114,7 @@ export class PlatformToggleComponent {
   getOptionIcon(option: string | PlatformToggleOption): string | undefined {
     if (typeof option === 'string' || !option.iconPath) return undefined;
 
-    const theme = this.themeService.theme() === 'light' ? 'light' : 'dark';
+    const theme = this.themeService.iconTheme();
     return option.iconPath.replace(/\/icons\//i, `/icons/${theme}/`);
   }
 

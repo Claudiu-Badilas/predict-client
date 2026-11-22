@@ -16,8 +16,10 @@
   <button
     type="button"
     class="platform-toggle__theme"
-    [attr.aria-label]="'Theme: ' + themeService.theme() + '. Change theme'"
-    [attr.title]="'Theme: ' + themeService.theme()"
+    [attr.aria-label]="
+      'Current theme: ' + themeService.themeLabel() + '. Cycle themes'
+    "
+    [attr.title]="'Theme: ' + themeService.themeLabel() + ' (cycle themes)'"
     (click)="themeService.toggleTheme()"
   >
     <svg
@@ -35,13 +37,16 @@
         <path
           d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"
         />
+      } @else if (themeService.theme() === 'dim') {
+        <circle cx="12" cy="12" r="8" />
+        <path d="M12 4a8 8 0 0 0 0 16Z" fill="currentColor" />
       } @else {
         <path d="M20.9 13A9 9 0 1 1 11 3.1 9 9 0 0 0 20.9 13Z" />
       }
     </svg>
-    <span class="platform-toggle__theme-label">
-      {{ themeService.theme() === 'light' ? 'Light' : 'Dark' }}
-    </span>
+    <span class="platform-toggle__theme-label">{{
+      themeService.themeLabel()
+    }}</span>
   </button>
 } @else if (selectionConfig(); as selection) {
   <div

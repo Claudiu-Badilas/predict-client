@@ -110,6 +110,6 @@ export class TopBarComponent {
   }
 
   getThemeIconPath(icon: string): string {
-    return `assets/icons/${this.themeService.theme()}/${icon}.svg`;
+    return `assets/icons/${this.themeService.iconTheme()}/${icon}.svg`;
   }
 }

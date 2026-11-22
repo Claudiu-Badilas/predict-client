@@ -1,6 +1,6 @@
 :host {
   --surface: var(--theme-surface);
-  --surface-soft: var(--theme-hover);
+  --surface-soft: var(--theme-table-header);
   --surface-tint: var(--theme-surface-muted);
   --border: var(--theme-border);
   --border-soft: var(--theme-border);
@@ -27,11 +27,10 @@
 
 .cell-label {
   color: var(--muted);
-  font-size: 8px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  line-height: 1;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -40,10 +39,10 @@
 
 .cell-value {
   color: var(--text-soft);
-  font-size: 10.5px;
-  font-weight: 750;
+  font-size: 12px;
+  font-weight: 650;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
@@ -124,10 +123,9 @@
   padding: 14px 8px;
   background: var(--surface-soft);
   color: var(--muted);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
   text-align: center;
   border-bottom: 1px solid var(--border);
   white-space: nowrap;
@@ -141,11 +139,13 @@
 
 .instalment-table thead th:nth-child(n + 2) {
   width: 15.6%;
+  text-align: right;
+  padding-right: 16px;
 }
 
 .instalment-table tbody td {
   padding: 14px 8px;
-  background: var(--surface);
+  background: var(--theme-table-row);
   border-bottom: 1px solid var(--border);
   text-align: center;
   vertical-align: middle;
@@ -159,7 +159,10 @@
 .instalment-table tbody td.col-month {
   text-align: left;
   padding: 12px 16px;
-  background: var(--surface-soft);
+}
+
+.instalment-table tbody tr:nth-child(even):not(.simulation-row) td {
+  background: var(--theme-table-row-alt);
 }
 
 .instalment-table tbody td > .cell-label {
@@ -173,12 +176,17 @@
   letter-spacing: -0.015em;
 }
 
-.instalment-table tbody tr:hover td {
-  background: var(--surface-tint);
+.instalment-table tbody tr:hover:not(.simulation-row) td {
+  background: var(--theme-table-row-hover);
 }
 
-.instalment-table tbody tr:hover td.col-month {
-  background: var(--surface-soft);
+.instalment-table tbody tr:hover:not(.simulation-row) td.col-month {
+  background: var(--theme-table-row-hover);
+}
+
+.instalment-table tbody td:nth-child(n + 3) {
+  text-align: right;
+  padding-right: 16px;
 }
 
 .instalment-table tbody tr.simulation-row td {
@@ -195,6 +203,10 @@
   background: var(--theme-accent-subtle);
   border-top: 1px dashed var(--theme-accent);
   border-bottom: 1px dashed var(--theme-accent);
+}
+
+.mobile-list .month-row:nth-child(even):not(.simulation-row) {
+  background: var(--theme-table-row-alt);
 }
 
 .cell-month {
@@ -316,7 +328,7 @@
   .cell-month {
     gap: 4px;
     padding: 8px 6px;
-    background: var(--surface-soft);
+    background: transparent;
   }
 
   .cell-month .cell-label {
@@ -333,13 +345,25 @@
 }
 
 @media (max-width: 480px) {
+  .month-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .cell {
-    padding: 7px 0px;
+    padding: 9px 5px;
     gap: 2px;
   }
 
+  .cell:not(:nth-child(3n)) {
+    border-right: 1px solid var(--border);
+  }
+
+  .cell:nth-child(n + 4) {
+    border-top: 1px solid var(--border);
+  }
+
   .cell-month {
-    padding: 7px 0px;
+    padding: 9px 5px;
     gap: 3px;
     font-size: 11px;
   }
@@ -350,12 +374,12 @@
   }
 
   .cell-label {
-    font-size: 7px;
-    letter-spacing: 0.03em;
+    font-size: 9px;
+    letter-spacing: 0;
   }
 
   .cell-value {
-    font-size: 9.5px;
+    font-size: 11px;
   }
 
   .early-chip {
@@ -366,21 +390,15 @@
 
 @media (max-width: 380px) {
   .month-row {
-    grid-template-columns:
-      minmax(0, 1.1fr)
-      minmax(0, 1.1fr)
-      minmax(0, 1.1fr)
-      minmax(0, 1.1fr)
-      minmax(0, 0.8fr)
-      minmax(0, 1.1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .cell {
-    padding: 6px 1px;
+    padding: 8px 4px;
   }
 
   .cell-month {
-    padding: 6px 4px;
+    padding: 8px 4px;
   }
 
   .cell-month .cell-label {
@@ -388,13 +406,13 @@
   }
 
   .cell-label {
-    font-size: 6.5px;
-    letter-spacing: 0.02em;
+    font-size: 8px;
+    letter-spacing: 0;
   }
 
   .cell-value {
-    font-size: 8.5px;
-    letter-spacing: -0.03em;
+    font-size: 10px;
+    letter-spacing: 0;
   }
 }
 

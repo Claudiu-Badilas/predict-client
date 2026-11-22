@@ -142,6 +142,34 @@
   background: #216e39;
 }
 
+:host-context([data-theme='dim']) .day {
+  border-color: var(--theme-border);
+}
+
+:host-context([data-theme='dim']) .day.level-0 {
+  background: var(--theme-surface-muted);
+}
+
+:host-context([data-theme='dim']) .day.level-1 {
+  background: #244b39;
+}
+
+:host-context([data-theme='dim']) .day.level-2 {
+  background: #2f6547;
+}
+
+:host-context([data-theme='dim']) .day.level-3 {
+  background: #427d53;
+}
+
+:host-context([data-theme='dim']) .day.level-4 {
+  background: #579865;
+}
+
+:host-context([data-theme='dim']) .color-swatch {
+  border-color: var(--theme-border-strong);
+}
+
 :host-context([data-theme='dark']) .day {
   border-color: rgb(184 210 221 / 18%);
 }
@@ -182,6 +210,10 @@
 
 .color-swatch--default {
   background: var(--default-empty-color, #ebedf0);
+}
+
+:host-context([data-theme='dim']) .color-swatch--default {
+  background: var(--theme-surface-muted);
 }
 
 :host-context([data-theme='dark']) .color-swatch--default {
