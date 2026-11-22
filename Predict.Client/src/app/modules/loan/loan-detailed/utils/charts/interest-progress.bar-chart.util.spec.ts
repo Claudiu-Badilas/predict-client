@@ -22,7 +22,7 @@ describe('InterestProgressChartBarUtils', () => {
     );
 
     expect(chart?.chart?.type).toBe('bar');
-    expect(chart?.series).toHaveLength(1);
+    expect(chart?.series).toHaveLength(2);
     expect(chart?.xAxis).toMatchObject({ type: 'category' });
   });
 });
